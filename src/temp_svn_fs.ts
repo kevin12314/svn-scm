@@ -298,4 +298,14 @@ class TempSvnFs implements FileSystemProvider, Disposable {
   }
 }
 
-export const tempSvnFs = new TempSvnFs();
+const globalTempSvnFsKey = "__svnScmTempSvnFs";
+
+type TempSvnFsGlobal = typeof globalThis & {
+  [globalTempSvnFsKey]?: TempSvnFs;
+};
+
+const tempSvnFsGlobal = globalThis as TempSvnFsGlobal;
+
+export const tempSvnFs =
+  tempSvnFsGlobal[globalTempSvnFsKey] ||
+  (tempSvnFsGlobal[globalTempSvnFsKey] = new TempSvnFs());
