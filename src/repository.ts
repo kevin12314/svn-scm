@@ -982,6 +982,10 @@ export class Repository implements IRemoteRepository {
     );
   }
 
+  public async lock(files: string[], message: string = "Locking for changes") {
+    return this.run(Operation.Lock, () => this.repository.lock(files, message));
+  }
+
   public async list(filePath: string): Promise<ISvnListItem[]> {
     return this.run<ISvnListItem[]>(Operation.List, () => {
       return this.repository.ls(filePath);

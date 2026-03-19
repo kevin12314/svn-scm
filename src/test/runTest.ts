@@ -6,12 +6,15 @@ const defaultCodeVersion = "1.73.0";
 async function main() {
   const extensionDevelopmentPath = path.resolve(__dirname, "../../");
   const extensionTestsPath = path.resolve(__dirname, "../../out/test");
+  const isHeadless = process.argv.includes("--headless");
+  const launchArgs = isHeadless ? ["--headless"] : [];
 
   try {
     await runTests({
       version: process.env.CODE_VERSION || defaultCodeVersion,
       extensionDevelopmentPath,
-      extensionTestsPath
+      extensionTestsPath,
+      launchArgs
     });
   } catch (err) {
     console.error(`Failed to run tests: ${err}\n${err.stack}`);

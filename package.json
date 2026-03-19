@@ -237,8 +237,18 @@
                 "icon": "$(refresh)"
             },
             {
+                "command": "svn.copyPermalink",
+                "title": "%commands.svn.copyPermalink.title%",
+                "category": "%commands.category.svn%"
+            },
+            {
                 "command": "svn.log",
                 "title": "%commands.svn.log.title%",
+                "category": "%commands.category.svn%"
+            },
+            {
+                "command": "svn.lock",
+                "title": "%commands.svn.lock.title%",
                 "category": "%commands.category.svn%"
             },
             {
@@ -514,7 +524,15 @@
                     "when": "false"
                 },
                 {
+                    "command": "svn.copyPermalink",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
                     "command": "svn.log",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
+                    "command": "svn.lock",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {

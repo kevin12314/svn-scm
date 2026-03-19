@@ -25,6 +25,8 @@
     "commands.svn.itemlog.openDiffBase.title": "Open diff with BASE",
     "commands.svn.itemlog.openFileRemote.title": "Open this revision",
     "commands.svn.itemlog.refresh.title": "Refresh log for item",
+    "commands.svn.copyPermalink.title": "Copy URL at Current Revision",
+    "commands.svn.lock.title": "Get lock for current file",
     "commands.svn.log.title": "Show commit messages",
     "commands.svn.merge.title": "Merge",
     "commands.svn.openChangeBase.title": "Open Changes with BASE",

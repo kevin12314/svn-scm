@@ -225,4 +225,12 @@ suite("Commands Tests", () => {
     ) as Repository;
     assert.equal(await repository.getCurrentBranch(), "trunk");
   });
+
+  test("Lock File", async function () {
+    const file = path.join(checkoutDir.fsPath, "new.txt");
+    const uri = Uri.file(file);
+
+    await commands.executeCommand("vscode.open", uri);
+    await commands.executeCommand("svn.lock");
+  });
 });

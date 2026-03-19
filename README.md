@@ -54,6 +54,8 @@ You can checkout a SVN repository with the `SVN: Checkout` command in the **Comm
 * Diff changes
 * Commit changes/changelists
 * See commit messages
+* Copy file permalinks
+* Lock files
 
 ## Blame
 

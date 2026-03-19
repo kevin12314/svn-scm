@@ -25,6 +25,8 @@
     "commands.svn.itemlog.openDiffBase.title": "以 BASE 開啟差異",
     "commands.svn.itemlog.openFileRemote.title": "開啟此修訂版",
     "commands.svn.itemlog.refresh.title": "重新整理檔案歷程",
+    "commands.svn.copyPermalink.title": "複製目前修訂版的 URL",
+    "commands.svn.lock.title": "鎖定目前檔案",
     "commands.svn.log.title": "顯示提交訊息",
     "commands.svn.merge.title": "合併",
     "commands.svn.openChangeBase.title": "以 BASE 開啟變更",
