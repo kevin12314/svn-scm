@@ -345,6 +345,18 @@
                 "icon": "$(add)"
             },
             {
+                "command": "svn.repolog.filterAuthor",
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.repolog.filterAuthor.title%",
+                "icon": "$(zap)"
+            },
+            {
+                "command": "svn.repolog.filterMsg",
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.repolog.filterMsg.title%",
+                "icon": "$(filter)"
+            },
+            {
                 "command": "svn.repolog.copymsg",
                 "category": "%commands.category.svn%",
                 "title": "%commands.svn.repolog.copymsg.title%"
@@ -596,6 +608,14 @@
                     "when": "false"
                 },
                 {
+                    "command": "svn.repolog.filterAuthor",
+                    "when": "false"
+                },
+                {
+                    "command": "svn.repolog.filterMsg",
+                    "when": "false"
+                },
+                {
                     "command": "svn.repolog.addrepolike",
                     "when": "false"
                 },
@@ -684,6 +704,16 @@
                 },
                 {
                     "command": "svn.repolog.refresh",
+                    "when": "view == repolog",
+                    "group": "navigation"
+                },
+                {
+                    "command": "svn.repolog.filterAuthor",
+                    "when": "view == repolog",
+                    "group": "navigation"
+                },
+                {
+                    "command": "svn.repolog.filterMsg",
                     "when": "view == repolog",
                     "group": "navigation"
                 },

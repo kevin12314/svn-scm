@@ -44,6 +44,8 @@
     "commands.svn.removeUnversioned.title": "Remove unversioned files",
     "commands.svn.renameExplorer.title": "Rename with SVN",
     "commands.svn.repolog.addrepolike.title": "Add repo-like path",
+    "commands.svn.repolog.filterAuthor.title": "Set filter by author",
+    "commands.svn.repolog.filterMsg.title": "Set filter by message",
     "commands.svn.repolog.copymsg.title": "Copy message",
     "commands.svn.repolog.copyrevision.title": "Copy revision number",
     "commands.svn.repolog.openDiff.title": "Open diff",

@@ -44,6 +44,8 @@
     "commands.svn.removeUnversioned.title": "移除未版本控制檔案",
     "commands.svn.renameExplorer.title": "以 SVN 重新命名",
     "commands.svn.repolog.addrepolike.title": "新增類儲存庫路徑",
+    "commands.svn.repolog.filterAuthor.title": "依作者篩選",
+    "commands.svn.repolog.filterMsg.title": "依訊息篩選",
     "commands.svn.repolog.copymsg.title": "複製訊息",
     "commands.svn.repolog.copyrevision.title": "複製修訂版號",
     "commands.svn.repolog.openDiff.title": "開啟差異",

@@ -74,6 +74,8 @@ export class RepoLogProvider
     ._onDidChangeTreeData.event;
   // TODO on-disk cache?
   private readonly logCache: Map<string, ICachedLog> = new Map();
+  private filterAuthor = "";
+  private filterMsg = "";
   private _dispose: Disposable[] = [];
 
   private getCached(maybeItem?: ILogTreeItem): ICachedLog {
@@ -114,6 +116,12 @@ export class RepoLogProvider
         this
       ),
       commands.registerCommand("svn.repolog.refresh", this.refresh, this),
+      commands.registerCommand(
+        "svn.repolog.filterAuthor",
+        this.filterAuthorGui,
+        this
+      ),
+      commands.registerCommand("svn.repolog.filterMsg", this.filterMsgGui, this),
       this.sourceControlManager.onDidChangeRepository(
         async (_e: RepositoryChangeEvent) => {
           return this.refresh();
@@ -125,6 +133,30 @@ export class RepoLogProvider
 
   public dispose() {
     dispose(this._dispose);
+  }
+
+  public filterAuthorGui() {
+    const box = window.createInputBox();
+    box.prompt = l10n.t("Set filter for commit authors, empty to reset");
+    box.value = this.filterAuthor;
+    box.onDidAccept(async () => {
+      this.filterAuthor = box.value;
+      box.dispose();
+      this._onDidChangeTreeData.fire(undefined);
+    });
+    box.show();
+  }
+
+  public filterMsgGui() {
+    const box = window.createInputBox();
+    box.prompt = l10n.t("Set filter for commit message, empty to reset");
+    box.value = this.filterMsg;
+    box.onDidAccept(async () => {
+      this.filterMsg = box.value;
+      box.dispose();
+      this._onDidChangeTreeData.fire(undefined);
+    });
+    box.show();
   }
 
   public removeRepo(element: ILogTreeItem) {
@@ -394,7 +426,12 @@ export class RepoLogProvider
       if (logentries.length === 0) {
         await fetchMore(cached);
       }
-      const result = transform(logentries, LogTreeItemKind.Commit, element);
+      const filteredEntries = logentries.filter(
+        ({ author, msg }) =>
+          (this.filterAuthor === "" || author.includes(this.filterAuthor)) &&
+          (this.filterMsg === "" || msg.includes(this.filterMsg))
+      );
+      const result = transform(filteredEntries, LogTreeItemKind.Commit, element);
       insertBaseMarker(cached, logentries, result);
       if (!cached.isComplete) {
         const ti = new TreeItem(l10n.t("Load another {0} revisions", limit));
