@@ -11,7 +11,7 @@
   "commit": "提交",
   "Changes": "變更",
   "Conflicts": "衝突",
-  "Unversioned": "未版本控制",
+  "Unversioned": "未納入版本控制",
   "Changelist \"{0}\"": "變更清單 \"{0}\"",
   "Remote Changes": "遠端變更",
   "There are no changes to commit.": "沒有可提交的變更。",
