@@ -1,4 +1,4 @@
-import { window } from "vscode";
+import { l10n, window } from "vscode";
 import { getConflictPickOptions } from "../conflictItems";
 import { Repository } from "../repository";
 import { Command } from "./command";
@@ -12,11 +12,14 @@ export class ResolveAll extends Command {
     const conflicts = repository.conflicts.resourceStates;
 
     if (!conflicts.length) {
-      window.showInformationMessage("No Conflicts");
+      window.showInformationMessage(l10n.t("No Conflicts"));
     }
 
     for (const conflict of conflicts) {
-      const placeHolder = `Select conflict option for ${conflict.resourceUri.path}`;
+      const placeHolder = l10n.t(
+        "Select conflict option for {0}",
+        conflict.resourceUri.path
+      );
       const picks = getConflictPickOptions();
 
       const choice = await window.showQuickPick(picks, { placeHolder });

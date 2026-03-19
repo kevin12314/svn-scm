@@ -221,13 +221,13 @@ export function overrideNextShowQuickPick(value: any) {
 
 const originalShowQuickPick = window.showQuickPick;
 
-window.showQuickPick = (
-  items: any[] | Thenable<any[]>,
+window.showQuickPick = ((
+  items: readonly any[] | Thenable<readonly any[]>,
   ...args: any[]
 ): Thenable<any | undefined> => {
   let next = overridesShowQuickPick.shift();
   if (typeof next === "undefined") {
-    return originalShowQuickPick.call(null, [items, ...args]);
+    return originalShowQuickPick.apply(window, [items, ...args] as any);
   }
 
   if (typeof next === "number" && Array.isArray(items)) {
@@ -237,4 +237,4 @@ window.showQuickPick = (
   return new Promise((resolve, _reject) => {
     resolve(next);
   });
-};
+}) as typeof window.showQuickPick;

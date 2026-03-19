@@ -4,6 +4,7 @@ import {
   Disposable,
   Event,
   EventEmitter,
+  l10n,
   TextEditor,
   ThemeIcon,
   TreeDataProvider,
@@ -92,7 +93,7 @@ export class ItemLogProvider
     const item = unwrap(this.currentItem);
     const pos = item.entries.findIndex(e => e === commit);
     if (pos === item.entries.length - 1) {
-      window.showWarningMessage("Cannot diff last commit");
+      window.showWarningMessage(l10n.t("Cannot diff last commit"));
       return;
     }
     const prevRev = item.entries[pos + 1].revision;
@@ -156,7 +157,7 @@ export class ItemLogProvider
       ti.contextValue = "diffable";
       ti.command = {
         command: "svn.itemlog.openDiff",
-        title: "Open diff",
+        title: l10n.t("Open diff"),
         arguments: [element]
       };
     } else if (element.kind === LogTreeItemKind.TItem) {
@@ -192,16 +193,20 @@ export class ItemLogProvider
       const result = transform(entries, LogTreeItemKind.Commit);
       insertBaseMarker(this.currentItem, entries, result);
       if (!this.currentItem.isComplete) {
-        const ti = new TreeItem(`Load another ${getLimit()} revisions`);
+        const ti = new TreeItem(
+          l10n.t("Load another {0} revisions", getLimit())
+        );
         const ltItem: ILogTreeItem = {
           kind: LogTreeItemKind.TItem,
           data: ti
         };
-        ti.tooltip = "Paging size may be adjusted using log.length setting";
+        ti.tooltip = l10n.t(
+          "Paging size may be adjusted using log.length setting"
+        );
         ti.command = {
           command: "svn.itemlog.refresh",
           arguments: [element, undefined, true],
-          title: "refresh element"
+          title: l10n.t("refresh element")
         };
         ti.iconPath = new ThemeIcon("unfold");
         result.push(ltItem);

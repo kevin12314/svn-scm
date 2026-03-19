@@ -1,5 +1,5 @@
 import * as path from "path";
-import { Uri, window } from "vscode";
+import { l10n, Uri, window } from "vscode";
 import { Repository } from "../repository";
 import { fixPathSeparator } from "../util";
 import { Command } from "./command";
@@ -35,7 +35,7 @@ export class RenameExplorer extends Command {
       const oldName = path.relative(root, oldFile);
       newName = await window.showInputBox({
         value: path.basename(oldFile),
-        prompt: `New name name for ${oldName}`
+        prompt: l10n.t("New name for {0}", oldName)
       });
     }
     if (!newName) {

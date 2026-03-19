@@ -1,11 +1,19 @@
 import * as os from "os";
 import * as path from "path";
-import { commands, ProgressLocation, Uri, window, workspace } from "vscode";
+import {
+  commands,
+  l10n,
+  ProgressLocation,
+  Uri,
+  window,
+  workspace
+} from "vscode";
 import { IAuth, ICpOptions } from "../common/types";
 import { getBranchName } from "../helpers/branch";
 import { configuration } from "../helpers/configuration";
 import { SourceControlManager } from "../source_control_manager";
 import { svnErrorCodes } from "../svn";
+import SvnError from "../svnError";
 import { Command } from "./command";
 
 export class Checkout extends Command {
@@ -16,7 +24,7 @@ export class Checkout extends Command {
   public async execute(url?: string) {
     if (!url) {
       url = await window.showInputBox({
-        prompt: "Repository URL",
+        prompt: l10n.t("Repository URL"),
         ignoreFocusOut: true
       });
     }
@@ -37,7 +45,7 @@ export class Checkout extends Command {
       canSelectFolders: true,
       canSelectMany: false,
       defaultUri: Uri.file(defaultCheckoutDirectory),
-      openLabel: "Select Repository Location"
+      openLabel: l10n.t("Select Repository Location")
     });
 
     if (!uris || uris.length === 0) {
@@ -57,7 +65,7 @@ export class Checkout extends Command {
     }
 
     folderName = await window.showInputBox({
-      prompt: "Folder name",
+      prompt: l10n.t("Folder name"),
       value: folderName,
       ignoreFocusOut: true
     });
@@ -76,7 +84,7 @@ export class Checkout extends Command {
 
     const progressOptions = {
       location,
-      title: `Checkout svn repository '${url}'...`,
+      title: l10n.t("Checkout svn repository '{0}'...", url),
       cancellable: true
     };
 
@@ -98,6 +106,7 @@ export class Checkout extends Command {
         break;
       } catch (err) {
         if (
+          err instanceof SvnError &&
           err.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
           attempt <= 3
         ) {
@@ -116,17 +125,18 @@ export class Checkout extends Command {
     }
 
     const choices = [];
-    let message = "Would you like to open the checked out repository?";
-    const open = "Open Repository";
+    let message = l10n.t("Would you like to open the checked out repository?");
+    const open = l10n.t("Open Repository");
     choices.push(open);
 
-    const addToWorkspace = "Add to Workspace";
+    const addToWorkspace = l10n.t("Add to Workspace");
     if (
       workspace.workspaceFolders &&
       (workspace as any).updateWorkspaceFolders // For VSCode >= 1.21
     ) {
-      message =
-        "Would you like to open the checked out repository, or add it to the current workspace?";
+      message = l10n.t(
+        "Would you like to open the checked out repository, or add it to the current workspace?"
+      );
       choices.push(addToWorkspace);
     }
 

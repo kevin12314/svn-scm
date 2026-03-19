@@ -5,6 +5,7 @@ import * as relativeTime from "dayjs/plugin/relativeTime";
 import {
   commands,
   env,
+  l10n,
   TextDocumentShowOptions,
   ThemeIcon,
   TreeItem,
@@ -82,7 +83,9 @@ export function getIconObject(iconName: string): { light: Uri; dark: Uri } {
 export async function copyCommitToClipboard(what: string, item: ILogTreeItem) {
   const clipboard = (env as any).clipboard;
   if (clipboard === undefined) {
-    window.showErrorMessage("Clipboard is supported in VS Code 1.30 and newer");
+    window.showErrorMessage(
+      l10n.t("Clipboard is supported in VS Code 1.30 and newer")
+    );
     return;
   }
   if (item.kind === LogTreeItemKind.Commit) {
@@ -128,7 +131,7 @@ export function insertBaseMarker(
       i++;
     }
     const titem = new TreeItem("BASE");
-    titem.tooltip = "Log entries above do not exist in working copy";
+    titem.tooltip = l10n.t("Log entries above do not exist in working copy");
     out.splice(i, 0, { kind: LogTreeItemKind.TItem, data: titem });
   }
   return undefined;
@@ -140,7 +143,7 @@ export async function checkIfFile(
 ): Promise<boolean | undefined> {
   if (e.localFullPath === undefined) {
     if (local) {
-      window.showErrorMessage("No working copy for this path");
+      window.showErrorMessage(l10n.t("No working copy for this path"));
     }
     return undefined;
   }
@@ -149,12 +152,15 @@ export async function checkIfFile(
     stat = await lstat(e.localFullPath.fsPath);
   } catch {
     window.showWarningMessage(
-      "Not available from this working copy: " + e.localFullPath
+      l10n.t(
+        "Not available from this working copy: {0}",
+        String(e.localFullPath)
+      )
     );
     return false;
   }
   if (!stat.isFile()) {
-    window.showErrorMessage("This target is not a file");
+    window.showErrorMessage(l10n.t("This target is not a file"));
     return false;
   }
   return true;
@@ -262,9 +268,10 @@ async function downloadFile(
     const ri = nm.parse(arg.toString(true));
     const localPath = ri.localFullPath;
     if (localPath === undefined || !(await exists(localPath.path))) {
-      const errorMsg =
-        "BASE revision doesn't exist for " +
-        (localPath ? localPath.path : "remote path");
+      const errorMsg = l10n.t(
+        "BASE revision doesn't exist for {0}",
+        localPath ? localPath.path : l10n.t("remote path")
+      );
       window.showErrorMessage(errorMsg);
       throw new Error(errorMsg);
     }
@@ -274,7 +281,7 @@ async function downloadFile(
   try {
     out = await repo.show(arg, revision);
   } catch (e) {
-    window.showErrorMessage("Failed to open path");
+    window.showErrorMessage(l10n.t("Failed to open path"));
     throw e;
   }
   return tempSvnFs.createTempSvnRevisionFile(arg, revision, out);
@@ -305,7 +312,7 @@ export async function openFileRemote(
   try {
     out = await repo.show(arg, against);
   } catch {
-    window.showErrorMessage("Failed to open path");
+    window.showErrorMessage(l10n.t("Failed to open path"));
     return;
   }
   const localUri = await tempSvnFs.createTempSvnRevisionFile(arg, against, out);

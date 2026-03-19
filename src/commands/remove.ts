@@ -1,4 +1,4 @@
-import { SourceControlResourceState, window } from "vscode";
+import { l10n, SourceControlResourceState, window } from "vscode";
 import { Command } from "./command";
 
 export class Remove extends Command {
@@ -14,18 +14,19 @@ export class Remove extends Command {
     }
 
     let keepLocal: boolean;
+    const yes = l10n.t("Yes");
     const answer = await window.showWarningMessage(
-      "Would you like to keep a local copy of the files?",
+      l10n.t("Would you like to keep a local copy of the files?"),
       { modal: true },
-      "Yes",
-      "No"
+      yes,
+      l10n.t("No")
     );
 
     if (!answer) {
       return;
     }
 
-    if (answer === "Yes") {
+    if (answer === yes) {
       keepLocal = true;
     } else {
       keepLocal = false;
@@ -44,7 +45,7 @@ export class Remove extends Command {
         await repository.removeFiles(paths, keepLocal);
       } catch (error) {
         console.log(error);
-        window.showErrorMessage("Unable to remove files");
+        window.showErrorMessage(l10n.t("Unable to remove files"));
       }
     });
   }

@@ -1,4 +1,4 @@
-import { window } from "vscode";
+import { l10n, window } from "vscode";
 import { configuration } from "../helpers/configuration";
 import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { Command } from "./command";
@@ -28,7 +28,7 @@ export class PullIncommingChange extends Command {
         }
       } catch (error) {
         console.error(error);
-        window.showErrorMessage("Unable to update");
+        window.showErrorMessage(l10n.t("Unable to update"));
       }
 
       return;

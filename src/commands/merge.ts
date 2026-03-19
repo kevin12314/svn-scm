@@ -1,4 +1,4 @@
-import { commands, window } from "vscode";
+import { commands, l10n, window } from "vscode";
 import { IBranchItem } from "../common/types";
 import { isTrunk, selectBranch } from "../helpers/branch";
 import { Repository } from "../repository";
@@ -31,23 +31,24 @@ export class Merge extends Command {
       if (typeof error === "object" && error.hasOwnProperty("stderrFormated")) {
         if (error.stderrFormated.includes("try updating first")) {
           const answer = await window.showErrorMessage(
-            "Seems like you need to update first prior to merging. " +
-              "Would you like to update now and try merging again?",
-            "Yes",
-            "No"
+            l10n.t(
+              "Seems like you need to update first prior to merging. Would you like to update now and try merging again?"
+            ),
+            l10n.t("Yes"),
+            l10n.t("No")
           );
-          if (answer === "Yes") {
+          if (answer === l10n.t("Yes")) {
             await commands.executeCommand("svn.update");
             await this.merge(repository, branch);
           }
         } else {
           window.showErrorMessage(
-            "Unable to merge branch: " + error.stderrFormated
+            l10n.t("Unable to merge branch: {0}", error.stderrFormated)
           );
         }
       } else {
         console.log(error);
-        window.showErrorMessage("Unable to merge branch");
+        window.showErrorMessage(l10n.t("Unable to merge branch"));
       }
     }
   }

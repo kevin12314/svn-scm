@@ -1,4 +1,4 @@
-import { SourceControlResourceState, window } from "vscode";
+import { l10n, SourceControlResourceState, window } from "vscode";
 import { Command } from "./command";
 
 export class Add extends Command {
@@ -26,7 +26,7 @@ export class Add extends Command {
         await repository.addFiles(paths);
       } catch (error) {
         console.log(error);
-        window.showErrorMessage("Unable to add file");
+        window.showErrorMessage(l10n.t("Unable to add file"));
       }
     });
   }

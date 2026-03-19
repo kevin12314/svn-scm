@@ -1,4 +1,4 @@
-import { SourceControlResourceState, window } from "vscode";
+import { l10n, SourceControlResourceState, window } from "vscode";
 import { getConflictPickOptions } from "../conflictItems";
 import { Command } from "./command";
 
@@ -16,7 +16,7 @@ export class Resolve extends Command {
     const picks = getConflictPickOptions();
 
     const choice = await window.showQuickPick(picks, {
-      placeHolder: "Select conflict option"
+      placeHolder: l10n.t("Select conflict option")
     });
 
     if (!choice) {

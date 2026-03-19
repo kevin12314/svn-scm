@@ -2,6 +2,7 @@ import * as path from "path";
 import {
   commands,
   Disposable,
+  l10n,
   Position,
   Range,
   SourceControlResourceState,
@@ -433,7 +434,7 @@ export abstract class Command implements Disposable {
       });
     } catch (error) {
       console.error(error);
-      window.showErrorMessage("Unable to patch");
+      window.showErrorMessage(l10n.t("Unable to patch"));
     }
   }
 
@@ -481,11 +482,11 @@ export abstract class Command implements Disposable {
         const ignored = await inputIgnoreList(repository, resources);
 
         if (ignored) {
-          window.showInformationMessage(`File(s) is now being ignored`);
+          window.showInformationMessage(l10n.t("File(s) is now being ignored"));
         }
       } catch (error) {
         console.log(error);
-        window.showErrorMessage("Unable to set property ignore");
+        window.showErrorMessage(l10n.t("Unable to set property ignore"));
       }
     });
   }

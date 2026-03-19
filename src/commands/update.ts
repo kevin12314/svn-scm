@@ -1,4 +1,4 @@
-import { window } from "vscode";
+import { l10n, window } from "vscode";
 import { configuration } from "../helpers/configuration";
 import { Repository } from "../repository";
 import { Command } from "./command";
@@ -26,7 +26,7 @@ export class Update extends Command {
       }
     } catch (error) {
       console.error(error);
-      window.showErrorMessage("Unable to update");
+      window.showErrorMessage(l10n.t("Unable to update"));
     }
   }
 }

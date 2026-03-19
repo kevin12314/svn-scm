@@ -1,4 +1,4 @@
-import { SourceControlResourceState, window } from "vscode";
+import { l10n, SourceControlResourceState, window } from "vscode";
 import { checkAndPromptDepth, confirmRevert } from "../input/revert";
 import { Command } from "./command";
 
@@ -32,7 +32,7 @@ export class Revert extends Command {
         await repository.revert(paths, depth);
       } catch (error) {
         console.log(error);
-        window.showErrorMessage("Unable to revert");
+        window.showErrorMessage(l10n.t("Unable to revert"));
       }
     });
   }

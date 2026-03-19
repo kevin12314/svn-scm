@@ -1,4 +1,4 @@
-import { Uri, window } from "vscode";
+import { l10n, Uri, window } from "vscode";
 import { configuration } from "../helpers/configuration";
 import { Repository } from "../repository";
 import { Command } from "./command";
@@ -13,17 +13,20 @@ export class PromptRemove extends Command {
     const relativeList = files
       .map(file => repository.repository.removeAbsolutePath(file))
       .sort();
-    const ignoreText = "Add to ignored list";
+    const yes = l10n.t("Yes");
+    const no = l10n.t("No");
+    const ignoreText = l10n.t("Add to ignored list");
     const resp = await window.showInformationMessage(
-      `The file(s) "${relativeList.join(
-        ", "
-      )}" are removed from disk.\nWould you like remove from SVN?`,
+      l10n.t(
+        'The file(s) "{0}" are removed from disk.\nWould you like remove from SVN?',
+        relativeList.join(", ")
+      ),
       { modal: false },
-      "Yes",
+      yes,
       ignoreText,
-      "No"
+      no
     );
-    if (resp === "Yes") {
+    if (resp === yes) {
       await repository.removeFiles(files, false);
     } else if (resp === ignoreText) {
       let ignoreList = configuration.get<string[]>(

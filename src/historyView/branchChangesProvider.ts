@@ -4,6 +4,7 @@ import {
   TreeItem,
   commands,
   EventEmitter,
+  l10n,
   window
 } from "vscode";
 import { SourceControlManager } from "../source_control_manager";
@@ -56,7 +57,7 @@ export class BranchChangesProvider
       label: element.localPath.fsPath,
       command: {
         command: "svn.branchchanges.openDiff",
-        title: "Open diff",
+        title: l10n.t("Open diff"),
         arguments: [element]
       },
       iconPath,

@@ -1,4 +1,4 @@
-import { ProgressLocation, window } from "vscode";
+import { l10n, ProgressLocation, window } from "vscode";
 import { IBranchItem, SvnKindType } from "../common/types";
 import FolderItem from "../quickPickItems/folderItem";
 import NewFolderItem from "../quickPickItems/newFolderItem";
@@ -42,7 +42,10 @@ export async function selectBranch(
   const promise = repository.repository.list(folder);
 
   window.withProgress(
-    { location: ProgressLocation.Window, title: "Checking remote branches" },
+    {
+      location: ProgressLocation.Window,
+      title: l10n.t("Checking remote branches")
+    },
     () => promise
   );
 
@@ -84,7 +87,7 @@ export async function selectBranch(
 
   if (choice instanceof NewFolderItem) {
     const result = await window.showInputBox({
-      prompt: "Please provide a branch name",
+      prompt: l10n.t("Please provide a branch name"),
       ignoreFocusOut: true
     });
 

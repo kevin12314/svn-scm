@@ -1,18 +1,18 @@
 import * as path from "path";
-import { QuickPickItem, Uri, window } from "vscode";
+import { l10n, QuickPickItem, Uri, window } from "vscode";
 import { Repository } from "./repository";
 
 export class IgnoreSingleItem implements QuickPickItem {
   constructor(public expression: string, public recursive: boolean = false) {}
 
   get label(): string {
-    const text = this.recursive ? " (Recursive)" : "";
+    const text = this.recursive ? l10n.t(" (Recursive)") : "";
     return `${this.expression}${text}`;
   }
 
   get description(): string {
-    const text = this.recursive ? " (Recursive)" : "";
-    return `Add '${this.expression}' to 'svn:ignore'${text}`;
+    const text = this.recursive ? l10n.t(" (Recursive)") : "";
+    return l10n.t("Add '{0}' to 'svn:ignore'{1}", this.expression, text);
   }
 }
 
@@ -50,12 +50,20 @@ export async function inputIgnoreList(repository: Repository, uris: Uri[]) {
   }
 
   const count = uris.length;
-  const recursive = "(Recursive)";
+  const recursive = l10n.t("(Recursive)");
 
-  const ignoreByFileName = `Ignore ${count} by filename`;
-  const ignoreByExtension = `Ignore ${count} by extension`;
-  const ignoreByFileNameRecursive = `Ignore ${count} by filename ${recursive}`;
-  const ignoreByExtensionRecursive = `Ignore ${count} by extension ${recursive}`;
+  const ignoreByFileName = l10n.t("Ignore {0} by filename", count);
+  const ignoreByExtension = l10n.t("Ignore {0} by extension", count);
+  const ignoreByFileNameRecursive = l10n.t(
+    "Ignore {0} by filename {1}",
+    count,
+    recursive
+  );
+  const ignoreByExtensionRecursive = l10n.t(
+    "Ignore {0} by extension {1}",
+    count,
+    recursive
+  );
 
   const picks: string[] = [
     ignoreByFileName,

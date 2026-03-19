@@ -1,4 +1,4 @@
-import { QuickPickItem, window } from "vscode";
+import { l10n, QuickPickItem, window } from "vscode";
 import { configuration } from "./helpers/configuration";
 import ChangeListItem from "./quickPickItems/changeListItem";
 import IgnoredChangeListItem from "./quickPickItems/ignoredChangeListItem";
@@ -70,7 +70,7 @@ export async function inputSwitchChangelist(
   );
 
   const selectedChoice: any = await window.showQuickPick(picks, {
-    placeHolder: "Select an existing changelist or create a new"
+    placeHolder: l10n.t("Select an existing changelist or create a new")
   });
   if (!selectedChoice) {
     return;
@@ -82,8 +82,8 @@ export async function inputSwitchChangelist(
     return false;
   } else if (selectedChoice instanceof NewChangeListItem) {
     const newChangelistName = await window.showInputBox({
-      placeHolder: "Changelist name",
-      prompt: "Please enter a changelist name"
+      placeHolder: l10n.t("Changelist name"),
+      prompt: l10n.t("Please enter a changelist name")
     });
     if (!newChangelistName) {
       return;
@@ -100,7 +100,7 @@ export async function inputCommitChangelist(repository: Repository) {
   const picks: ChangeListItem[] = getCommitChangelistPickOptions(repository);
 
   if (picks.length === 0) {
-    window.showInformationMessage("There are no changes to commit.");
+    window.showInformationMessage(l10n.t("There are no changes to commit."));
     return;
   }
 
@@ -110,7 +110,7 @@ export async function inputCommitChangelist(repository: Repository) {
     choice = picks[0];
   } else {
     choice = await window.showQuickPick(picks, {
-      placeHolder: "Select a changelist to commit"
+      placeHolder: l10n.t("Select a changelist to commit")
     });
   }
 
@@ -133,7 +133,7 @@ export async function inputCommitFiles(repository: Repository) {
       r => new FileItem(repository, r, selectedAll)
     );
     const selected = await window.showQuickPick(picks, {
-      placeHolder: "Select files to commit",
+      placeHolder: l10n.t("Select files to commit"),
       canPickMany: true
     });
 
@@ -163,12 +163,12 @@ export async function getPatchChangelist(repository: Repository) {
   const picks: QuickPickItem[] = patchChangelistOptions(repository);
 
   if (!picks.length) {
-    window.showErrorMessage("No changelists to pick from");
+    window.showErrorMessage(l10n.t("No changelists to pick from"));
     return;
   }
 
   const selectedChoice: any = await window.showQuickPick(picks, {
-    placeHolder: "Select a changelist"
+    placeHolder: l10n.t("Select a changelist")
   });
   if (!selectedChoice) {
     return;

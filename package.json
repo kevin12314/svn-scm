@@ -1,14 +1,13 @@
 {
     "name": "svn-scm",
-    "displayName": "SVN",
-    "description": "Integrated Subversion source control",
+    "displayName": "%extension.displayName%",
+    "description": "%extension.description%",
     "version": "2.17.0",
     "publisher": "johnstoncode",
     "engines": {
-        "vscode": "^1.53.0"
+        "vscode": "^1.73.0"
     },
     "private": true,
-    "enableProposedApi": false,
     "icon": "images/subversion.png",
     "homepage": "https://github.com/JohnstonCode/svn-scm/blob/master/README.md",
     "repository": {
@@ -32,6 +31,7 @@
         "*"
     ],
     "main": "./out/extension",
+    "l10n": "./l10n",
     "scripts": {
         "build": "yarn run build:ts && yarn run build:css",
         "build:css": "yarn sass scss:css --style=compressed",
@@ -39,6 +39,8 @@
         "compile": "webpack --mode development --watch",
         "lint": "eslint \"src/**/*.ts\"",
         "lint:fix": "yarn run lint --fix",
+        "l10n:export": "npx @vscode/l10n-dev export --outDir ./l10n ./src",
+        "l10n:pseudo": "npx @vscode/l10n-dev generate-pseudo -o ./l10n ./l10n/bundle.l10n.json ./package.nls.json",
         "organize": "node ./out/tools/organize.js",
         "semantic-release": "semantic-release --yarn",
         "style-check": "yarn prettylint 'src/**/*.ts'",
@@ -61,7 +63,8 @@
         "@types/node": "^12.11.7",
         "@types/semver": "^7.3.8",
         "@types/tmp": "0.2.1",
-        "@types/vscode": "1.53.0",
+        "@types/vscode": "1.73.0",
+        "@vscode/l10n-dev": "^0.0.18",
         "@types/xml2js": "^0.4.9",
         "@typescript-eslint/eslint-plugin": "^4.29.0",
         "@typescript-eslint/parser": "^4.29.0",
@@ -101,7 +104,7 @@
             "activitybar": [
                 {
                     "id": "svnActivity",
-                    "title": "Subversion",
+                    "title": "%viewsContainers.activitybar.svnActivity.title%",
                     "icon": "icons/subversion-logo.svg"
                 }
             ]
@@ -110,23 +113,27 @@
             "explorer": [
                 {
                     "id": "svn",
-                    "name": "SVN"
+                    "name": "%views.explorer.svn.name%",
+                    "icon": "icons/subversion-logo.svg"
                 }
             ],
             "svnActivity": [
                 {
                     "id": "repolog",
-                    "name": "Repositories",
+                    "name": "%views.svnActivity.repolog.name%",
+                    "icon": "icons/subversion-logo.svg",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {
                     "id": "itemlog",
-                    "name": "File History",
+                    "name": "%views.svnActivity.itemlog.name%",
+                    "icon": "icons/subversion-logo.svg",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {
                     "id": "branchchanges",
-                    "name": "Branch Changes",
+                    "name": "%views.svnActivity.branchchanges.name%",
+                    "icon": "icons/subversion-logo.svg",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 }
             ]
@@ -134,114 +141,114 @@
         "commands": [
             {
                 "command": "svn.add",
-                "title": "Add",
-                "category": "SVN",
+                "title": "%commands.svn.add.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(add)"
             },
             {
                 "command": "svn.addToIgnoreExplorer",
-                "title": "Ignore file/ext from SVN (svn:ignore)",
-                "category": "SVN"
+                "title": "%commands.svn.addToIgnoreExplorer.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.addToIgnoreSCM",
-                "title": "Ignore file/ext from SVN (svn:ignore)",
-                "category": "SVN"
+                "title": "%commands.svn.addToIgnoreSCM.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.branchchanges.openDiff",
-                "category": "SVN",
-                "title": "Open diff"
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.branchchanges.openDiff.title%"
             },
             {
                 "command": "svn.branchchanges.refresh",
-                "category": "SVN",
-                "title": "Refresh branch changes",
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.branchchanges.refresh.title%",
                 "icon": "$(refresh)"
             },
             {
                 "command": "svn.changelist",
-                "title": "Set changelist",
-                "category": "SVN",
+                "title": "%commands.svn.changelist.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(list-unordered)"
             },
             {
                 "command": "svn.checkout",
-                "title": "Checkout",
-                "category": "SVN"
+                "title": "%commands.svn.checkout.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.cleanup",
-                "title": "Clean up working copy",
-                "category": "SVN"
+                "title": "%commands.svn.cleanup.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.close",
-                "title": "Close repository",
-                "category": "SVN"
+                "title": "%commands.svn.close.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.commit",
-                "title": "Commit Selected",
-                "category": "SVN",
+                "title": "%commands.svn.commit.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(check)"
             },
             {
                 "command": "svn.commitWithMessage",
-                "title": "Commit Changes",
-                "category": "SVN",
+                "title": "%commands.svn.commitWithMessage.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(check)"
             },
             {
                 "command": "svn.deleteUnversioned",
-                "title": "Delete selected files",
-                "category": "SVN"
+                "title": "%commands.svn.deleteUnversioned.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.itemlog.copymsg",
-                "category": "SVN",
-                "title": "Copy message"
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.itemlog.copymsg.title%"
             },
             {
                 "command": "svn.itemlog.copyrevision",
-                "category": "SVN",
-                "title": "Copy revision number"
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.itemlog.copyrevision.title%"
             },
             {
                 "command": "svn.itemlog.openDiff",
-                "title": "Open diff",
-                "category": "SVN"
+                "title": "%commands.svn.itemlog.openDiff.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.itemlog.openDiffBase",
-                "title": "Open diff with BASE",
-                "category": "SVN"
+                "title": "%commands.svn.itemlog.openDiffBase.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.itemlog.openFileRemote",
-                "title": "Open this revision",
-                "category": "SVN"
+                "title": "%commands.svn.itemlog.openFileRemote.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.itemlog.refresh",
-                "category": "SVN",
-                "title": "Refresh log for item",
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.itemlog.refresh.title%",
                 "icon": "$(refresh)"
             },
             {
                 "command": "svn.log",
-                "title": "Show commit messages",
-                "category": "SVN"
+                "title": "%commands.svn.log.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.merge",
-                "title": "Merge",
-                "category": "SVN"
+                "title": "%commands.svn.merge.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.openChangeBase",
-                "title": "Open Changes with BASE",
-                "category": "SVN",
+                "title": "%commands.svn.openChangeBase.title%",
+                "category": "%commands.category.svn%",
                 "icon": {
                     "light": "icons/light/open-change-base.svg",
                     "dark": "icons/dark/open-change-base.svg"
@@ -249,8 +256,8 @@
             },
             {
                 "command": "svn.openChangeHead",
-                "title": "Open Changes with HEAD",
-                "category": "SVN",
+                "title": "%commands.svn.openChangeHead.title%",
+                "category": "%commands.category.svn%",
                 "icon": {
                     "light": "icons/light/open-change-head.svg",
                     "dark": "icons/dark/open-change-head.svg"
@@ -258,176 +265,176 @@
             },
             {
                 "command": "svn.openChangePrev",
-                "title": "Open Changes with PREV",
-                "category": "SVN"
+                "title": "%commands.svn.openChangePrev.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.openFile",
-                "title": "Open File",
-                "category": "SVN",
+                "title": "%commands.svn.openFile.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(go-to-file)"
             },
             {
                 "command": "svn.openHEADFile",
-                "title": "Open File (HEAD)",
-                "category": "SVN"
+                "title": "%commands.svn.openHEADFile.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.patch",
-                "title": "Show diff patch for selected",
-                "category": "SVN"
+                "title": "%commands.svn.patch.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.patchAll",
-                "title": "Show all diff patch",
-                "category": "SVN"
+                "title": "%commands.svn.patchAll.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.patchChangeList",
-                "title": "Show patch from changelist",
-                "category": "SVN"
+                "title": "%commands.svn.patchChangeList.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.pickCommitMessage",
-                "title": "Pick a previous commit message",
-                "category": "SVN",
+                "title": "%commands.svn.pickCommitMessage.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(history)"
             },
             {
                 "command": "svn.refresh",
-                "title": "Refresh",
-                "category": "SVN",
+                "title": "%commands.svn.refresh.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(refresh)"
             },
             {
                 "command": "svn.refreshRemoteChanges",
-                "title": "Refresh Remote Changes",
-                "category": "SVN",
+                "title": "%commands.svn.refreshRemoteChanges.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(refresh)"
             },
             {
                 "command": "svn.remove",
-                "title": "Remove Selected",
-                "category": "SVN"
+                "title": "%commands.svn.remove.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.removeUnversioned",
-                "title": "Remove unversioned files",
-                "category": "SVN"
+                "title": "%commands.svn.removeUnversioned.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.renameExplorer",
-                "title": "Rename with SVN",
-                "category": "SVN"
+                "title": "%commands.svn.renameExplorer.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.repolog.addrepolike",
-                "category": "SVN",
-                "title": "Add repo-like path",
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.repolog.addrepolike.title%",
                 "icon": "$(add)"
             },
             {
                 "command": "svn.repolog.copymsg",
-                "category": "SVN",
-                "title": "Copy message"
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.repolog.copymsg.title%"
             },
             {
                 "command": "svn.repolog.copyrevision",
-                "category": "SVN",
-                "title": "Copy revision number"
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.repolog.copyrevision.title%"
             },
             {
                 "command": "svn.repolog.openDiff",
-                "category": "SVN",
-                "title": "Open diff"
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.repolog.openDiff.title%"
             },
             {
                 "command": "svn.repolog.openFileLocal",
-                "category": "SVN",
-                "title": "Open WC version of a file"
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.repolog.openFileLocal.title%"
             },
             {
                 "command": "svn.repolog.openFileRemote",
-                "category": "SVN",
-                "title": "Open this revision"
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.repolog.openFileRemote.title%"
             },
             {
                 "command": "svn.repolog.refresh",
-                "category": "SVN",
-                "title": "Refresh log",
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.repolog.refresh.title%",
                 "icon": "$(refresh)"
             },
             {
                 "command": "svn.repolog.remove",
-                "category": "SVN",
-                "title": "Remove"
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.repolog.remove.title%"
             },
             {
                 "command": "svn.resolve",
-                "title": "Resolve conflicts for selected",
-                "category": "SVN",
+                "title": "%commands.svn.resolve.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(check)"
             },
             {
                 "command": "svn.resolveAll",
-                "title": "Resolve all conflicts",
-                "category": "SVN"
+                "title": "%commands.svn.resolveAll.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.revert",
-                "title": "Revert Selected File",
-                "category": "SVN",
+                "title": "%commands.svn.revert.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(discard)"
             },
             {
                 "command": "svn.revertAll",
-                "title": "Revert All Changes",
-                "category": "SVN",
+                "title": "%commands.svn.revertAll.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(discard)"
             },
             {
                 "command": "svn.revertChange",
-                "title": "Revert Change",
-                "category": "SVN",
+                "title": "%commands.svn.revertChange.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(discard)"
             },
             {
                 "command": "svn.revertExplorer",
-                "title": "Revert with SVN",
-                "category": "SVN",
+                "title": "%commands.svn.revertExplorer.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(discard)"
             },
             {
                 "command": "svn.searchLogByRevision",
-                "title": "Search log by revision",
-                "category": "SVN"
+                "title": "%commands.svn.searchLogByRevision.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.searchLogByText",
-                "title": "Search log",
-                "category": "SVN"
+                "title": "%commands.svn.searchLogByText.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.switchBranch",
-                "title": "Switch Branch",
-                "category": "SVN"
+                "title": "%commands.svn.switchBranch.title%",
+                "category": "%commands.category.svn%"
             },
             {
                 "command": "svn.treeview.pullIncomingChange",
-                "title": "Update selected",
-                "category": "SVN",
+                "title": "%commands.svn.treeview.pullIncomingChange.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(cloud-download)"
             },
             {
                 "command": "svn.treeview.refreshProvider",
-                "title": "Refresh",
-                "category": "SVN",
+                "title": "%commands.svn.treeview.refreshProvider.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(refresh)"
             },
             {
                 "command": "svn.update",
-                "title": "Update",
-                "category": "SVN",
+                "title": "%commands.svn.update.title%",
+                "category": "%commands.category.svn%",
                 "icon": "$(cloud-download)"
             }
         ],
@@ -981,26 +988,26 @@
             ]
         },
         "configuration": {
-            "title": "Svn",
+            "title": "%configuration.title%",
             "properties": {
                 "svn.autorefresh": {
                     "type": "boolean",
-                    "description": "Whether auto refreshing is enabled",
+                    "description": "%configuration.svn.autorefresh.description%",
                     "default": true
                 },
                 "svn.commit.changes.selectedAll": {
                     "type": "boolean",
-                    "description": "Select all files when commit changes",
+                    "description": "%configuration.svn.commit.changes.selectedAll.description%",
                     "default": true
                 },
                 "svn.commit.checkEmptyMessage": {
                     "type": "boolean",
-                    "description": "Check empty message before commit",
+                    "description": "%configuration.svn.commit.checkEmptyMessage.description%",
                     "default": true
                 },
                 "svn.conflicts.autoResolve": {
                     "type": "boolean",
-                    "description": "Set file to status resolved after fix conflicts",
+                    "description": "%configuration.svn.conflicts.autoResolve.description%",
                     "default": false
                 },
                 "svn.default.encoding": {
@@ -1008,13 +1015,13 @@
                         "string",
                         "null"
                     ],
-                    "description": "Encoding of svn output if the output is not utf-8. When this parameter is null, the encoding is automatically detected. Example: 'windows-1252'.",
+                    "description": "%configuration.svn.default.encoding.description%",
                     "default": null
                 },
                 "svn.defaultCheckoutDirectory": {
                     "type": "string",
                     "default": null,
-                    "description": "The default location to checkout a svn repository."
+                    "description": "%configuration.svn.defaultCheckoutDirectory.description%"
                 },
                 "svn.delete.actionForDeletedFiles": {
                     "type": "string",
@@ -1023,7 +1030,7 @@
                         "prompt",
                         "remove"
                     ],
-                    "description": "When a file is deleted, what SVN should do? `none` - Do nothing, `prompt` - Ask the action, `remove` - automatically remove from SVN",
+                    "description": "%configuration.svn.delete.actionForDeletedFiles.description%",
                     "default": "prompt"
                 },
                 "svn.delete.ignoredRulesForDeletedFiles": {
@@ -1031,37 +1038,37 @@
                     "items": {
                         "type": "string"
                     },
-                    "description": "Ignored files/rules for `svn.delete.actionForDeletedFiles`(Ex.: file.txt or **/*.txt)",
+                    "description": "%configuration.svn.delete.ignoredRulesForDeletedFiles.description%",
                     "default": []
                 },
                 "svn.detectExternals": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Controls whether to automatically detect svn externals."
+                    "description": "%configuration.svn.detectExternals.description%"
                 },
                 "svn.detectIgnored": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Controls whether to automatically detect svn on ignored folders."
+                    "description": "%configuration.svn.detectIgnored.description%"
                 },
                 "svn.diff.withHead": {
                     "type": "boolean",
-                    "description": "Show diff changes using latest revision in the repository. Set false to use latest revision in local folder",
+                    "description": "%configuration.svn.diff.withHead.description%",
                     "default": true
                 },
                 "svn.enabled": {
                     "type": "boolean",
-                    "description": "Whether svn is enabled",
+                    "description": "%configuration.svn.enabled.description%",
                     "default": true
                 },
                 "svn.experimental.detect_encoding": {
                     "type": "boolean",
-                    "description": "Try the experimental encoding detection",
+                    "description": "%configuration.svn.experimental.detect_encoding.description%",
                     "default": false
                 },
                 "svn.experimental.encoding_priority": {
                     "type": "array",
-                    "description": "Priority of encoding",
+                    "description": "%configuration.svn.experimental.encoding_priority.description%",
                     "default": [],
                     "examples": [
                         [
@@ -1073,7 +1080,7 @@
                 },
                 "svn.gravatar.icon_url": {
                     "type": "string",
-                    "description": "Url for the gravitar icon using the <AUTHOR>, <AUTHOR_MD5> and <SIZE> placeholders",
+                    "description": "%configuration.svn.gravatar.icon_url.description%",
                     "examples": [
                         "https://www.gravatar.com/avatar/<AUTHOR_MD5>.jpg?s=<SIZE>&d=https%3A%2F%2Fui-avatars.com%2Fapi%2F/<AUTHOR>/128"
                     ],
@@ -1081,12 +1088,12 @@
                 },
                 "svn.gravatars.enabled": {
                     "type": "boolean",
-                    "description": "Use garavatar icons in log viewers",
+                    "description": "%configuration.svn.gravatars.enabled.description%",
                     "default": true
                 },
                 "svn.ignoreMissingSvnWarning": {
                     "type": "boolean",
-                    "description": "Ignores the warning when SVN is missing",
+                    "description": "%configuration.svn.ignoreMissingSvnWarning.description%",
                     "default": false
                 },
                 "svn.ignoreRepositories": {
@@ -1096,11 +1103,11 @@
                     ],
                     "default": null,
                     "scope": "resource",
-                    "description": "List of SVN repositories to ignore."
+                    "description": "%configuration.svn.ignoreRepositories.description%"
                 },
                 "svn.ignoreWorkingCopyIsTooOld": {
                     "type": "boolean",
-                    "description": "Ignores the warning when working copy is too old",
+                    "description": "%configuration.svn.ignoreWorkingCopyIsTooOld.description%",
                     "default": false
                 },
                 "svn.layout.branchesRegex": {
@@ -1108,28 +1115,28 @@
                         "string",
                         "null"
                     ],
-                    "description": "Regex to detect path for 'branches' in SVN URL, 'null' to disable. Subpath use 'branches/[^/]+/([^/]+)(/.*)?' (Ex.: 'branches/...', 'versions/...')",
+                    "description": "%configuration.svn.layout.branchesRegex.description%",
                     "default": "branches/([^/]+)(/.*)?"
                 },
                 "svn.layout.branchesRegexName": {
                     "type": [
                         "number"
                     ],
-                    "description": "Regex group position for name of branch",
+                    "description": "%configuration.svn.layout.branchesRegexName.description%",
                     "default": 1
                 },
                 "svn.layout.showFullName": {
                     "type": [
                         "boolean"
                     ],
-                    "description": "Set true to show 'branches/<name>' and false to show only '<name>'",
+                    "description": "%configuration.svn.layout.showFullName.description%",
                     "default": true
                 },
                 "svn.layout.tagRegexName": {
                     "type": [
                         "number"
                     ],
-                    "description": "Regex group position for name of tag",
+                    "description": "%configuration.svn.layout.tagRegexName.description%",
                     "default": 1
                 },
                 "svn.layout.tagsRegex": {
@@ -1137,7 +1144,7 @@
                         "string",
                         "null"
                     ],
-                    "description": "Regex to detect path for 'tags' in SVN URL, 'null' to disable. Subpath use 'tags/[^/]+/([^/]+)(/.*)?'. (Ex.: 'tags/...', 'stamps/...')",
+                    "description": "%configuration.svn.layout.tagsRegex.description%",
                     "default": "tags/([^/]+)(/.*)?"
                 },
                 "svn.layout.trunkRegex": {
@@ -1145,36 +1152,36 @@
                         "string",
                         "null"
                     ],
-                    "description": "Regex to detect path for 'trunk' in SVN URL, 'null' to disable. (Ex.: '(trunk)', '(main)')",
+                    "description": "%configuration.svn.layout.trunkRegex.description%",
                     "default": "(trunk)(/.*)?"
                 },
                 "svn.layout.trunkRegexName": {
                     "type": [
                         "number"
                     ],
-                    "description": "Regex group position for name of trunk",
+                    "description": "%configuration.svn.layout.trunkRegexName.description%",
                     "default": 1
                 },
                 "svn.log.length": {
                     "type": "number",
                     "minimum": 1,
-                    "description": "Number of commit messages to log",
+                    "description": "%configuration.svn.log.length.description%",
                     "default": 50
                 },
                 "svn.multipleFolders.depth": {
                     "type": "number",
                     "minimum": 0,
-                    "description": "Maximum depth to find subfolders using SVN",
+                    "description": "%configuration.svn.multipleFolders.depth.description%",
                     "default": 4
                 },
                 "svn.multipleFolders.enabled": {
                     "type": "boolean",
-                    "description": "Allow to find subfolders using SVN",
+                    "description": "%configuration.svn.multipleFolders.enabled.description%",
                     "default": false
                 },
                 "svn.multipleFolders.ignore": {
                     "type": "array",
-                    "description": "Folders to ignore using SVN",
+                    "description": "%configuration.svn.multipleFolders.ignore.description%",
                     "default": [
                         "**/.git",
                         "**/.hg",
@@ -1187,33 +1194,33 @@
                         "string",
                         "null"
                     ],
-                    "description": "Path to the svn executable",
+                    "description": "%configuration.svn.path.description%",
                     "default": null,
                     "scope": "machine"
                 },
                 "svn.previousCommitsUser": {
                     "type": "string",
-                    "description": "Only show previous commits for a given user. Requires svn >= 1.8",
+                    "description": "%configuration.svn.previousCommitsUser.description%",
                     "default": null
                 },
                 "svn.refresh.remoteChanges": {
                     "type": "boolean",
-                    "description": "Refresh remote changes on refresh command",
+                    "description": "%configuration.svn.refresh.remoteChanges.description%",
                     "default": false
                 },
                 "svn.remoteChanges.checkFrequency": {
                     "type": "number",
-                    "description": "Set the interval in seconds to check changed files on remote repository and show in statusbar. 0 to disable",
+                    "description": "%configuration.svn.remoteChanges.checkFrequency.description%",
                     "default": 300
                 },
                 "svn.showOutput": {
                     "type": "boolean",
-                    "description": "Show the output window when the extension starts",
+                    "description": "%configuration.svn.showOutput.description%",
                     "default": false
                 },
                 "svn.showUpdateMessage": {
                     "type": "boolean",
-                    "description": "Show the update message when update is run",
+                    "description": "%configuration.svn.showUpdateMessage.description%",
                     "default": true
                 },
                 "svn.sourceControl.changesLeftClick": {
@@ -1222,27 +1229,27 @@
                         "open",
                         "open diff"
                     ],
-                    "description": "Set left click functionality on changes resource state",
+                    "description": "%configuration.svn.sourceControl.changesLeftClick.description%",
                     "default": "open diff"
                 },
                 "svn.sourceControl.combineExternalIfSameServer": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Combine the svn external in the main if is from the same server."
+                    "description": "%configuration.svn.sourceControl.combineExternalIfSameServer.description%"
                 },
                 "svn.sourceControl.countUnversioned": {
                     "type": "boolean",
-                    "description": "Allow to count unversioned files in status count",
+                    "description": "%configuration.svn.sourceControl.countUnversioned.description%",
                     "default": true
                 },
                 "svn.sourceControl.hideUnversioned": {
                     "type": "boolean",
-                    "description": "Hide unversioned files in Source Control UI",
+                    "description": "%configuration.svn.sourceControl.hideUnversioned.description%",
                     "default": false
                 },
                 "svn.sourceControl.ignore": {
                     "type": "array",
-                    "description": "Ignore unversioned files like .gitignore, Configuring this will overlook the default ignore rule",
+                    "description": "%configuration.svn.sourceControl.ignore.description%",
                     "default": [],
                     "examples": [
                         [
@@ -1256,21 +1263,21 @@
                 },
                 "svn.sourceControl.ignoreOnCommit": {
                     "type": "array",
-                    "description": "Changelists to ignore on commit",
+                    "description": "%configuration.svn.sourceControl.ignoreOnCommit.description%",
                     "default": [
                         "ignore-on-commit"
                     ]
                 },
                 "svn.sourceControl.ignoreOnStatusCount": {
                     "type": "array",
-                    "description": "Changelists to ignore on status count",
+                    "description": "%configuration.svn.sourceControl.ignoreOnStatusCount.description%",
                     "default": [
                         "ignore-on-commit"
                     ]
                 },
                 "svn.update.ignoreExternals": {
                     "type": "boolean",
-                    "description": "Set to ignore externals definitions on update (add --ignore-externals)",
+                    "description": "%configuration.svn.update.ignoreExternals.description%",
                     "default": true
                 }
             }

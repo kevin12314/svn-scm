@@ -7,6 +7,7 @@ import {
   EventEmitter,
   ExtensionContext,
   Uri,
+  l10n,
   window,
   workspace,
   WorkspaceFoldersChangeEvent
@@ -504,7 +505,7 @@ export class SourceControlManager implements IDisposable {
         repository
       };
     });
-    const placeHolder = "Choose a repository";
+    const placeHolder = l10n.t("Choose a repository");
     const pick = await window.showQuickPick(picks, { placeHolder });
 
     return pick && pick.repository;

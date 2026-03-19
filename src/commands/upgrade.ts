@@ -1,4 +1,4 @@
-import { commands, window } from "vscode";
+import { commands, l10n, window } from "vscode";
 import { configuration } from "../helpers/configuration";
 import { SourceControlManager } from "../source_control_manager";
 import { fixPathSeparator } from "../util";
@@ -20,11 +20,11 @@ export class Upgrade extends Command {
 
     folderPath = fixPathSeparator(folderPath);
 
-    const yes = "Yes";
-    const no = "No";
-    const neverShowAgain = "Don't Show Again";
+    const yes = l10n.t("Yes");
+    const no = l10n.t("No");
+    const neverShowAgain = l10n.t("Don't Show Again");
     const choice = await window.showWarningMessage(
-      "You want upgrade the working copy (svn upgrade)?",
+      l10n.t("You want upgrade the working copy (svn upgrade)?"),
       yes,
       no,
       neverShowAgain
@@ -40,11 +40,16 @@ export class Upgrade extends Command {
       );
 
       if (upgraded) {
-        window.showInformationMessage(`Working copy "${folderPath}" upgraded`);
+        window.showInformationMessage(
+          l10n.t('Working copy "{0}" upgraded', folderPath)
+        );
         sourceControlManager.tryOpenRepository(folderPath);
       } else {
         window.showErrorMessage(
-          `Error on upgrading working copy "${folderPath}". See log for more detail`
+          l10n.t(
+            'Error on upgrading working copy "{0}". See log for more detail',
+            folderPath
+          )
         );
       }
     } else if (choice === neverShowAgain) {

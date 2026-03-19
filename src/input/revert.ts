@@ -1,11 +1,11 @@
-import { Uri, window } from "vscode";
+import { l10n, Uri, window } from "vscode";
 import { SvnDepth } from "../common/types";
 import { lstat } from "../fs";
 
 export async function confirmRevert() {
-  const yes = "Yes I'm sure";
+  const yes = l10n.t("Yes I'm sure");
   const answer = await window.showWarningMessage(
-    "Are you sure? This will wipe all local changes.",
+    l10n.t("Are you sure? This will wipe all local changes."),
     { modal: true },
     yes
   );
@@ -26,7 +26,7 @@ export async function promptDepth() {
     }
   }
 
-  const placeHolder = "Select revert depth";
+  const placeHolder = l10n.t("Select revert depth");
   const pick = await window.showQuickPick(picks, { placeHolder });
   if (!pick) {
     return undefined;

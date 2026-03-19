@@ -1,6 +1,6 @@
 import { Repository } from "../repository";
 import { Command } from "./command";
-import { window } from "vscode";
+import { l10n, window } from "vscode";
 
 export class RemoveUnversioned extends Command {
   constructor() {
@@ -8,13 +8,16 @@ export class RemoveUnversioned extends Command {
   }
 
   public async execute(repository: Repository) {
+    const yes = l10n.t("Yes");
     const answer = await window.showWarningMessage(
-      "Are you sure? This will remove all unversioned files except for ignored.",
+      l10n.t(
+        "Are you sure? This will remove all unversioned files except for ignored."
+      ),
       { modal: true },
-      "Yes",
-      "No"
+      yes,
+      l10n.t("No")
     );
-    if (answer !== "Yes") {
+    if (answer !== yes) {
       return;
     }
     await repository.removeUnversioned();

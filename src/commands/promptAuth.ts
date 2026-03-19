@@ -1,4 +1,4 @@
-import { window } from "vscode";
+import { l10n, window } from "vscode";
 import { IAuth } from "../common/types";
 import { Command } from "./command";
 
@@ -9,8 +9,8 @@ export class PromptAuth extends Command {
 
   public async execute(prevUsername?: string, prevPassword?: string) {
     const username = await window.showInputBox({
-      placeHolder: "Svn repository username",
-      prompt: "Please enter your username",
+      placeHolder: l10n.t("Svn repository username"),
+      prompt: l10n.t("Please enter your username"),
       ignoreFocusOut: true,
       value: prevUsername
     });
@@ -20,8 +20,8 @@ export class PromptAuth extends Command {
     }
 
     const password = await window.showInputBox({
-      placeHolder: "Svn repository password",
-      prompt: "Please enter your password",
+      placeHolder: l10n.t("Svn repository password"),
+      prompt: l10n.t("Please enter your password"),
       value: prevPassword,
       ignoreFocusOut: true,
       password: true

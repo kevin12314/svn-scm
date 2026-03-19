@@ -3,6 +3,7 @@ import {
   commands,
   Disposable,
   ExtensionContext,
+  l10n,
   OutputChannel,
   Uri,
   window
@@ -25,6 +26,14 @@ import { IsSvn19orGreater } from "./contexts/isSvn19orGreater";
 import { IsSvn18orGreater } from "./contexts/isSvn18orGreater";
 import { tempSvnFs } from "./temp_svn_fs";
 import { SvnFileSystemProvider } from "./svnFileSystemProvider";
+
+function getErrorMessage(err: unknown): string {
+  if (err instanceof Error) {
+    return err.message;
+  }
+
+  return String(err);
+}
 
 async function init(
   extensionContext: ExtensionContext,
@@ -69,7 +78,7 @@ async function init(
 }
 
 async function _activate(context: ExtensionContext, disposables: Disposable[]) {
-  const outputChannel = window.createOutputChannel("Svn");
+  const outputChannel = window.createOutputChannel(l10n.t("SVN"));
   commands.registerCommand("svn.showOutput", () => outputChannel.show());
   disposables.push(outputChannel);
 
@@ -83,7 +92,9 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
     try {
       await init(context, outputChannel, disposables);
     } catch (err) {
-      if (!/Svn installation not found/.test(err.message || "")) {
+      const errorMessage = getErrorMessage(err);
+
+      if (!/Svn installation not found/.test(errorMessage)) {
         throw err;
       }
 
@@ -94,15 +105,17 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
         return;
       }
 
-      console.warn(err.message);
-      outputChannel.appendLine(err.message);
+      console.warn(errorMessage);
+      outputChannel.appendLine(errorMessage);
       outputChannel.show();
 
-      const findSvnExecutable = "Find SVN executable";
-      const download = "Download SVN";
-      const neverShowAgain = "Don't Show Again";
+      const findSvnExecutable = l10n.t("Find SVN executable");
+      const download = l10n.t("Download SVN");
+      const neverShowAgain = l10n.t("Don't Show Again");
       const choice = await window.showWarningMessage(
-        "SVN not found. Install it or configure it using the 'svn.path' setting.",
+        l10n.t(
+          "SVN not found. Install it or configure it using the 'svn.path' setting."
+        ),
         findSvnExecutable,
         download,
         neverShowAgain

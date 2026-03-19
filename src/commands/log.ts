@@ -1,5 +1,5 @@
 import { posix as path } from "path";
-import { commands, Uri, window } from "vscode";
+import { commands, l10n, Uri, window } from "vscode";
 import { SvnUriAction } from "../common/types";
 import { Repository } from "../repository";
 import { toSvnUri } from "../uri";
@@ -23,7 +23,7 @@ export class Log extends Command {
       await commands.executeCommand<void>("vscode.open", uri);
     } catch (error) {
       console.error(error);
-      window.showErrorMessage("Unable to log");
+      window.showErrorMessage(l10n.t("Unable to log"));
     }
   }
 }

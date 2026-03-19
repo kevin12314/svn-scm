@@ -1,10 +1,12 @@
 import * as path from "path";
-import { commands, Uri, ViewColumn, WebviewPanel, window } from "vscode";
+import { commands, l10n, Uri, ViewColumn, WebviewPanel, window } from "vscode";
 import { SourceControlManager } from "./source_control_manager";
 import { configuration } from "./helpers/configuration";
 
 export function noChangesToCommit() {
-  return window.showInformationMessage("There are no changes to commit.");
+  return window.showInformationMessage(
+    l10n.t("There are no changes to commit.")
+  );
 }
 
 let panel: WebviewPanel;
@@ -36,9 +38,17 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
       panel.dispose();
     };
 
+    const panelTitle = l10n.t("Commit Message");
+    const filesToCommitTitle = l10n.t("Files to commit");
+    const pickCommitMessageLabel = l10n.t("Pick a previous commit message");
+    const commitMessageLabel = l10n.t("Commit message");
+    const commitPlaceholder = l10n.t("Message (press Ctrl+Enter to commit)");
+    const commitLabel = l10n.t("Commit");
+    const cancelLabel = l10n.t("Cancel");
+
     panel = window.createWebviewPanel(
       "svnCommitMessage",
-      "Commit Message",
+      panelTitle,
       {
         preserveFocus: false,
         viewColumn: ViewColumn.Active
@@ -61,7 +71,7 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
       if (selectedFiles.length) {
         beforeForm = `
 <div class="file-list">
-  <h3 class="title">Files to commit</h3>
+  <h3 class="title">${filesToCommitTitle}</h3>
   <ul>
     ${selectedFiles.join("\n")}
   </ul>
@@ -85,7 +95,7 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
       panel.webview.cspSource
     };">
 
-  <title>Commit Message</title>
+  <title>${panelTitle}</title>
   <link rel="stylesheet" href="${styleUri}">
 </head>
 <body>
@@ -94,13 +104,13 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
     <form>
       <fieldset>
         <div class="float-right">
-          <a href="#" id="pickCommitMessage">Pick a previous commit message</a>
+          <a href="#" id="pickCommitMessage">${pickCommitMessageLabel}</a>
         </div>
-        <label for="message">Commit message</label>
-        <textarea id="message" rows="3" placeholder="Message (press Ctrl+Enter to commit)"></textarea>
-        <button id="commit" class="button-primary">Commit</button>
+        <label for="message">${commitMessageLabel}</label>
+        <textarea id="message" rows="3" placeholder="${commitPlaceholder}"></textarea>
+        <button id="commit" class="button-primary">${commitLabel}</button>
         <div class="float-right">
-          <button id="cancel" class="button button-outline">Cancel</button>
+          <button id="cancel" class="button button-outline">${cancelLabel}</button>
         </div>
       </fieldset>
     </form>
@@ -238,13 +248,14 @@ export async function inputCommitMessage(
   );
 
   if (message === "" && checkEmptyMessage) {
+    const yes = l10n.t("Yes");
     const allowEmpty = await window.showWarningMessage(
-      "Do you really want to commit an empty message?",
+      l10n.t("Do you really want to commit an empty message?"),
       { modal: true },
-      "Yes"
+      yes
     );
 
-    if (allowEmpty === "Yes") {
+    if (allowEmpty === yes) {
       return "";
     } else {
       return undefined;

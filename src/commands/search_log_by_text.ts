@@ -1,5 +1,5 @@
 import { Command } from "./command";
-import { window, Uri, commands, ProgressLocation } from "vscode";
+import { commands, l10n, ProgressLocation, Uri, window } from "vscode";
 import { Repository } from "../repository";
 import * as cp from "child_process";
 import { tempSvnFs } from "../temp_svn_fs";
@@ -10,7 +10,7 @@ export class SearchLogByText extends Command {
   }
 
   public async execute(repository: Repository) {
-    const input = await window.showInputBox({ prompt: "Search query" });
+    const input = await window.showInputBox({ prompt: l10n.t("Search query") });
     if (!input) {
       return;
     }
@@ -42,7 +42,7 @@ export class SearchLogByText extends Command {
       {
         cancellable: true,
         location: ProgressLocation.Notification,
-        title: "Searching Log"
+        title: l10n.t("Searching Log")
       },
       (_progress, token) => {
         token.onCancellationRequested(() => {

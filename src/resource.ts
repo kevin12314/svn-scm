@@ -1,6 +1,7 @@
 import * as path from "path";
 import {
   Command,
+  l10n,
   SourceControlResourceDecorations,
   SourceControlResourceState,
   ThemeColor,
@@ -99,7 +100,7 @@ export class Resource implements SourceControlResourceState {
     if (!this.remote && changesLeftClick === "open") {
       return {
         command: "svn.openFile",
-        title: "Open file",
+        title: l10n.t("Open file"),
         arguments: [this]
       };
     }
@@ -107,14 +108,14 @@ export class Resource implements SourceControlResourceState {
     if (this.remote || diffHead) {
       return {
         command: "svn.openResourceHead",
-        title: "Open Diff With Head",
+        title: l10n.t("Open Diff With Head"),
         arguments: [this]
       };
     }
 
     return {
       command: "svn.openResourceBase",
-      title: "Open Diff With Base",
+      title: l10n.t("Open Diff With Base"),
       arguments: [this]
     };
   }
@@ -135,7 +136,7 @@ export class Resource implements SourceControlResourceState {
 
   private get tooltip(): string {
     if (this.type === Status.ADDED && this.renameResourceUri) {
-      return "Renamed from " + this.renameResourceUri.fsPath;
+      return l10n.t("Renamed from {0}", this.renameResourceUri.fsPath);
     }
 
     if (
@@ -143,8 +144,9 @@ export class Resource implements SourceControlResourceState {
       this.props &&
       this.props !== PropStatus.NONE
     ) {
-      return (
-        "Property " + this.props.charAt(0).toUpperCase() + this.props.slice(1)
+      return l10n.t(
+        "Property {0}",
+        this.props.charAt(0).toUpperCase() + this.props.slice(1)
       );
     }
 

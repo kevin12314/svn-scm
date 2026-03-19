@@ -1,5 +1,5 @@
 import * as path from "path";
-import { TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { l10n, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { Repository } from "../../repository";
 import { Resource } from "../../resource";
 import { getIconUri } from "../../uri";
@@ -45,7 +45,7 @@ export default class IncomingChangeNode implements BaseNode {
       case "modified":
         return {
           command: "svn.openChangeHead",
-          title: "Open Changes with HEAD",
+          title: l10n.t("Open Changes with HEAD"),
           arguments: [
             new Resource(this.uri, this.type, undefined, "none", true)
           ]
@@ -53,13 +53,13 @@ export default class IncomingChangeNode implements BaseNode {
       case "deleted":
         return {
           command: "svn.openFile",
-          title: "Open File",
+          title: l10n.t("Open File"),
           arguments: [this.uri]
         };
       case "added":
         return {
           command: "svn.openHEADFile",
-          title: "Open File (HEAD)",
+          title: l10n.t("Open File (HEAD)"),
           arguments: [
             new Resource(this.uri, this.type, undefined, "none", true)
           ]

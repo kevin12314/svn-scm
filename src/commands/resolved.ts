@@ -1,5 +1,5 @@
 import * as path from "path";
-import { Uri, window } from "vscode";
+import { l10n, Uri, window } from "vscode";
 import { configuration } from "../helpers/configuration";
 import { Command } from "./command";
 
@@ -17,14 +17,15 @@ export class Resolved extends Command {
 
     if (!autoResolve) {
       const basename = path.basename(uri.fsPath);
+      const yes = l10n.t("Yes");
       const pick = await window.showWarningMessage(
-        `Mark the conflict as resolved for "${basename}"?`,
+        l10n.t('Mark the conflict as resolved for "{0}"?', basename),
         { modal: true },
-        "Yes",
-        "No"
+        yes,
+        l10n.t("No")
       );
 
-      if (pick !== "Yes") {
+      if (pick !== yes) {
         return;
       }
     }

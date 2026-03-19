@@ -4,6 +4,7 @@ import {
   Disposable,
   Event,
   EventEmitter,
+  l10n,
   ThemeIcon,
   TreeDataProvider,
   TreeItem,
@@ -145,7 +146,7 @@ export class RepoLogProvider
       order: this.logCache.size
     };
     if (this.logCache.has(repoLike)) {
-      window.showWarningMessage("This path is already added");
+      window.showWarningMessage(l10n.t("This path is already added"));
       return;
     }
     const repo = this.sourceControlManager.getRepository(repoLike);
@@ -174,7 +175,7 @@ export class RepoLogProvider
         item.svnTarget = uri;
       } catch (e) {
         window.showWarningMessage(
-          "Failed to add repo: " + (e instanceof Error ? e.message : "")
+          l10n.t("Failed to add repo: {0}", e instanceof Error ? e.message : "")
         );
         return;
       }
@@ -185,14 +186,16 @@ export class RepoLogProvider
         item.svnTarget = Uri.parse(svninfo.url);
         item.persisted.baseRevision = parseInt(svninfo.revision, 10);
       } catch (e) {
-        window.showErrorMessage("Failed to resolve svn path");
+        window.showErrorMessage(l10n.t("Failed to resolve svn path"));
         return;
       }
     }
 
     const repoName = item.svnTarget.toString(true);
     if (this.logCache.has(repoName)) {
-      window.showWarningMessage("Repository with this name already exists");
+      window.showWarningMessage(
+        l10n.t("Repository with this name already exists")
+      );
       return;
     }
     this.logCache.set(repoName, item);
@@ -201,7 +204,7 @@ export class RepoLogProvider
 
   public addRepolikeGui() {
     const box = window.createInputBox();
-    box.prompt = "Enter SVN URL or local path";
+    box.prompt = l10n.t("Enter SVN URL or local path");
     box.onDidAccept(async () => {
       let repoLike = box.value;
       if (
@@ -220,7 +223,7 @@ export class RepoLogProvider
       }
       box.dispose();
       const box2 = window.createInputBox();
-      box2.prompt = "Enter starting revision (optional)";
+      box2.prompt = l10n.t("Enter starting revision (optional)");
       box2.onDidAccept(async () => {
         const rev = box2.value;
         box2.dispose();
@@ -265,7 +268,7 @@ export class RepoLogProvider
     if (revs.length === 2) {
       prevRev = revs[1];
     } else {
-      window.showWarningMessage("Cannot find previous commit");
+      window.showWarningMessage(l10n.t("Cannot find previous commit"));
       return;
     }
 
@@ -357,7 +360,7 @@ export class RepoLogProvider
       ti.contextValue = "diffable";
       ti.command = {
         command: "svn.repolog.openDiff",
-        title: "Open diff",
+        title: l10n.t("Open diff"),
         arguments: [element]
       };
     } else if (element.kind === LogTreeItemKind.TItem) {
@@ -394,12 +397,14 @@ export class RepoLogProvider
       const result = transform(logentries, LogTreeItemKind.Commit, element);
       insertBaseMarker(cached, logentries, result);
       if (!cached.isComplete) {
-        const ti = new TreeItem(`Load another ${limit} revisions`);
-        ti.tooltip = "Paging size may be adjusted using log.length setting";
+        const ti = new TreeItem(l10n.t("Load another {0} revisions", limit));
+        ti.tooltip = l10n.t(
+          "Paging size may be adjusted using log.length setting"
+        );
         ti.command = {
           command: "svn.repolog.refresh",
           arguments: [element, true],
-          title: "refresh element"
+          title: l10n.t("refresh element")
         };
         ti.iconPath = new ThemeIcon("unfold");
         result.push({ kind: LogTreeItemKind.TItem, data: ti });
