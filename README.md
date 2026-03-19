@@ -21,6 +21,9 @@ If you use [TortoiseSVN](https://tortoisesvn.net/), make sure the option
 **Command Line Tools** is checked during installation and
 `C:\Program Files\TortoiseSVN\bin` is available in PATH.
 
+## Translations
+Please open an [issue](https://github.com/kevin12314/svn-scm/issues) with improvements to translations or create a [PR](https://github.com/kevin12314/svn-scm/pulls) to add a new languate. 
+
 ## Feedback & Contributing
 
 * Please report any bugs, suggestions or documentation requests via the
