@@ -11,21 +11,33 @@ jobs:
    runs-on: ubuntu-latest
    steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10.17.0
+        run_install: false
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'pnpm'
 
     - name: Fetch tags
       run: git fetch --tags -f || true
 
     - name: Install dependencies
-      run: yarn install --frozen-lockfile || yarn install --frozen-lockfile
+      run: pnpm install --frozen-lockfile
 
     - name: Release Open VSX
       run: |
-        yarn add iconv-lite jschardet
-        npx vsce package -o svn-scm-ovsx.vsix
-        npx ovsx publish svn-scm-ovsx.vsix -p ${{ secrets.ovsxToken }}
+        pnpm add iconv-lite jschardet
+        pnpm exec vsce package -o svn-scm-ovsx.vsix
+        pnpm exec ovsx publish svn-scm-ovsx.vsix -p ${{ secrets.ovsxToken }}
 
     - name: Get tag
       id: getTag

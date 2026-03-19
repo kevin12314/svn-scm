@@ -1,5 +1,7 @@
 import * as path from "path";
-import { runTests } from "vscode-test";
+import { runTests } from "@vscode/test-electron";
+
+const defaultCodeVersion = "1.73.0";
 
 async function main() {
   const extensionDevelopmentPath = path.resolve(__dirname, "../../");
@@ -7,7 +9,7 @@ async function main() {
 
   try {
     await runTests({
-      version: process.env.CODE_VERSION,
+      version: process.env.CODE_VERSION || defaultCodeVersion,
       extensionDevelopmentPath,
       extensionTestsPath
     });

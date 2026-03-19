@@ -22,19 +22,25 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+          run_install: false
 
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: '12.17'
+          node-version: '20'
+          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
-        shell: bash
+        run: pnpm install --frozen-lockfile
       
       - name: Compile sources for tests
-        run: yarn run test-compile
+        run: pnpm run test-compile
 
       - name: Cache VSCode binary
         id: cache-vscode
@@ -49,7 +55,7 @@ jobs:
       - name: Run tests
         uses: GabrielBB/xvfb-action@v1.0
         with:
-          run: yarn test
+          run: pnpm test
         env:
           CODE_VERSION: ${{ matrix.version }}
         continue-on-error: ${{ matrix.version == 'insiders' }}
@@ -57,8 +63,8 @@ jobs:
       - name: Release
         if: startsWith(matrix.os, 'ubuntu') && matrix.version == 'stable' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         run: |
-          yarn run organize
-          yarn run semantic-release
+          pnpm run organize
+          pnpm run semantic-release
         env:
           VSCE_TOKEN: ${{ secrets.vsceToken }}
           GITHUB_TOKEN: ${{ secrets.githubToken }}
@@ -74,19 +80,25 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+          run_install: false
 
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: '12.17'
+          node-version: '20'
+          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
-        shell: bash
+        run: pnpm install --frozen-lockfile
 
       - name: Lint check
-        run: yarn run lint --silent -- -f stylish
+        run: pnpm run lint --silent -- -f stylish
 
   artifact:
     runs-on: ubuntu-latest
@@ -94,19 +106,25 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+          run_install: false
 
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: '12.17'
+          node-version: '20'
+          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
-        shell: bash
+        run: pnpm install --frozen-lockfile
 
       - name: Package extension
-        run: npx vsce package -o svn-scm.vsix
+        run: pnpm exec vsce package -o svn-scm.vsix
 
       - name: Upload artifact
         uses: actions/upload-artifact@v1
@@ -116,8 +134,8 @@ jobs:
 
       - name: Package open-vsx extension
         run: |
-          yarn add iconv-lite jschardet
-          npx vsce package -o svn-scm-ovsx.vsix
+          pnpm add iconv-lite jschardet
+          pnpm exec vsce package -o svn-scm-ovsx.vsix
 
       - name: Upload open-vsx artifact
         uses: actions/upload-artifact@v1
