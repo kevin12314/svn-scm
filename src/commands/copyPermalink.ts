@@ -8,13 +8,17 @@ export class CopyPermalink extends Command {
   }
 
   public async execute(): Promise<void> {
-    const editor = window.activeTextEditor;
-    if (!editor) {
-      window.showErrorMessage(l10n.t("No active editor"));
+    let fileUri = this.getUriFromActiveTab();
+
+    if (!fileUri) {
+      fileUri = window.activeTextEditor?.document.uri;
+    }
+
+    if (!fileUri) {
+      window.showErrorMessage(l10n.t("No file is currently open"));
       return;
     }
 
-    const fileUri = editor.document.uri;
     if (fileUri.scheme !== "file") {
       window.showErrorMessage(l10n.t("File is not a local file"));
       return;

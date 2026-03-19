@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import * as fs from "original-fs";
 import * as path from "path";
-import { commands, Uri } from "vscode";
+import { commands, Uri, window } from "vscode";
 import { ISvnResourceGroup } from "../common/types";
 import { SourceControlManager } from "../source_control_manager";
 import { Repository } from "../repository";
@@ -232,5 +232,65 @@ suite("Commands Tests", () => {
 
     await commands.executeCommand("vscode.open", uri);
     await commands.executeCommand("svn.lock");
+  });
+
+  test("Lock Binary File from Active Tab", async function () {
+    this.timeout(20000);
+
+    const binaryFile = path.join(checkoutDir.fsPath, "test_lock.lib");
+    const binaryData = Buffer.from([
+      0x7f, 0x45, 0x4c, 0x46, 0x02, 0x01, 0x01, 0x00,
+      0xff, 0x00, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60
+    ]);
+    fs.writeFileSync(binaryFile, binaryData);
+
+    const repository = sourceControlManager.getRepository(
+      checkoutDir
+    ) as Repository;
+
+    await commands.executeCommand("svn.refresh");
+    await timeout(200);
+
+    await repository.addFiles([binaryFile]);
+    await repository.status();
+    await timeout(200);
+
+    const svnPath = repository.repository.removeAbsolutePath(binaryFile);
+    await repository.repository.exec(["propset", "svn:needs-lock", "1", svnPath]);
+    await timeout(200);
+
+    await repository.commitFiles("Add binary file for active tab lock test", [binaryFile]);
+    await timeout(500);
+
+    await commands.executeCommand("vscode.open", Uri.file(binaryFile));
+    await timeout(500);
+
+    const errorMessages: string[] = [];
+    const infoMessages: string[] = [];
+    const originalShowErrorMessage = window.showErrorMessage;
+    const originalShowInformationMessage = window.showInformationMessage;
+
+    window.showErrorMessage = async (message: string, ...items: any[]) => {
+      errorMessages.push(String(message));
+      return originalShowErrorMessage(message, ...items);
+    };
+    window.showInformationMessage = async (message: string, ...items: any[]) => {
+      infoMessages.push(String(message));
+      return originalShowInformationMessage(message, ...items);
+    };
+
+    try {
+      await commands.executeCommand("svn.lock");
+      await timeout(200);
+    } finally {
+      window.showErrorMessage = originalShowErrorMessage;
+      window.showInformationMessage = originalShowInformationMessage;
+    }
+
+    assert.equal(errorMessages.length, 0, errorMessages.join("; "));
+    assert.ok(
+      infoMessages.some(message => message.includes("Successfully locked")),
+      infoMessages.join("; ")
+    );
   });
 });

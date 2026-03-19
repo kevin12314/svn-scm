@@ -7,7 +7,7 @@ export class Lock extends Command {
   }
 
   public async execute(resourceUri?: Uri) {
-    const uri = resourceUri || window.activeTextEditor?.document.uri;
+    const uri = resourceUri || this.getUriFromActiveTab() || window.activeTextEditor?.document.uri;
 
     if (!uri) {
       window.showErrorMessage(l10n.t("No file is currently open"));
@@ -31,7 +31,7 @@ export class Lock extends Command {
         );
       } catch (error) {
         console.log(error);
-        window.showErrorMessage(l10n.t("Unable to lock file"));
+        window.showErrorMessage(l10n.t("Unable to lock file: {0}", `${error}`));
       }
     });
   }
