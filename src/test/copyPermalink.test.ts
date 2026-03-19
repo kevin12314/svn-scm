@@ -133,8 +133,22 @@ suite("Copy Permalink Tests", () => {
 
     const binaryFilePath = path.join(checkoutDir.fsPath, "test_permalink.lib");
     const binaryData = Buffer.from([
-      0x7f, 0x45, 0x4c, 0x46, 0x02, 0x01, 0x01, 0x00,
-      0xff, 0x00, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60
+      0x7f,
+      0x45,
+      0x4c,
+      0x46,
+      0x02,
+      0x01,
+      0x01,
+      0x00,
+      0xff,
+      0x00,
+      0x10,
+      0x20,
+      0x30,
+      0x40,
+      0x50,
+      0x60
     ]);
     fs.writeFileSync(binaryFilePath, binaryData);
 
@@ -145,7 +159,9 @@ suite("Copy Permalink Tests", () => {
     await commands.executeCommand("svn.refresh");
     await timeout(200);
     await repository.addFiles([binaryFilePath]);
-    await repository.commitFiles("Add binary file for permalink test", [binaryFilePath]);
+    await repository.commitFiles("Add binary file for permalink test", [
+      binaryFilePath
+    ]);
     await timeout(500);
 
     await commands.executeCommand("vscode.open", Uri.file(binaryFilePath));

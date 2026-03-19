@@ -121,7 +121,11 @@ export class RepoLogProvider
         this.filterAuthorGui,
         this
       ),
-      commands.registerCommand("svn.repolog.filterMsg", this.filterMsgGui, this),
+      commands.registerCommand(
+        "svn.repolog.filterMsg",
+        this.filterMsgGui,
+        this
+      ),
       this.sourceControlManager.onDidChangeRepository(
         async (_e: RepositoryChangeEvent) => {
           return this.refresh();
@@ -431,7 +435,11 @@ export class RepoLogProvider
           (this.filterAuthor === "" || author.includes(this.filterAuthor)) &&
           (this.filterMsg === "" || msg.includes(this.filterMsg))
       );
-      const result = transform(filteredEntries, LogTreeItemKind.Commit, element);
+      const result = transform(
+        filteredEntries,
+        LogTreeItemKind.Commit,
+        element
+      );
       insertBaseMarker(cached, logentries, result);
       if (!cached.isComplete) {
         const ti = new TreeItem(l10n.t("Load another {0} revisions", limit));

@@ -61,7 +61,9 @@ export class CopyPermalink extends Command {
         l10n.t("Permalink copied to clipboard (revision {0})", revision)
       );
     } catch (error) {
-      window.showErrorMessage(l10n.t("Failed to copy permalink: {0}", `${error}`));
+      window.showErrorMessage(
+        l10n.t("Failed to copy permalink: {0}", `${error}`)
+      );
     }
   }
 }

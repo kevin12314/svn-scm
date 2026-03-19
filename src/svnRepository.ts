@@ -971,7 +971,12 @@ export class Repository {
     files: string[],
     message: string = "Locking for changes"
   ): Promise<string> {
-    const args = ["lock", "-m", message, ...files.map(file => this.removeAbsolutePath(file))];
+    const args = [
+      "lock",
+      "-m",
+      message,
+      ...files.map(file => this.removeAbsolutePath(file))
+    ];
 
     const result = await this.exec(args);
 

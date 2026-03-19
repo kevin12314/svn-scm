@@ -1,12 +1,19 @@
 import * as assert from "assert";
 import { Uri } from "vscode";
 import { ISvnLogEntry } from "../common/types";
-import { ICachedLog, ILogTreeItem, LogTreeItemKind, SvnPath } from "../historyView/common";
+import {
+  ICachedLog,
+  ILogTreeItem,
+  LogTreeItemKind,
+  SvnPath
+} from "../historyView/common";
 import { RepoLogProvider } from "../historyView/repoLogProvider";
 
 suite("Repo Log Provider Tests", () => {
   test("filters cached entries by author and message without mutating cache", async () => {
-    const provider: any = Object.create(RepoLogProvider.prototype) as RepoLogProvider;
+    const provider: any = Object.create(
+      RepoLogProvider.prototype
+    ) as RepoLogProvider;
     provider.logCache = new Map<string, ICachedLog>();
     provider.filterAuthor = "";
     provider.filterMsg = "";
@@ -57,14 +64,18 @@ suite("Repo Log Provider Tests", () => {
     provider.filterAuthor = "alice";
     let children = await provider.getChildren(repoItem);
     assert.deepEqual(
-      children.map((child: ILogTreeItem) => (child.data as ISvnLogEntry).revision),
+      children.map(
+        (child: ILogTreeItem) => (child.data as ISvnLogEntry).revision
+      ),
       ["3", "1"]
     );
 
     provider.filterMsg = "feature";
     children = await provider.getChildren(repoItem);
     assert.deepEqual(
-      children.map((child: ILogTreeItem) => (child.data as ISvnLogEntry).revision),
+      children.map(
+        (child: ILogTreeItem) => (child.data as ISvnLogEntry).revision
+      ),
       ["1"]
     );
 
@@ -72,7 +83,9 @@ suite("Repo Log Provider Tests", () => {
     provider.filterMsg = "";
     children = await provider.getChildren(repoItem);
     assert.deepEqual(
-      children.map((child: ILogTreeItem) => (child.data as ISvnLogEntry).revision),
+      children.map(
+        (child: ILogTreeItem) => (child.data as ISvnLogEntry).revision
+      ),
       ["3", "2", "1"]
     );
 

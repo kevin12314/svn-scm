@@ -121,5 +121,16 @@
   "Unable to remove file \"{0}\" from changelist": "Unable to remove file \"{0}\" from changelist",
   "Added files \"{0}\" to changelist \"{1}\"": "Added files \"{0}\" to changelist \"{1}\"",
   "Unable to add file \"{0}\" to changelist \"{1}\"": "Unable to add file \"{0}\" to changelist \"{1}\"",
-  "Unable to add file": "Unable to add file"
+  "Unable to add file": "Unable to add file",
+  "Can only lock files from the file system": "Can only lock files from the file system",
+  "Could not retrieve SVN information for this file": "Could not retrieve SVN information for this file",
+  "Failed to copy permalink: {0}": "Failed to copy permalink: {0}",
+  "File is not a local file": "File is not a local file",
+  "File is not in an SVN repository": "File is not in an SVN repository",
+  "No file is currently open": "No file is currently open",
+  "Permalink copied to clipboard (revision {0})": "Permalink copied to clipboard (revision {0})",
+  "Set filter for commit authors, empty to reset": "Set filter for commit authors, empty to reset",
+  "Set filter for commit message, empty to reset": "Set filter for commit message, empty to reset",
+  "Successfully locked {0}": "Successfully locked {0}",
+  "Unable to lock file: {0}": "Unable to lock file: {0}"
 }

@@ -38,6 +38,7 @@
         "build:css": "sass scss:css --style=compressed",
         "build:ts": "webpack --mode production",
         "compile": "webpack --mode development --watch",
+        "l10n:check": "node ./scripts/check-l10n-missing.js",
         "lint": "eslint \"src/**/*.ts\"",
         "lint:fix": "eslint \"src/**/*.ts\" --fix",
         "l10n:export": "pnpm exec @vscode/l10n-dev export --outDir ./l10n ./src",
@@ -1018,6 +1019,11 @@
                     "command": "svn.addToIgnoreExplorer",
                     "group": "9_svn",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
+                    "command": "svn.lock",
+                    "group": "7_modification",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && explorerViewletVisible && filesExplorerFocus && !explorerResourceIsRoot && !explorerResourceIsFolder && !inputFocus"
                 },
                 {
                     "command": "svn.renameExplorer",

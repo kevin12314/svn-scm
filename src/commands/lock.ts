@@ -7,7 +7,10 @@ export class Lock extends Command {
   }
 
   public async execute(resourceUri?: Uri) {
-    const uri = resourceUri || this.getUriFromActiveTab() || window.activeTextEditor?.document.uri;
+    const uri =
+      resourceUri ||
+      this.getUriFromActiveTab() ||
+      window.activeTextEditor?.document.uri;
 
     if (!uri) {
       window.showErrorMessage(l10n.t("No file is currently open"));

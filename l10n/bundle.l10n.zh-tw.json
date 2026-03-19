@@ -121,5 +121,16 @@
   "Unable to remove file \"{0}\" from changelist": "無法從變更清單移除檔案 \"{0}\"",
   "Added files \"{0}\" to changelist \"{1}\"": "已將檔案 \"{0}\" 加入變更清單 \"{1}\"",
   "Unable to add file \"{0}\" to changelist \"{1}\"": "無法將檔案 \"{0}\" 加入變更清單 \"{1}\"",
-  "Unable to add file": "無法加入檔案"
+  "Unable to add file": "無法加入檔案",
+  "Can only lock files from the file system": "只能鎖定檔案系統中的檔案",
+  "Could not retrieve SVN information for this file": "無法取得此檔案的 SVN 資訊",
+  "Failed to copy permalink: {0}": "複製永久連結失敗：{0}",
+  "File is not a local file": "此檔案不是本機檔案",
+  "File is not in an SVN repository": "此檔案不在 SVN 存放庫中",
+  "No file is currently open": "目前沒有開啟任何檔案",
+  "Permalink copied to clipboard (revision {0})": "永久連結已複製到剪貼簿（修訂版 {0}）",
+  "Set filter for commit authors, empty to reset": "設定提交作者篩選，留空可重設",
+  "Set filter for commit message, empty to reset": "設定提交訊息篩選，留空可重設",
+  "Successfully locked {0}": "已成功鎖定 {0}",
+  "Unable to lock file: {0}": "無法鎖定檔案：{0}"
 }

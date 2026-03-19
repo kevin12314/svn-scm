@@ -239,8 +239,22 @@ suite("Commands Tests", () => {
 
     const binaryFile = path.join(checkoutDir.fsPath, "test_lock.lib");
     const binaryData = Buffer.from([
-      0x7f, 0x45, 0x4c, 0x46, 0x02, 0x01, 0x01, 0x00,
-      0xff, 0x00, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60
+      0x7f,
+      0x45,
+      0x4c,
+      0x46,
+      0x02,
+      0x01,
+      0x01,
+      0x00,
+      0xff,
+      0x00,
+      0x10,
+      0x20,
+      0x30,
+      0x40,
+      0x50,
+      0x60
     ]);
     fs.writeFileSync(binaryFile, binaryData);
 
@@ -256,10 +270,17 @@ suite("Commands Tests", () => {
     await timeout(200);
 
     const svnPath = repository.repository.removeAbsolutePath(binaryFile);
-    await repository.repository.exec(["propset", "svn:needs-lock", "1", svnPath]);
+    await repository.repository.exec([
+      "propset",
+      "svn:needs-lock",
+      "1",
+      svnPath
+    ]);
     await timeout(200);
 
-    await repository.commitFiles("Add binary file for active tab lock test", [binaryFile]);
+    await repository.commitFiles("Add binary file for active tab lock test", [
+      binaryFile
+    ]);
     await timeout(500);
 
     await commands.executeCommand("vscode.open", Uri.file(binaryFile));
@@ -274,7 +295,10 @@ suite("Commands Tests", () => {
       errorMessages.push(String(message));
       return originalShowErrorMessage(message, ...items);
     };
-    window.showInformationMessage = async (message: string, ...items: any[]) => {
+    window.showInformationMessage = async (
+      message: string,
+      ...items: any[]
+    ) => {
       infoMessages.push(String(message));
       return originalShowInformationMessage(message, ...items);
     };
