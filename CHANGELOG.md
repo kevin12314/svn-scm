@@ -1,3 +1,24 @@
+# [3.0.0](https://github.com/JohnstonCode/svn-scm/compare/v2.17.0...v3.0.0) (2026-03-20)
+
+
+### Features
+
+* add a command to copy the URL at the current revision
+* add a command to get a lock for the current file
+* add repository log filters by author and commit message
+* adapt copy URL at the current revision, lock for the current file, and repository log filters by author and commit message with reference to Souls-R/svn-scm-next
+
+### Bug Fixes
+
+* support lock and permalink commands from binary file tabs
+* bundle runtime dependencies correctly in VSIX packages built with pnpm
+
+### Maintenance
+
+* migrate user-facing strings to VS Code l10n bundles, including Traditional Chinese translations
+* migrate the project and release workflows from Yarn to pnpm
+* align the build toolchain with TypeScript 5 and supported ESLint versions
+
 # [2.17.0](https://github.com/JohnstonCode/svn-scm/compare/v2.16.1...v2.17.0) (2023-06-22)
 
 
