@@ -51,7 +51,27 @@ jobs:
 
       - name: Install Subversion on Windows
         if: runner.os == 'Windows'
-        run: choco install svn -y --no-progress
+        shell: pwsh
+        run: |
+          choco install svn -y --no-progress
+
+          $candidateDirs = @(
+            'C:\Program Files\Subversion\bin'
+            'C:\Program Files (x86)\Subversion\bin'
+          )
+
+          $svnDir = $candidateDirs | Where-Object { Test-Path (Join-Path $_ 'svn.exe') } | Select-Object -First 1
+
+          if (-not $svnDir) {
+            throw 'svn.exe was not found after Chocolatey installation.'
+          }
+
+          $svnDir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          $env:PATH = "$svnDir;$env:PATH"
+
+          Write-Host "Using SVN from: $svnDir"
+          & (Join-Path $svnDir 'svn.exe') --version --quiet
+          & (Join-Path $svnDir 'svnadmin.exe') --version --quiet
       
       - name: Compile sources for tests
         run: pnpm run test-compile
