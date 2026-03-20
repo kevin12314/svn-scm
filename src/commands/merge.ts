@@ -2,6 +2,7 @@ import { commands, l10n, window } from "vscode";
 import { IBranchItem } from "../common/types";
 import { isTrunk, selectBranch } from "../helpers/branch";
 import { Repository } from "../repository";
+import { isSvnErrorLike } from "../util";
 import { Command } from "./command";
 
 export class Merge extends Command {
@@ -28,7 +29,7 @@ export class Merge extends Command {
     try {
       await repository.merge(branch.path, reintegrate);
     } catch (error) {
-      if (typeof error === "object" && error.hasOwnProperty("stderrFormated")) {
+      if (isSvnErrorLike(error) && error.stderrFormated) {
         if (error.stderrFormated.includes("try updating first")) {
           const answer = await window.showErrorMessage(
             l10n.t(

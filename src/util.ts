@@ -131,6 +131,17 @@ export function timeout(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+export function isSvnErrorLike(
+  error: unknown
+): error is {
+  stderr?: string;
+  stderrFormated?: string;
+  svnErrorCode?: string;
+  stack?: string;
+} {
+  return typeof error === "object" && error !== null;
+}
+
 export function isReadOnly(operation: Operation): boolean {
   switch (operation) {
     case Operation.CurrentBranch:

@@ -1,6 +1,7 @@
 import { l10n, window } from "vscode";
 import { selectBranch } from "../helpers/branch";
 import { Repository } from "../repository";
+import { isSvnErrorLike } from "../util";
 import { Command } from "./command";
 
 export class SwitchBranch extends Command {
@@ -32,11 +33,7 @@ export class SwitchBranch extends Command {
         try {
           await repository.switchBranch(branch.path);
         } catch (error) {
-          if (
-            typeof error === "object" &&
-            error.hasOwnProperty("stderrFormated") &&
-            error.stderrFormated.includes("ignore-ancestry")
-          ) {
+          if (isSvnErrorLike(error) && error.stderrFormated?.includes("ignore-ancestry")) {
             const yes = l10n.t("Yes");
             const answer = await window.showErrorMessage(
               l10n.t(

@@ -50,6 +50,7 @@ import {
   getSvnDir,
   isDescendant,
   isReadOnly,
+  isSvnErrorLike,
   timeout,
   toDisposable
 } from "./util";
@@ -1109,7 +1110,7 @@ export class Repository implements IRemoteRepository {
 
         return result;
       } catch (err) {
-        if (err.svnErrorCode === svnErrorCodes.NotASvnRepository) {
+        if (isSvnErrorLike(err) && err.svnErrorCode === svnErrorCodes.NotASvnRepository) {
           this.state = RepositoryState.Disposed;
         }
 
@@ -1144,12 +1145,14 @@ export class Repository implements IRemoteRepository {
         return result;
       } catch (err) {
         if (
+          isSvnErrorLike(err) &&
           err.svnErrorCode === svnErrorCodes.RepositoryIsLocked &&
           attempt <= 10
         ) {
           // quatratic backoff
           await timeout(Math.pow(attempt, 2) * 50);
         } else if (
+          isSvnErrorLike(err) &&
           err.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
           attempt <= 1 + accounts.length
         ) {
@@ -1165,6 +1168,7 @@ export class Repository implements IRemoteRepository {
             this.password = accounts[index].password;
           }
         } else if (
+          isSvnErrorLike(err) &&
           err.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
           attempt <= 3 + accounts.length
         ) {

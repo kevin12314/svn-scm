@@ -1,6 +1,7 @@
 import { l10n, window } from "vscode";
 import { getConflictPickOptions } from "../conflictItems";
 import { Repository } from "../repository";
+import { isSvnErrorLike } from "../util";
 import { Command } from "./command";
 
 export class ResolveAll extends Command {
@@ -35,7 +36,9 @@ export class ResolveAll extends Command {
         );
         window.showInformationMessage(response);
       } catch (error) {
-        window.showErrorMessage(error.stderr);
+        window.showErrorMessage(
+          isSvnErrorLike(error) && error.stderr ? error.stderr : String(error)
+        );
       }
     }
   }

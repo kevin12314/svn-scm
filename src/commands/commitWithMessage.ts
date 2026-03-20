@@ -5,6 +5,7 @@ import { Status } from "../common/types";
 import { inputCommitMessage } from "../messages";
 import { Repository } from "../repository";
 import { Resource } from "../resource";
+import { isSvnErrorLike } from "../util";
 import { Command } from "./command";
 
 export class CommitWithMessage extends Command {
@@ -57,7 +58,11 @@ export class CommitWithMessage extends Command {
       repository.inputBox.value = "";
     } catch (error) {
       console.error(error);
-      window.showErrorMessage(error.stderrFormated);
+      window.showErrorMessage(
+        isSvnErrorLike(error) && error.stderrFormated
+          ? error.stderrFormated
+          : String(error)
+      );
     }
   }
 }
