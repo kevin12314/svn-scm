@@ -44,7 +44,7 @@ jobs:
 
       - name: Cache VSCode binary
         id: cache-vscode
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: .vscode-test
           key: vscode-${{ runner.os }}-${{ matrix.version }}-${{ github.run_id }}
@@ -98,7 +98,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Lint check
-        run: pnpm run lint --silent -- -f stylish
+        run: pnpm exec eslint "src/**/*.ts" -f stylish
 
   artifact:
     runs-on: ubuntu-latest
@@ -127,7 +127,7 @@ jobs:
         run: pnpm run package:vsix
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: "svn-scm-${{ github.sha }}.vsix"
           path: "svn-scm.vsix"
@@ -136,7 +136,7 @@ jobs:
         run: pnpm run package:ovsx
 
       - name: Upload open-vsx artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: "svn-scm-ovsx-${{ github.sha }}.vsix"
           path: "svn-scm-ovsx.vsix"
