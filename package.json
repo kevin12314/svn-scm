@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "%extension.displayName%",
     "description": "%extension.description%",
-    "version": "2.17.0",
+    "version": "3.0.0",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.73.0"
@@ -10,7 +10,7 @@
     "packageManager": "pnpm@10.17.0",
     "private": true,
     "icon": "images/subversion.png",
-    "homepage": "https://github.com/JohnstonCode/svn-scm/blob/master/README.md",
+    "homepage": "https://github.com/kevin12314/svn-scm/blob/master/README.md",
     "repository": {
         "type": "git",
         "url": "https://github.com/JohnstonCode/svn-scm.git"
@@ -35,7 +35,7 @@
     "l10n": "./l10n",
     "scripts": {
         "build": "pnpm run build:ts && pnpm run build:css",
-        "build:css": "sass scss:css --style=compressed",
+        "build:css": "sass scss:css --style=compressed --quiet-deps --silence-deprecation=import,global-builtin",
         "build:ts": "webpack --mode production",
         "compile": "webpack --mode development --watch",
         "l10n:check": "node ./scripts/check-l10n-missing.js",
@@ -44,6 +44,7 @@
         "l10n:export": "pnpm exec @vscode/l10n-dev export --outDir ./l10n ./src",
         "l10n:pseudo": "pnpm exec @vscode/l10n-dev generate-pseudo -o ./l10n ./l10n/bundle.l10n.json ./package.nls.json",
         "organize": "node ./out/tools/organize.js",
+        "package:vsix": "pnpm exec vsce package --allow-star-activation --follow-symlinks -o svn-scm.vsix",
         "semantic-release": "semantic-release",
         "style-check": "prettylint 'src/**/*.ts'",
         "style-fix": "prettier --write \"src/**/*.ts\"",
@@ -51,7 +52,7 @@
         "test-compile": "tsc -p ./",
         "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
         "vscode:prepublish": "pnpm run lint && pnpm run build",
-        "watch:css": "sass --watch scss:css --style=compressed"
+        "watch:css": "sass --watch scss:css --style=compressed --quiet-deps --silence-deprecation=import,global-builtin"
     },
     "dependencies": {
         "iconv-lite-umd": "^0.6.10",
@@ -66,6 +67,7 @@
         "@types/semver": "^7.3.8",
         "@types/tmp": "0.2.1",
         "@types/vscode": "1.73.0",
+        "@vscode/vsce": "^3.7.1",
         "@vscode/l10n-dev": "^0.0.18",
         "@types/xml2js": "^0.4.9",
         "@typescript-eslint/eslint-plugin": "^8.57.1",
