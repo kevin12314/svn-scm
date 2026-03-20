@@ -35,8 +35,7 @@ jobs:
 
     - name: Release Open VSX
       run: |
-        pnpm add iconv-lite jschardet
-        pnpm exec vsce package -o svn-scm-ovsx.vsix
+        pnpm run package:ovsx
         pnpm exec ovsx publish svn-scm-ovsx.vsix -p ${{ secrets.ovsxToken }}
 
     - name: Get tag

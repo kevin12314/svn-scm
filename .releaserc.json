@@ -13,14 +13,19 @@
       "assets": ["CHANGELOG.md", "README.md", "package.json", "pnpm-lock.yaml"],
       "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
     },
-    "semantic-release-vsce"
+    {
+      "path": "@semantic-release/exec",
+      "prepareCmd": "pnpm run package:vsix"
+    }
   ],
   "publish": [
-    "semantic-release-vsce",
+    {
+      "path": "@semantic-release/exec",
+      "publishCmd": "pnpm exec vsce publish --packagePath svn-scm.vsix --pat $VSCE_TOKEN"
+    },
     {
       "path": "@semantic-release/github",
       "assets": "svn-scm.vsix"
     }
-  ],
-  "packageVsix": "svn-scm.vsix"
+  ]
 }

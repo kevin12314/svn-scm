@@ -124,7 +124,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Package extension
-        run: pnpm exec vsce package -o svn-scm.vsix
+        run: pnpm run package:vsix
 
       - name: Upload artifact
         uses: actions/upload-artifact@v1
@@ -133,9 +133,7 @@ jobs:
           path: "svn-scm.vsix"
 
       - name: Package open-vsx extension
-        run: |
-          pnpm add iconv-lite jschardet
-          pnpm exec vsce package -o svn-scm-ovsx.vsix
+        run: pnpm run package:ovsx
 
       - name: Upload open-vsx artifact
         uses: actions/upload-artifact@v1
