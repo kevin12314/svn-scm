@@ -31,7 +31,7 @@ jobs:
       run: git fetch --tags -f || true
 
     - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+      run: pnpm install --frozen-lockfile --config.node-linker=hoisted
 
     - name: Release Open VSX
       run: |
