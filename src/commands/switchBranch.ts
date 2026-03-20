@@ -33,7 +33,10 @@ export class SwitchBranch extends Command {
         try {
           await repository.switchBranch(branch.path);
         } catch (error) {
-          if (isSvnErrorLike(error) && error.stderrFormated?.includes("ignore-ancestry")) {
+          if (
+            isSvnErrorLike(error) &&
+            error.stderrFormated?.includes("ignore-ancestry")
+          ) {
             const yes = l10n.t("Yes");
             const answer = await window.showErrorMessage(
               l10n.t(

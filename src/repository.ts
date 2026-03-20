@@ -1110,7 +1110,10 @@ export class Repository implements IRemoteRepository {
 
         return result;
       } catch (err) {
-        if (isSvnErrorLike(err) && err.svnErrorCode === svnErrorCodes.NotASvnRepository) {
+        if (
+          isSvnErrorLike(err) &&
+          err.svnErrorCode === svnErrorCodes.NotASvnRepository
+        ) {
           this.state = RepositoryState.Disposed;
         }
 
