@@ -1,3 +1,21 @@
+# [3.1.0](https://github.com/JohnstonCode/svn-scm/compare/v3.0.0...v3.1.0) (2026-03-20)
+
+
+### Features
+
+* add confirmation prompts before revert and revert all operations
+* install Subversion in CI across supported operating systems
+
+### Bug Fixes
+
+* detect the installed Subversion directory on Windows runners and append it to PATH
+* update GitHub Actions cache and artifact steps to resolve dependency issues
+
+### Maintenance
+
+* refactor tests to reuse shared repository setup helpers
+* update pnpm install configuration and minimatch type definitions
+
 # [3.0.0](https://github.com/JohnstonCode/svn-scm/compare/v2.17.0...v3.0.0) (2026-03-20)
 
 

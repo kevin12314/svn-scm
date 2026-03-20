@@ -1,7 +1,14 @@
 name: release Open VSX
+run-name: Open VSX package${{ github.event_name == 'workflow_dispatch' && inputs.publish && ' and publish' || '' }}
 
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the packaged VSIX to Open VSX
+        required: false
+        default: false
+        type: boolean
   push:
     tags:
      - "v*"
@@ -33,10 +40,20 @@ jobs:
     - name: Install dependencies
       run: pnpm install --frozen-lockfile --config.node-linker=hoisted
 
-    - name: Release Open VSX
+    - name: Package Open VSX
+      run: pnpm run package:ovsx
+
+    - name: Publish Open VSX
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish }}
+      env:
+        OVSX_TOKEN: ${{ secrets.ovsxToken }}
       run: |
-        pnpm run package:ovsx
-        pnpm exec ovsx publish svn-scm-ovsx.vsix -p ${{ secrets.ovsxToken }}
+        if [ -z "$OVSX_TOKEN" ]; then
+          echo "Missing Actions secret: ovsxToken"
+          exit 1
+        fi
+
+        pnpm exec ovsx publish svn-scm-ovsx.vsix -p "$OVSX_TOKEN"
 
     - name: Get tag
       id: getTag
