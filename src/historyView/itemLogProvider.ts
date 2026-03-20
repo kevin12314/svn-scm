@@ -137,7 +137,7 @@ export class ItemLogProvider
               },
               order: 0
             };
-          } catch (e) {
+          } catch {
             // doesn't belong to this repo
           }
         }

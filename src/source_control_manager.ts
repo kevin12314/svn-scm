@@ -317,7 +317,7 @@ export class SourceControlManager implements IDisposable {
 
       try {
         files = await readdir(path);
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -327,7 +327,7 @@ export class SourceControlManager implements IDisposable {
 
         try {
           stats = await stat(dir);
-        } catch (error) {
+        } catch {
           continue;
         }
 
@@ -434,7 +434,7 @@ export class SourceControlManager implements IDisposable {
         await repository.info(path);
 
         return repository;
-      } catch (error) {
+      } catch {
         // Ignore
       }
     }

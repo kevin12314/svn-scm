@@ -756,7 +756,7 @@ export class Repository implements IRemoteRepository {
   public async getBranches() {
     try {
       return await this.repository.getBranches();
-    } catch (error) {
+    } catch {
       return [];
     }
   }
