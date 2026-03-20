@@ -46,6 +46,7 @@
   "Open File (HEAD)": "開啟檔案（HEAD）",
   "Yes I'm sure": "是，我確定",
   "Are you sure? This will wipe all local changes.": "你確定嗎？這會清除所有本機變更。",
+  "Are you sure? This will undo the add and leave the files as unversioned.": "你確定嗎？這會取消加入版本控制，並將檔案保留為未納入版本控制狀態。",
   "Select revert depth": "選擇還原深度",
   "This path is already added": "此路徑已加入",
   "Failed to add repo: {0}": "加入存放庫失敗：{0}",

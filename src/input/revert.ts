@@ -1,14 +1,28 @@
-import { l10n, Uri, window } from "vscode";
-import { SvnDepth } from "../common/types";
+import { l10n, SourceControlResourceState, Uri, window } from "vscode";
+import { Status, SvnDepth } from "../common/types";
 import { lstat } from "../fs";
 
-export async function confirmRevert() {
-  const yes = l10n.t("Yes I'm sure");
-  const answer = await window.showWarningMessage(
-    l10n.t("Are you sure? This will wipe all local changes."),
-    { modal: true },
-    yes
+type RevertableResourceState = SourceControlResourceState & {
+  type?: string;
+};
+
+function isAddedSelection(resourceStates: RevertableResourceState[] = []) {
+  return (
+    resourceStates.length > 0 &&
+    resourceStates.every(resource => resource.type === Status.ADDED)
   );
+}
+
+export async function confirmRevert(
+  resourceStates: RevertableResourceState[] = []
+) {
+  const yes = l10n.t("Yes I'm sure");
+  const message = isAddedSelection(resourceStates)
+    ? l10n.t(
+        "Are you sure? This will undo the add and leave the files as unversioned."
+      )
+    : l10n.t("Are you sure? This will wipe all local changes.");
+  const answer = await window.showWarningMessage(message, { modal: true }, yes);
 
   if (answer !== yes) {
     return false;

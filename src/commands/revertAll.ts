@@ -10,7 +10,7 @@ export class RevertAll extends Command {
   public async execute(resourceGroup: SourceControlResourceGroup) {
     const resourceStates = resourceGroup.resourceStates;
 
-    if (resourceStates.length === 0 || !(await confirmRevert())) {
+    if (resourceStates.length === 0 || !(await confirmRevert(resourceStates))) {
       return;
     }
 

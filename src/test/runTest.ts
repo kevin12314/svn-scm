@@ -18,7 +18,9 @@ async function main() {
     });
   } catch (err) {
     const stack = err instanceof Error ? err.stack : undefined;
-    console.error(`Failed to run tests: ${String(err)}${stack ? `\n${stack}` : ""}`);
+    console.error(
+      `Failed to run tests: ${String(err)}${stack ? `\n${stack}` : ""}`
+    );
     process.exit(1);
   }
 }

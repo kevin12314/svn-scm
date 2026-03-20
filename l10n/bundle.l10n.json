@@ -46,6 +46,7 @@
   "Open File (HEAD)": "Open File (HEAD)",
   "Yes I'm sure": "Yes I'm sure",
   "Are you sure? This will wipe all local changes.": "Are you sure? This will wipe all local changes.",
+  "Are you sure? This will undo the add and leave the files as unversioned.": "Are you sure? This will undo the add and leave the files as unversioned.",
   "Select revert depth": "Select revert depth",
   "This path is already added": "This path is already added",
   "Failed to add repo: {0}": "Failed to add repo: {0}",
