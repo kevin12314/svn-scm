@@ -27,6 +27,9 @@ importers:
       '@types/glob':
         specifier: ^7.1.4
         version: 7.1.4
+      '@types/minimatch':
+        specifier: ^3.0.5
+        version: 3.0.5
       '@types/mocha':
         specifier: ^9.0.0
         version: 9.0.0
@@ -521,8 +524,12 @@ packages:
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
-  '@types/minimatch@3.0.3':
-    resolution: {integrity: sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==}
+  '@types/minimatch@3.0.5':
+    resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
+
+  '@types/minimatch@6.0.0':
+    resolution: {integrity: sha512-zmPitbQ8+6zNutpwgcQuLcsEpn/Cj54Kbn7L5pX0Os5kdWplB7xPgEh/g+SWOB/qmows2gpuCaPyduq8ZZRnxA==}
+    deprecated: This is a stub types definition. minimatch provides its own type definitions, so you do not need this installed.
 
   '@types/minimist@1.2.0':
     resolution: {integrity: sha512-BsF2gEVEIOcbQCSwXR6V14fGD6QLLT0yQBK6RpblkxVYP9x8ANNThpxMUxV7h4KKjqMDR8qELlcnqrEoyvsohw==}
@@ -4187,12 +4194,16 @@ snapshots:
 
   '@types/glob@7.1.4':
     dependencies:
-      '@types/minimatch': 3.0.3
+      '@types/minimatch': 6.0.0
       '@types/node': 14.0.27
 
   '@types/json-schema@7.0.15': {}
 
-  '@types/minimatch@3.0.3': {}
+  '@types/minimatch@3.0.5': {}
+
+  '@types/minimatch@6.0.0':
+    dependencies:
+      minimatch: 3.1.5
 
   '@types/minimist@1.2.0': {}
 
