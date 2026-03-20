@@ -3,7 +3,6 @@ import * as fs from "original-fs";
 import * as path from "path";
 import { commands, Uri, window, workspace } from "vscode";
 import { SourceControlManager } from "../source_control_manager";
-import { Repository } from "../repository";
 import * as testUtil from "./testUtil";
 
 suite("Repository Tests", () => {
@@ -65,12 +64,10 @@ suite("Repository Tests", () => {
   });
 
   test("Try get current branch name", async () => {
-    const repository: Repository | null = sourceControlManager.getRepository(
+    const repository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
       checkoutDir.fsPath
     );
-    if (!repository) {
-      return;
-    }
 
     const name = await repository.getCurrentBranch();
     assert.equal(name, "trunk");
@@ -78,12 +75,10 @@ suite("Repository Tests", () => {
 
   test("Try commit file", async function () {
     this.timeout(60000);
-    const repository: Repository | null = sourceControlManager.getRepository(
+    const repository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
       checkoutDir.fsPath
     );
-    if (!repository) {
-      return;
-    }
 
     assert.equal(repository.changes.resourceStates.length, 0);
 
@@ -115,12 +110,10 @@ suite("Repository Tests", () => {
 
     await sourceControlManager.tryOpenRepository(newCheckoutDir.fsPath);
 
-    const newRepository: Repository | null = sourceControlManager.getRepository(
+    const newRepository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
       newCheckoutDir.fsPath
     );
-    if (!newRepository) {
-      return;
-    }
     assert.ok(newRepository);
 
     await newRepository.newBranch("branches/test");

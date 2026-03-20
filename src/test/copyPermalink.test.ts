@@ -3,7 +3,6 @@ import * as fs from "original-fs";
 import * as path from "path";
 import { commands, env, Uri, window, workspace } from "vscode";
 import { SourceControlManager } from "../source_control_manager";
-import { Repository } from "../repository";
 import * as testUtil from "./testUtil";
 import { timeout } from "../util";
 
@@ -34,9 +33,10 @@ suite("Copy Permalink Tests", () => {
     testFilePath = path.join(checkoutDir.fsPath, "test_permalink.txt");
     fs.writeFileSync(testFilePath, "test content for permalink");
 
-    const repository = sourceControlManager.getRepository(
+    const repository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
       checkoutDir
-    ) as Repository;
+    );
 
     await commands.executeCommand("svn.refresh");
 
@@ -152,9 +152,10 @@ suite("Copy Permalink Tests", () => {
     ]);
     fs.writeFileSync(binaryFilePath, binaryData);
 
-    const repository = sourceControlManager.getRepository(
+    const repository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
       checkoutDir
-    ) as Repository;
+    );
 
     await commands.executeCommand("svn.refresh");
     await timeout(200);

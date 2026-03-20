@@ -4,6 +4,8 @@ import * as fs from "original-fs";
 import * as path from "path";
 import * as tmp from "tmp";
 import { extensions, Uri, window } from "vscode";
+import { Repository } from "../repository";
+import { SourceControlManager } from "../source_control_manager";
 import { timeout } from "../util";
 
 tmp.setGracefulCleanup();
@@ -193,6 +195,23 @@ export function activeExtension() {
       resolve();
     }
   });
+}
+
+export async function getOrOpenRepository(
+  sourceControlManager: SourceControlManager,
+  checkoutDir: Uri | string
+): Promise<Repository> {
+  const checkoutPath =
+    typeof checkoutDir === "string" ? checkoutDir : checkoutDir.fsPath;
+
+  await sourceControlManager.tryOpenRepository(checkoutPath);
+
+  const repository = sourceControlManager.getRepository(checkoutPath);
+  if (!repository) {
+    throw new Error(`Repository is not open: ${checkoutPath}`);
+  }
+
+  return repository;
 }
 
 const overridesShowInputBox: any[] = [];
