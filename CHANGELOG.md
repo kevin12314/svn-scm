@@ -1,3 +1,18 @@
+# [3.2.0](https://github.com/JohnstonCode/svn-scm/compare/v3.1.0...v3.2.0) (2026-03-24)
+
+
+### Features
+
+* add a confirmation prompt before committing missing files or folders
+
+### Bug Fixes
+
+* update GitHub Actions checkout and setup-node actions to v6
+
+### Maintenance
+
+* extend the Open VSX release workflow with optional publish inputs
+
 # [3.1.0](https://github.com/JohnstonCode/svn-scm/compare/v3.0.0...v3.1.0) (2026-03-20)
 
 
