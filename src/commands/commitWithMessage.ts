@@ -7,6 +7,7 @@ import { Repository } from "../repository";
 import { Resource } from "../resource";
 import { isSvnErrorLike } from "../util";
 import { Command } from "./command";
+import { confirmMissingResourcesForCommit } from "./commitMissing";
 
 export class CommitWithMessage extends Command {
   constructor() {
@@ -16,6 +17,14 @@ export class CommitWithMessage extends Command {
   public async execute(repository: Repository) {
     const resourceStates = await inputCommitFiles(repository);
     if (!resourceStates || resourceStates.length === 0) {
+      return;
+    }
+
+    const resources = resourceStates.filter(
+      state => state instanceof Resource
+    ) as Resource[];
+
+    if (!(await confirmMissingResourcesForCommit(repository, resources))) {
       return;
     }
 
@@ -33,7 +42,7 @@ export class CommitWithMessage extends Command {
     }
 
     // If files is renamed, the commit need previous file
-    resourceStates.forEach(state => {
+    resources.forEach(state => {
       if (state instanceof Resource) {
         if (state.type === Status.ADDED && state.renameResourceUri) {
           filePaths.push(state.renameResourceUri.fsPath);

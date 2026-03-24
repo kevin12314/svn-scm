@@ -1,8 +1,8 @@
 import * as assert from "assert";
 import * as fs from "original-fs";
 import * as path from "path";
-import { commands, Uri, window } from "vscode";
-import { ISvnResourceGroup } from "../common/types";
+import { commands, Uri, window, workspace } from "vscode";
+import { ISvnResourceGroup, Status } from "../common/types";
 import { SourceControlManager } from "../source_control_manager";
 import * as testUtil from "./testUtil";
 import { timeout } from "../util";
@@ -200,6 +200,83 @@ suite("Commands Tests", () => {
     testUtil.overrideNextShowQuickPick(0);
 
     await commands.executeCommand("svn.commitWithMessage");
+  });
+
+  test("Commit Missing Folder Removes From SVN", async function () {
+    this.timeout(30000);
+
+    const repository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
+      checkoutDir
+    );
+
+    const config = workspace.getConfiguration("svn");
+    const previousDeleteAction = config.get("delete.actionForDeletedFiles");
+    await config.update("delete.actionForDeletedFiles", "none", true);
+
+    const folder = path.join(checkoutDir.fsPath, "impl");
+
+    try {
+      fs.mkdirSync(folder);
+
+      await repository.addFiles([folder]);
+      await repository.status();
+      await timeout(200);
+
+      await repository.commitFiles("Add impl folder", [folder]);
+      await repository.status();
+      await timeout(200);
+
+      fs.rmdirSync(folder);
+
+      await commands.executeCommand("svn.refresh");
+      await timeout(1200);
+
+      const missingResource = repository.changes.resourceStates.find(
+        resource =>
+          resource instanceof Object &&
+          (resource as any).type === Status.MISSING
+      );
+
+      assert.ok(missingResource);
+
+      testUtil.overrideNextShowWarningMessage("Continue");
+      setTimeout(() => {
+        commands.executeCommand(
+          "svn.forceCommitMessageTest",
+          "Remove impl folder"
+        );
+      }, 1000);
+
+      await commands.executeCommand("svn.commit", missingResource);
+      await repository.status();
+      await timeout(500);
+
+      assert.equal(
+        repository.changes.resourceStates.some(
+          resource => (resource as any).resourceUri.fsPath === folder
+        ),
+        false
+      );
+
+      let deletedFromRemote = false;
+      try {
+        await repository.repository.exec([
+          "ls",
+          `${repository.repository.info.url}/impl`
+        ]);
+      } catch {
+        deletedFromRemote = true;
+      }
+
+      assert.equal(deletedFromRemote, true);
+    } finally {
+      await config.update(
+        "delete.actionForDeletedFiles",
+        previousDeleteAction,
+        true
+      );
+    }
   });
 
   test("New Branch", async function () {

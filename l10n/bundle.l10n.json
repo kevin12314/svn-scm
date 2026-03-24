@@ -133,5 +133,7 @@
   "Set filter for commit authors, empty to reset": "Set filter for commit authors, empty to reset",
   "Set filter for commit message, empty to reset": "Set filter for commit message, empty to reset",
   "Successfully locked {0}": "Successfully locked {0}",
-  "Unable to lock file: {0}": "Unable to lock file: {0}"
+  "Unable to lock file: {0}": "Unable to lock file: {0}",
+  "Continue": "Continue",
+  "The following missing file(s) or folder(s) will be removed from SVN before commit:\\n{0}\\n\\nDo you want to continue?": "The following missing file(s) or folder(s) will be removed from SVN before commit:\\n{0}\\n\\nDo you want to continue?"
 }

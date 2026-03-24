@@ -133,5 +133,7 @@
   "Set filter for commit authors, empty to reset": "設定提交作者篩選，留空可重設",
   "Set filter for commit message, empty to reset": "設定提交訊息篩選，留空可重設",
   "Successfully locked {0}": "已成功鎖定 {0}",
-  "Unable to lock file: {0}": "無法鎖定檔案：{0}"
+  "Unable to lock file: {0}": "無法鎖定檔案：{0}",
+  "Continue": "繼續",
+  "The following missing file(s) or folder(s) will be removed from SVN before commit:\\n{0}\\n\\nDo you want to continue?": "以下缺少的檔案或資料夾將在提交前從 SVN 移除：\\n{0}\\n\\n要繼續嗎？"
 }

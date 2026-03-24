@@ -257,3 +257,25 @@ window.showQuickPick = ((
     resolve(next);
   });
 }) as typeof window.showQuickPick;
+
+const overridesShowWarningMessage: any[] = [];
+
+export function overrideNextShowWarningMessage(value: any) {
+  overridesShowWarningMessage.push(value);
+}
+
+const originalShowWarningMessage = window.showWarningMessage;
+
+window.showWarningMessage = ((
+  message: string,
+  ...args: any[]
+): Thenable<any | undefined> => {
+  const next = overridesShowWarningMessage.shift();
+  if (typeof next === "undefined") {
+    return originalShowWarningMessage.apply(window, [message, ...args] as any);
+  }
+
+  return new Promise((resolve, _reject) => {
+    resolve(next);
+  });
+}) as typeof window.showWarningMessage;

@@ -5,6 +5,7 @@ import { inputCommitMessage } from "../messages";
 import { Resource } from "../resource";
 import { isSvnErrorLike } from "../util";
 import { Command } from "./command";
+import { confirmMissingResourcesForCommit } from "./commitMissing";
 
 export class Commit extends Command {
   constructor() {
@@ -38,10 +39,20 @@ export class Commit extends Command {
         return;
       }
 
+      const selectedResources = selection.filter(resource =>
+        resources.some(uri => uri.fsPath === resource.resourceUri.fsPath)
+      );
+
+      if (
+        !(await confirmMissingResourcesForCommit(repository, selectedResources))
+      ) {
+        return;
+      }
+
       const paths = resources.map(resource => resource.fsPath);
 
-      for (const resource of resources) {
-        let dir = path.dirname(resource.fsPath);
+      for (const resource of selectedResources) {
+        let dir = path.dirname(resource.resourceUri.fsPath);
         let parent = repository.getResourceFromFile(dir);
 
         while (parent) {
