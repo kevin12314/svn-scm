@@ -33,17 +33,17 @@ suite("Repository Tests", () => {
   });
 
   test("Empty Open Repository", async function () {
-    assert.equal(sourceControlManager.repositories.length, 0);
+    assert.strictEqual(sourceControlManager.repositories.length, 0);
   });
 
   test("Try Open Repository", async function () {
     await sourceControlManager.tryOpenRepository(checkoutDir.fsPath);
-    assert.equal(sourceControlManager.repositories.length, 1);
+    assert.strictEqual(sourceControlManager.repositories.length, 1);
   });
 
   test("Try Open Repository Again", async () => {
     await sourceControlManager.tryOpenRepository(checkoutDir.fsPath);
-    assert.equal(sourceControlManager.repositories.length, 1);
+    assert.strictEqual(sourceControlManager.repositories.length, 1);
   });
 
   test("Try get repository from Uri", () => {
@@ -60,7 +60,7 @@ suite("Repository Tests", () => {
     const repository = sourceControlManager.getRepository(checkoutDir.fsPath);
     const repository2 = sourceControlManager.getRepository(repository);
     assert.ok(repository2);
-    assert.equal(repository, repository2);
+    assert.strictEqual(repository, repository2);
   });
 
   test("Try get current branch name", async () => {
@@ -70,7 +70,7 @@ suite("Repository Tests", () => {
     );
 
     const name = await repository.getCurrentBranch();
-    assert.equal(name, "trunk");
+    assert.strictEqual(name, "trunk");
   });
 
   test("Try commit file", async function () {
@@ -80,7 +80,7 @@ suite("Repository Tests", () => {
       checkoutDir.fsPath
     );
 
-    assert.equal(repository.changes.resourceStates.length, 0);
+    assert.strictEqual(repository.changes.resourceStates.length, 0);
 
     const file = path.join(checkoutDir.fsPath, "new.txt");
 
@@ -91,15 +91,15 @@ suite("Repository Tests", () => {
 
     await repository.addFiles([file]);
 
-    assert.equal(repository.changes.resourceStates.length, 1);
+    assert.strictEqual(repository.changes.resourceStates.length, 1);
 
     const message = await repository.commitFiles("First Commit", [file]);
-    assert.ok(/1 file commited: revision (.*)\./i.test(message));
+    assert.ok(/1 file committed: revision (.*)\./i.test(message));
 
-    assert.equal(repository.changes.resourceStates.length, 0);
+    assert.strictEqual(repository.changes.resourceStates.length, 0);
 
     const remoteContent = await repository.show(file, "HEAD");
-    assert.equal(remoteContent, "test");
+    assert.strictEqual(remoteContent, "test");
   });
 
   test("Try switch branch", async function () {
@@ -119,6 +119,6 @@ suite("Repository Tests", () => {
     await newRepository.newBranch("branches/test");
     const currentBranch = await newRepository.getCurrentBranch();
 
-    assert.equal(currentBranch, "branches/test");
+    assert.strictEqual(currentBranch, "branches/test");
   });
 });

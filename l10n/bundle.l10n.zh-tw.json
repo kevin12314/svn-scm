@@ -130,10 +130,15 @@
   "File is not in an SVN repository": "此檔案不在 SVN 存放庫中",
   "No file is currently open": "目前沒有開啟任何檔案",
   "Permalink copied to clipboard (revision {0})": "永久連結已複製到剪貼簿（修訂版 {0}）",
+  "Updated to revision {0}.": "已更新至修訂版 {0}。",
+  "At revision {0}.": "目前已是修訂版 {0}。",
+  "{0} file committed: revision {1}.": "已提交 {0} 個檔案：修訂版 {1}。",
+  "{0} files committed: revision {1}.": "已提交 {0} 個檔案：修訂版 {1}。",
   "Set filter for commit authors, empty to reset": "設定提交作者篩選，留空可重設",
   "Set filter for commit message, empty to reset": "設定提交訊息篩選，留空可重設",
   "Successfully locked {0}": "已成功鎖定 {0}",
   "Unable to lock file: {0}": "無法鎖定檔案：{0}",
   "Continue": "繼續",
-  "The following missing file(s) or folder(s) will be removed from SVN before commit:\\n{0}\\n\\nDo you want to continue?": "以下缺少的檔案或資料夾將在提交前從 SVN 移除：\\n{0}\\n\\n要繼續嗎？"
+  "The following missing file(s) or folder(s) will be removed from SVN after commit:": "以下缺少的檔案或資料夾將在提交後從 SVN 移除：",
+  "Do you want to continue?": "要繼續嗎？"
 }

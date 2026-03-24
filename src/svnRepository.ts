@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as tmp from "tmp";
-import { Uri, workspace } from "vscode";
+import { Uri, l10n, workspace } from "vscode";
 import {
   ConstructorPolicy,
   ICpOptions,
@@ -153,6 +153,28 @@ export class Repository {
 
   public resetInfoCache(file: string = "") {
     delete this._infoCache[file];
+  }
+
+  private getLocalizedUpdateMessage(output: string): string {
+    const message = output.trim().split(/\r?\n/).pop();
+
+    if (!message) {
+      return output;
+    }
+
+    const updatedToRevisionMatch = message.match(
+      /^Updated to revision (.*)\.$/i
+    );
+    if (updatedToRevisionMatch && updatedToRevisionMatch[1]) {
+      return l10n.t("Updated to revision {0}.", updatedToRevisionMatch[1]);
+    }
+
+    const atRevisionMatch = message.match(/^At revision (.*)\.$/i);
+    if (atRevisionMatch && atRevisionMatch[1]) {
+      return l10n.t("At revision {0}.", atRevisionMatch[1]);
+    }
+
+    return message;
   }
 
   @sequentialize
@@ -466,15 +488,13 @@ export class Repository {
 
     const matches = result.stdout.match(/Committed revision (.*)\./i);
     if (matches && matches[0]) {
-      const sendedFiles = (
+      const sentFiles = (
         result.stdout.match(/(Sending|Adding|Deleting)\s+/g) || []
       ).length;
 
-      const filesMessage = `${sendedFiles} ${
-        sendedFiles === 1 ? "file" : "files"
-      } commited`;
-
-      return `${filesMessage}: revision ${matches[1]}.`;
+      return sentFiles === 1
+        ? l10n.t("{0} file committed: revision {1}.", sentFiles, matches[1])
+        : l10n.t("{0} files committed: revision {1}.", sentFiles, matches[1]);
     }
 
     return result.stdout;
@@ -698,12 +718,7 @@ export class Repository {
 
     this.resetInfoCache();
 
-    const message = result.stdout.trim().split(/\r?\n/).pop();
-
-    if (message) {
-      return message;
-    }
-    return result.stdout;
+    return this.getLocalizedUpdateMessage(result.stdout);
   }
 
   public async pullIncomingChange(path: string): Promise<string> {
@@ -713,12 +728,7 @@ export class Repository {
 
     this.resetInfoCache();
 
-    const message = result.stdout.trim().split(/\r?\n/).pop();
-
-    if (message) {
-      return message;
-    }
-    return result.stdout;
+    return this.getLocalizedUpdateMessage(result.stdout);
   }
 
   public async patch(files: string[]) {

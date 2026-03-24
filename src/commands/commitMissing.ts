@@ -38,11 +38,11 @@ export async function confirmMissingResourcesForCommit(
     .sort();
 
   const confirm = l10n.t("Continue");
+  const message = `${l10n.t(
+    "The following missing file(s) or folder(s) will be removed from SVN after commit:"
+  )}\n${relativePaths.join("\n")}\n\n${l10n.t("Do you want to continue?")}`;
   const answer = await window.showWarningMessage(
-    l10n.t(
-      "The following missing file(s) or folder(s) will be removed from SVN before commit:\n{0}\n\nDo you want to continue?",
-      relativePaths.join("\n")
-    ),
+    message,
     { modal: true },
     confirm
   );
