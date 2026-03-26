@@ -12,7 +12,7 @@
 
 # Info
 This project is a fork of [JohnstonCode's VS Code SVN Extension](https://github.com/JohnstonCode/svn-scm)
-with additional support for localized user-facing messages and AI-assisted commit message generation.
+with additional support for localized user-facing messages and AI-assisted commit message generation using GitHub Copilot.
 
 # Prerequisites
 
@@ -57,7 +57,7 @@ You can checkout a SVN repository with the `SVN: Checkout` command in the **Comm
 * Create patches
 * Diff changes
 * Commit changes/changelists
-* Generate commit messages from current changes, with AI fallback support
+* AI-assisted commit message generation from current changes using GitHub Copilot
 * See commit messages
 * Copy file permalinks
 * Lock files
