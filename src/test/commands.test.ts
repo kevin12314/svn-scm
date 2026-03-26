@@ -112,6 +112,42 @@ suite("Commands Tests", () => {
     await commands.executeCommand("svn.openResourceHead", resource);
   });
 
+  test("Generate Commit Message", async function () {
+    const repository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
+      checkoutDir
+    );
+
+    await commands.executeCommand("svn.refresh");
+    await commands.executeCommand("svn.generateCommitMessage");
+
+    assert.ok(repository.inputBox.value.includes("Update new.txt"));
+    assert.ok(repository.inputBox.value.includes("Modified:"));
+    assert.ok(repository.inputBox.value.includes("- new.txt"));
+  });
+
+  test("Generate Commit Message For Selected Files", async function () {
+    const repository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
+      checkoutDir
+    );
+    const newFile = path.join(checkoutDir.fsPath, "new.txt");
+    const extraFile = path.join(checkoutDir.fsPath, "extra.txt");
+
+    fs.writeFileSync(newFile, "test 3");
+    fs.writeFileSync(extraFile, "extra test");
+
+    await commands.executeCommand("svn.add", Uri.file(extraFile));
+    await commands.executeCommand("svn.refresh");
+    await commands.executeCommand("svn.generateCommitMessage", repository, [
+      newFile
+    ]);
+
+    assert.ok(repository.inputBox.value.includes("Update new.txt"));
+    assert.ok(repository.inputBox.value.includes("- new.txt"));
+    assert.ok(!repository.inputBox.value.includes("extra.txt"));
+  });
+
   test("Add Changelist", async function () {
     const repository = await testUtil.getOrOpenRepository(
       sourceControlManager,

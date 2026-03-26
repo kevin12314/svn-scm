@@ -40,6 +40,7 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
 
     const panelTitle = l10n.t("Commit Message");
     const filesToCommitTitle = l10n.t("Files to commit");
+    const generateCommitMessageLabel = l10n.t("Generate commit message");
     const pickCommitMessageLabel = l10n.t("Pick a previous commit message");
     const commitMessageLabel = l10n.t("Commit message");
     const commitPlaceholder = l10n.t("Message (press Ctrl+Enter to commit)");
@@ -104,6 +105,8 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
     <form>
       <fieldset>
         <div class="float-right">
+          <a href="#" id="generateCommitMessage">${generateCommitMessageLabel}</a>
+          |
           <a href="#" id="pickCommitMessage">${pickCommitMessageLabel}</a>
         </div>
         <label for="message">${commitMessageLabel}</label>
@@ -121,6 +124,7 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
     const txtMessage = document.getElementById("message");
     const btnCommit = document.getElementById("commit");
     const btnCancel = document.getElementById("cancel");
+    const linkGenerateCommitMessage = document.getElementById("generateCommitMessage");
     const linkPickCommitMessage = document.getElementById("pickCommitMessage");
 
     // load current message
@@ -158,6 +162,12 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
       }, 1000);
     });
 
+    linkGenerateCommitMessage.addEventListener("click", function() {
+      vscode.postMessage({
+        command: "generateCommitMessage"
+      });
+    });
+
     linkPickCommitMessage.addEventListener("click", function() {
       vscode.postMessage({
         command: "pickCommitMessage"
@@ -184,6 +194,32 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
     panel.onDidDispose(() => {
       resolve(undefined);
     });
+
+    const generateCommitMessage = async () => {
+      let repository;
+
+      if (filePaths && filePaths[0]) {
+        const sourceControlManager = (await commands.executeCommand(
+          "svn.getSourceControlManager",
+          ""
+        )) as SourceControlManager;
+        repository = await sourceControlManager.getRepositoryFromUri(
+          Uri.file(filePaths[0])
+        );
+      }
+
+      const message = await commands.executeCommand(
+        "svn.generateCommitMessage",
+        repository,
+        filePaths
+      );
+      if (message !== undefined) {
+        panel.webview.postMessage({
+          command: "setMessage",
+          message
+        });
+      }
+    };
 
     const pickCommitMessage = async () => {
       let repository;
@@ -216,6 +252,9 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
         case "commit":
           resolve(message.message);
           panel.dispose();
+          break;
+        case "generateCommitMessage":
+          generateCommitMessage();
           break;
         case "pickCommitMessage":
           pickCommitMessage();

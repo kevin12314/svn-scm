@@ -53,6 +53,7 @@ You can checkout a SVN repository with the `SVN: Checkout` command in the **Comm
 * Create patches
 * Diff changes
 * Commit changes/changelists
+* Generate commit messages from current changes, with AI fallback support
 * See commit messages
 * Copy file permalinks
 * Lock files
@@ -75,6 +76,27 @@ Here are all of the extension settings with their default values. To change any 
 
   // Check empty message before commit
   "svn.commit.checkEmptyMessage": true,
+
+  // Controls how commit messages are generated.
+  "svn.commitMessageGeneration.mode": "auto",  // values: ["auto","ai","template"],
+
+  // Preferred language model vendor for AI commit message generation, for example 'copilot'. Leave empty to use automatic selection.
+  "svn.commitMessageGeneration.preferredVendor": null,
+
+  // Optional language model family for AI commit message generation, for example 'oswe-vscode'. Leave empty unless you need stricter model selection.
+  "svn.commitMessageGeneration.preferredModelFamily": null,
+
+  // Preferred language model version for AI commit message generation. Defaults to 'raptor-mini' so the extension tries that Copilot model first.
+  "svn.commitMessageGeneration.preferredModelVersion": "raptor-mini",
+
+  // Controls the language used for generated commit messages.
+  "svn.commitMessageGeneration.outputLanguage": "auto",  // values: ["auto","en","zh-TW"],
+
+  // Include unified diff content in the AI prompt when generating commit messages.
+  "svn.commitMessageGeneration.includeDiff": true,
+
+  // Maximum number of diff characters to include in the AI prompt.
+  "svn.commitMessageGeneration.maxDiffCharacters": 12000,
 
   // Set file to status resolved after fix conflicts
   "svn.conflicts.autoResolve": null,

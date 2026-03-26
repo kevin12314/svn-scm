@@ -2,7 +2,7 @@
     "name": "svn-scm",
     "displayName": "%extension.displayName%",
     "description": "%extension.description%",
-    "version": "3.2.0",
+    "version": "3.3.0",
     "publisher": "johnstoncode",
     "engines": {
         "vscode": "^1.73.0"
@@ -205,6 +205,12 @@
                 "title": "%commands.svn.commitWithMessage.title%",
                 "category": "%commands.category.svn%",
                 "icon": "$(check)"
+            },
+            {
+                "command": "svn.generateCommitMessage",
+                "title": "%commands.svn.generateCommitMessage.title%",
+                "category": "%commands.category.svn%",
+                "icon": "$(sparkle)"
             },
             {
                 "command": "svn.deleteUnversioned",
@@ -824,6 +830,11 @@
                     "when": "config.svn.enabled && scmProvider == svn"
                 },
                 {
+                    "command": "svn.generateCommitMessage",
+                    "group": "navigation",
+                    "when": "config.svn.enabled && scmProvider == svn"
+                },
+                {
                     "command": "svn.switchBranch",
                     "when": "config.svn.enabled && scmProvider == svn"
                 },
@@ -1064,6 +1075,71 @@
                     "type": "boolean",
                     "description": "%configuration.svn.commit.checkEmptyMessage.description%",
                     "default": true
+                },
+                "svn.commitMessageGeneration.mode": {
+                    "type": "string",
+                    "enum": [
+                        "auto",
+                        "ai",
+                        "template"
+                    ],
+                    "markdownEnumDescriptions": [
+                        "%configuration.svn.commitMessageGeneration.mode.auto.description%",
+                        "%configuration.svn.commitMessageGeneration.mode.ai.description%",
+                        "%configuration.svn.commitMessageGeneration.mode.template.description%"
+                    ],
+                    "description": "%configuration.svn.commitMessageGeneration.mode.description%",
+                    "default": "auto"
+                },
+                "svn.commitMessageGeneration.preferredVendor": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "%configuration.svn.commitMessageGeneration.preferredVendor.description%",
+                    "default": null
+                },
+                "svn.commitMessageGeneration.preferredModelFamily": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "%configuration.svn.commitMessageGeneration.preferredModelFamily.description%",
+                    "default": null
+                },
+                "svn.commitMessageGeneration.preferredModelVersion": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "%configuration.svn.commitMessageGeneration.preferredModelVersion.description%",
+                    "default": "raptor-mini"
+                },
+                "svn.commitMessageGeneration.outputLanguage": {
+                    "type": "string",
+                    "enum": [
+                        "auto",
+                        "en",
+                        "zh-TW"
+                    ],
+                    "markdownEnumDescriptions": [
+                        "%configuration.svn.commitMessageGeneration.outputLanguage.auto.description%",
+                        "%configuration.svn.commitMessageGeneration.outputLanguage.en.description%",
+                        "%configuration.svn.commitMessageGeneration.outputLanguage.zhTW.description%"
+                    ],
+                    "description": "%configuration.svn.commitMessageGeneration.outputLanguage.description%",
+                    "default": "auto"
+                },
+                "svn.commitMessageGeneration.includeDiff": {
+                    "type": "boolean",
+                    "description": "%configuration.svn.commitMessageGeneration.includeDiff.description%",
+                    "default": true
+                },
+                "svn.commitMessageGeneration.maxDiffCharacters": {
+                    "type": "number",
+                    "minimum": 1000,
+                    "description": "%configuration.svn.commitMessageGeneration.maxDiffCharacters.description%",
+                    "default": 12000
                 },
                 "svn.conflicts.autoResolve": {
                     "type": "boolean",
