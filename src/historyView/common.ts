@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import * as path from "path";
-import * as dayjs from "dayjs";
-import * as relativeTime from "dayjs/plugin/relativeTime";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import {
   commands,
   env,
@@ -222,13 +222,13 @@ export function getCommitIcon(
     return gravatar;
   }
 
-  const gravitarUrl = configuration
+  const gravatarUrl = configuration
     .get("gravatar.icon_url", "")
     .replace("<AUTHOR>", author)
     .replace("<AUTHOR_MD5>", md5(author))
     .replace("<SIZE>", size.toString());
 
-  gravatar = Uri.parse(gravitarUrl);
+  gravatar = Uri.parse(gravatarUrl);
 
   gravatarCache.set(author, gravatar);
 

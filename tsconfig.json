@@ -4,6 +4,8 @@
     "module": "commonjs",
     "rootDir": "./src",
     "outDir": "./out",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "typeRoots": ["./node_modules/@types"],
     "sourceMap": true,
     "experimentalDecorators": true,
