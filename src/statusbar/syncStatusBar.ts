@@ -1,4 +1,4 @@
-import { Command, Disposable, Event, EventEmitter } from "vscode";
+import { Command, Disposable, Event, EventEmitter, l10n } from "vscode";
 import { Operation } from "../common/types";
 import { Repository } from "../repository";
 
@@ -84,35 +84,35 @@ export class SyncStatusBar {
       command = "";
       icon = "$(sync~spin)";
       text = "";
-      tooltip = "Updating Revision...";
+      tooltip = l10n.t("Updating Revision...");
     } else if (this.state.isStatusRemoteRunning) {
       command = "";
       icon = "$(sync~spin)";
       text = "";
-      tooltip = "Checking remote updates...";
+      tooltip = l10n.t("Checking remote updates...");
     } else if (this.state.isOperationRunning) {
       command = "";
       icon = "$(sync~spin)";
       text = "Running";
-      tooltip = "Running...";
+      tooltip = l10n.t("Running...");
     } else if (this.state.needCleanUp) {
       command = "svn.cleanup";
       icon = "$(alert)";
       text = "Need cleanup";
-      tooltip = "Run cleanup command";
+      tooltip = l10n.t("Run cleanup command");
     } else if (this.state.isIncomplete) {
       command = "svn.finishCheckout";
       icon = "$(issue-reopened)";
       text = "Incomplete (Need finish checkout)";
-      tooltip = "Run update to complete";
+      tooltip = l10n.t("Run update to complete");
     } else if (this.state.remoteChangedFiles > 0) {
       icon = "$(cloud-download)";
       command = "svn.update";
-      tooltip = "Update Revision";
+      tooltip = l10n.t("Update Revision");
       text = `${this.state.remoteChangedFiles}↓`;
     } else {
       command = "svn.update";
-      tooltip = "Update Revision";
+      tooltip = l10n.t("Update Revision");
     }
 
     return {
