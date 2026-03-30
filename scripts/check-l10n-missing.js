@@ -94,39 +94,37 @@
     ...collectManifestKeys(packageManifest)
   ].sort((left, right) => left.localeCompare(right));
 
-  const bundleEn = readJson("l10n/bundle.l10n.json");
-  const bundleZhTw = readJson("l10n/bundle.l10n.zh-tw.json");
-  const packageEn = readJson("package.nls.json");
-  const packageZhTw = readJson("package.nls.zh-tw.json");
+  const locales = [
+    { id: "en", suffix: "", label: "English" },
+    { id: "zh-cn", suffix: ".zh-cn", label: "Simplified Chinese" },
+    { id: "zh-tw", suffix: ".zh-tw", label: "Traditional Chinese" },
+    { id: "ko", suffix: ".ko", label: "Korean" },
+    { id: "ja", suffix: ".ja", label: "Japanese" }
+  ];
 
-  const runtimeMissingEn = diffKeys(runtimeKeys, bundleEn);
-  const runtimeMissingZhTw = diffKeys(runtimeKeys, bundleZhTw);
-  const manifestMissingEn = diffKeys(manifestKeys, packageEn);
-  const manifestMissingZhTw = diffKeys(manifestKeys, packageZhTw);
+  const missingSections = locales.flatMap(locale => {
+    const bundlePath = `l10n/bundle.l10n${locale.suffix}.json`;
+    const packagePath = `package.nls${locale.suffix}.json`;
+    const runtimeMissing = diffKeys(runtimeKeys, readJson(bundlePath));
+    const manifestMissing = diffKeys(manifestKeys, readJson(packagePath));
 
-  printSection(
-    "Runtime keys missing from l10n/bundle.l10n.json",
-    runtimeMissingEn
-  );
-  printSection(
-    "Runtime keys missing from l10n/bundle.l10n.zh-tw.json",
-    runtimeMissingZhTw
-  );
-  printSection(
-    "Manifest keys missing from package.nls.json",
-    manifestMissingEn
-  );
-  printSection(
-    "Manifest keys missing from package.nls.zh-tw.json",
-    manifestMissingZhTw
-  );
+    return [
+      {
+        title: `Runtime keys missing from ${bundlePath}`,
+        keys: runtimeMissing
+      },
+      {
+        title: `Manifest keys missing from ${packagePath}`,
+        keys: manifestMissing
+      }
+    ];
+  });
 
-  if (
-    runtimeMissingEn.length > 0 ||
-    runtimeMissingZhTw.length > 0 ||
-    manifestMissingEn.length > 0 ||
-    manifestMissingZhTw.length > 0
-  ) {
+  for (const section of missingSections) {
+    printSection(section.title, section.keys);
+  }
+
+  if (missingSections.some(section => section.keys.length > 0)) {
     process.exitCode = 1;
   }
 })().catch(error => {

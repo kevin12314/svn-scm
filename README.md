@@ -103,7 +103,7 @@ Here are all of the extension settings with their default values. To change any 
   "svn.commitMessageGeneration.preferredModelVersion": "raptor-mini",
 
   // Controls the language used for generated commit messages.
-  "svn.commitMessageGeneration.outputLanguage": "auto",  // values: ["auto","en","zh-TW"],
+  "svn.commitMessageGeneration.outputLanguage": "auto",  // values: ["auto","en","ko","ja","zh-CN","zh-TW"],
 
   // Include unified diff content in the AI prompt when generating commit messages.
   "svn.commitMessageGeneration.includeDiff": true,

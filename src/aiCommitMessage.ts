@@ -56,16 +56,39 @@ function getOutputLanguageInstruction(): string {
     "commitMessageGeneration.outputLanguage",
     "auto"
   );
+  const editorLanguage = vscode.env.language.toLowerCase();
 
   switch (language) {
     case "en":
       return vscode.l10n.t("Write the commit message in English.");
+    case "ko":
+      return vscode.l10n.t("Write the commit message in Korean.");
+    case "ja":
+      return vscode.l10n.t("Write the commit message in Japanese.");
+    case "zh-CN":
+      return vscode.l10n.t("Write the commit message in Simplified Chinese.");
     case "zh-TW":
       return vscode.l10n.t("Write the commit message in Traditional Chinese.");
     default:
-      return vscode.env.language.toLowerCase() === "zh-tw"
-        ? vscode.l10n.t("Write the commit message in Traditional Chinese.")
-        : vscode.l10n.t("Write the commit message in English.");
+      if (editorLanguage === "ko" || editorLanguage.startsWith("ko-")) {
+        return vscode.l10n.t("Write the commit message in Korean.");
+      }
+
+      if (editorLanguage === "ja" || editorLanguage.startsWith("ja-")) {
+        return vscode.l10n.t("Write the commit message in Japanese.");
+      }
+
+      if (editorLanguage === "zh-tw" || editorLanguage.startsWith("zh-hant")) {
+        return vscode.l10n.t(
+          "Write the commit message in Traditional Chinese."
+        );
+      }
+
+      if (editorLanguage === "zh-cn" || editorLanguage.startsWith("zh-hans")) {
+        return vscode.l10n.t("Write the commit message in Simplified Chinese.");
+      }
+
+      return vscode.l10n.t("Write the commit message in English.");
   }
 }
 

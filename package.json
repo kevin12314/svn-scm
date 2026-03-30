@@ -1174,11 +1174,17 @@
                     "enum": [
                         "auto",
                         "en",
+                        "ko",
+                        "ja",
+                        "zh-CN",
                         "zh-TW"
                     ],
                     "markdownEnumDescriptions": [
                         "%configuration.svn.commitMessageGeneration.outputLanguage.auto.description%",
                         "%configuration.svn.commitMessageGeneration.outputLanguage.en.description%",
+                        "%configuration.svn.commitMessageGeneration.outputLanguage.ko.description%",
+                        "%configuration.svn.commitMessageGeneration.outputLanguage.ja.description%",
+                        "%configuration.svn.commitMessageGeneration.outputLanguage.zhCN.description%",
                         "%configuration.svn.commitMessageGeneration.outputLanguage.zhTW.description%"
                     ],
                     "description": "%configuration.svn.commitMessageGeneration.outputLanguage.description%",
