@@ -31,6 +31,11 @@ export interface ISvnInfo {
   revision: string;
   url: string;
   relativeUrl: string;
+  conflict?: {
+    curBaseFile?: string;
+    prevBaseFile?: string;
+    prevWcFile?: string;
+  };
   repository: {
     root: string;
     uuid: string;

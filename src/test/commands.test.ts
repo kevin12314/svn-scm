@@ -3,9 +3,82 @@ import * as fs from "original-fs";
 import * as path from "path";
 import { commands, Uri, window, workspace } from "vscode";
 import { ISvnResourceGroup, Status } from "../common/types";
+import { Resource } from "../resource";
 import { SourceControlManager } from "../source_control_manager";
 import * as testUtil from "./testUtil";
 import { timeout } from "../util";
+
+function runSvn(
+  args: string[],
+  cwd: string,
+  allowedExitCodes: number[] = [0]
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const proc = testUtil.spawn("svn", args, { cwd });
+    let stderr = "";
+
+    proc.stderr?.on("data", data => {
+      stderr += data.toString();
+    });
+
+    proc.once("error", reject);
+    proc.once("exit", exitCode => {
+      if (typeof exitCode === "number" && allowedExitCodes.includes(exitCode)) {
+        resolve();
+        return;
+      }
+
+      reject(
+        new Error(
+          `svn ${args.join(" ")} failed with exit code ${String(exitCode)}${
+            stderr ? `: ${stderr}` : ""
+          }`
+        )
+      );
+    });
+  });
+}
+
+async function runStep(name: string, action: () => Promise<void>): Promise<void> {
+  try {
+    await action();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`${name}: ${message}`);
+  }
+}
+
+function runSvnCapture(args: string[], cwd: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const proc = testUtil.spawn("svn", args, { cwd });
+    let stdout = "";
+    let stderr = "";
+
+    proc.stdout?.on("data", data => {
+      stdout += data.toString();
+    });
+
+    proc.stderr?.on("data", data => {
+      stderr += data.toString();
+    });
+
+    proc.once("error", reject);
+    proc.once("exit", exitCode => {
+      if (exitCode === 0) {
+        resolve(stdout);
+        return;
+      }
+
+      reject(
+        new Error(
+          `svn ${args.join(" ")} failed with exit code ${String(exitCode)}${
+            stderr ? `: ${stderr}` : ""
+          }`
+        )
+      );
+    });
+  });
+}
 
 suite("Commands Tests", () => {
   let repoUri: Uri;
@@ -438,5 +511,68 @@ suite("Commands Tests", () => {
       infoMessages.some(message => message.includes("Successfully locked")),
       infoMessages.join("; ")
     );
+  });
+
+  test("Conflict Resource Uses Merge Editor Command", async function () {
+    this.timeout(120000);
+
+    const repository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
+      checkoutDir
+    );
+    const conflictFileName = `merge-editor-conflict-${Date.now()}.txt`;
+    const conflictFile = path.join(
+      checkoutDir.fsPath,
+      conflictFileName
+    );
+
+    await runStep("create base conflict file", async () => {
+      fs.writeFileSync(conflictFile, "base\n");
+    });
+    await runStep("add base conflict file", async () => {
+      await repository.addFiles([conflictFile]);
+    });
+    await runStep("commit base conflict file", async () => {
+      await repository.commitFiles("Add merge editor conflict fixture", [
+        conflictFile
+      ]);
+    });
+    await timeout(500);
+
+    const secondCheckoutDir = await testUtil.createRepoCheckout(
+      testUtil.getSvnUrl(repoUri) + "/trunk"
+    );
+    const secondConflictFile = path.join(
+      secondCheckoutDir.fsPath,
+      conflictFileName
+    );
+
+    await runStep("write remote conflicting change", async () => {
+      fs.writeFileSync(secondConflictFile, "incoming change\n");
+    });
+    await runStep("commit remote conflicting change", async () => {
+      await runSvn(
+        ["commit", "-m", "Remote conflicting change"],
+        secondCheckoutDir.fsPath
+      );
+    });
+    await timeout(500);
+
+    await runStep("write local conflicting change", async () => {
+      fs.writeFileSync(conflictFile, "local change\n");
+    });
+    await runStep("update to produce conflict", async () => {
+      await runSvn(["update"], checkoutDir.fsPath, [0, 1]);
+    });
+    const statusOutput = await runSvnCapture(["status"], checkoutDir.fsPath);
+    const conflictArtifacts = fs
+      .readdirSync(checkoutDir.fsPath)
+      .filter(entry => entry.startsWith(`${conflictFileName}.`));
+    const conflictResource = new Resource(Uri.file(conflictFile), Status.CONFLICTED);
+
+    assert.ok(statusOutput.includes(conflictFileName), statusOutput);
+    assert.ok(/(^|\r?\n)C\s+/.test(statusOutput), statusOutput);
+    assert.strictEqual(conflictResource.command.command, "svn.openMergeEditor");
+    assert.ok(conflictArtifacts.length >= 2, conflictArtifacts.join(", "));
   });
 });

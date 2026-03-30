@@ -209,6 +209,12 @@
                 "icon": "$(check)"
             },
             {
+                "command": "svn.completeMerge",
+                "title": "%commands.svn.completeMerge.title%",
+                "category": "%commands.category.svn%",
+                "icon": "$(pass-filled)"
+            },
+            {
                 "command": "svn.generateCommitMessage",
                 "title": "%commands.svn.generateCommitMessage.title%",
                 "category": "%commands.category.svn%",
@@ -302,6 +308,11 @@
             {
                 "command": "svn.openHEADFile",
                 "title": "%commands.svn.openHEADFile.title%",
+                "category": "%commands.category.svn%"
+            },
+            {
+                "command": "svn.openMergeEditor",
+                "title": "%commands.svn.openMergeEditor.title%",
                 "category": "%commands.category.svn%"
             },
             {
@@ -959,6 +970,16 @@
                     "group": "1_modification"
                 },
                 {
+                    "command": "svn.openMergeEditor",
+                    "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == conflicts",
+                    "group": "navigation"
+                },
+                {
+                    "command": "svn.completeMerge",
+                    "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == conflicts",
+                    "group": "navigation"
+                },
+                {
                     "command": "svn.changelist",
                     "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup != unversioned && scmResourceGroup != external && scmResourceGroup != conflicts && scmResourceGroup != remotechanges",
                     "group": "inline"
@@ -1016,6 +1037,11 @@
                 }
             ],
             "editor/title": [
+                {
+                    "command": "svn.completeMerge",
+                    "group": "navigation",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && isMergeEditor"
+                },
                 {
                     "command": "svn.openFile",
                     "group": "navigation",
