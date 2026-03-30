@@ -7,6 +7,7 @@
   "Open Diff With Base": "BASE との差分を開く",
   "Current": "現在",
   "Incoming": "受信",
+  "Local": "ローカル",
   "Working Copy": "作業コピー",
   "No SVN conflict inputs were found for \"{0}\".": "\"{0}\" の SVN 競合入力が見つかりませんでした。",
   "Unable to open Merge Editor for \"{0}\".": "\"{0}\" のマージ エディターを開けませんでした。",

@@ -242,7 +242,7 @@ export abstract class Command implements Disposable {
   ): Promise<void> {
     let left = await this.getLeftResource(resource, against);
     let right = this.getRightResource(resource, against);
-    const title = this.getTitle(resource, against);
+    const title = await this.getTitleWithAuthor(resource, against);
 
     if (resource.remote && left) {
       [left, right] = [right, left];
@@ -384,6 +384,59 @@ export abstract class Command implements Disposable {
     }
 
     return "";
+  }
+
+  private async getTitleWithAuthor(
+    resource: Resource,
+    against?: string
+  ): Promise<string> {
+    const baseTitle = this.getTitle(resource, against);
+
+    if (!against) {
+      return baseTitle;
+    }
+
+    try {
+      const sourceControlManager = (await commands.executeCommand(
+        "svn.getSourceControlManager",
+        ""
+      )) as SourceControlManager;
+      const repository = sourceControlManager.getRepository(
+        resource.resourceUri
+      );
+      if (!repository) {
+        return baseTitle;
+      }
+
+      const info = await repository.getInfo(
+        resource.resourceUri.fsPath,
+        against
+      );
+      const author = info?.commit?.author;
+
+      const againstLabel = author ? `${against} - ${author}` : against;
+
+      // Remove any existing parenthetical suffix to rebuild with clearer semantics
+      const core =
+        baseTitle.replace(/\s*\([^)]*\)\s*$/, "") ||
+        path.basename(resource.resourceUri.fsPath);
+
+      if (resource.remote) {
+        // Remote change: Keep classic style "(HEAD - author)"
+        if (baseTitle.includes(`(${against})`)) {
+          return baseTitle.replace(`(${against})`, `(${againstLabel})`);
+        }
+        return `${core} (${againstLabel})`;
+      }
+
+      // Local working copy compared against AGAINST
+      return `${core} (${againstLabel} vs ${l10n.t("Local")})`;
+    } catch (err) {
+      // Swallow errors and fall back to base title
+      console.debug(err);
+    }
+
+    return baseTitle;
   }
 
   protected async openChange(

@@ -39,7 +39,10 @@ function runSvn(
   });
 }
 
-async function runStep(name: string, action: () => Promise<void>): Promise<void> {
+async function runStep(
+  name: string,
+  action: () => Promise<void>
+): Promise<void> {
   try {
     await action();
   } catch (error) {
@@ -521,10 +524,7 @@ suite("Commands Tests", () => {
       checkoutDir
     );
     const conflictFileName = `merge-editor-conflict-${Date.now()}.txt`;
-    const conflictFile = path.join(
-      checkoutDir.fsPath,
-      conflictFileName
-    );
+    const conflictFile = path.join(checkoutDir.fsPath, conflictFileName);
 
     await runStep("create base conflict file", async () => {
       fs.writeFileSync(conflictFile, "base\n");
@@ -568,7 +568,10 @@ suite("Commands Tests", () => {
     const conflictArtifacts = fs
       .readdirSync(checkoutDir.fsPath)
       .filter(entry => entry.startsWith(`${conflictFileName}.`));
-    const conflictResource = new Resource(Uri.file(conflictFile), Status.CONFLICTED);
+    const conflictResource = new Resource(
+      Uri.file(conflictFile),
+      Status.CONFLICTED
+    );
 
     assert.ok(statusOutput.includes(conflictFileName), statusOutput);
     assert.ok(/(^|\r?\n)C\s+/.test(statusOutput), statusOutput);

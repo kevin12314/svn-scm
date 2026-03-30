@@ -143,22 +143,23 @@ export class Resource implements SourceControlResourceState {
   }
 
   private get tooltip(): string {
+    let tip: string;
     if (this.type === Status.ADDED && this.renameResourceUri) {
-      return l10n.t("Renamed from {0}", this.renameResourceUri.fsPath);
-    }
-
-    if (
+      tip = l10n.t("Renamed from {0}", this.renameResourceUri.fsPath);
+    } else if (
       this.type === Status.NORMAL &&
       this.props &&
       this.props !== PropStatus.NONE
     ) {
-      return l10n.t(
+      tip = l10n.t(
         "Property {0}",
         this.props.charAt(0).toUpperCase() + this.props.slice(1)
       );
+    } else {
+      tip = this.type.charAt(0).toUpperCase() + this.type.slice(1);
     }
 
-    return this.type.charAt(0).toUpperCase() + this.type.slice(1);
+    return tip;
   }
 
   private get strikeThrough(): boolean {

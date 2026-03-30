@@ -7,6 +7,7 @@
   "Open Diff With Base": "与 BASE 比较差异",
   "Current": "当前版本",
   "Incoming": "传入版本",
+  "Local": "本地",
   "Working Copy": "工作副本",
   "No SVN conflict inputs were found for \"{0}\".": "找不到 \"{0}\" 的 SVN 冲突输入文件。",
   "Unable to open Merge Editor for \"{0}\".": "无法为 \"{0}\" 打开合并编辑器。",

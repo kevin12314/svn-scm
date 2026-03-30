@@ -7,6 +7,7 @@
   "Open Diff With Base": "Open Diff With Base",
   "Current": "Current",
   "Incoming": "Incoming",
+  "Local": "Local",
   "Working Copy": "Working Copy",
   "No SVN conflict inputs were found for \"{0}\".": "No SVN conflict inputs were found for \"{0}\".",
   "Unable to open Merge Editor for \"{0}\".": "Unable to open Merge Editor for \"{0}\".",
