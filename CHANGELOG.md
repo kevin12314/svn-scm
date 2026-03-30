@@ -1,3 +1,22 @@
+# [3.4.0](https://github.com/JohnstonCode/svn-scm/compare/v3.3.0...v3.4.0) (2026-03-30)
+
+
+### Features
+
+* add a 3-way merge editor workflow for conflict resolution and merge completion
+* add a command to copy commit details including revision, author, date, message, and changed paths
+* add Korean and Japanese localization support and improve AI commit message generation guidance
+
+### Bug Fixes
+
+* refine localized revision update and remote check prompt messages
+* fix workflow badge links and TypeScript rootDir configuration
+
+### Maintenance
+
+* update README guidance for AI-assisted commit message generation
+* refresh TypeScript project settings and dependency versions
+
 # [3.3.0](https://github.com/JohnstonCode/svn-scm/compare/v3.2.0...v3.3.0) (2026-03-26)
 
 
