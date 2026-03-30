@@ -95,6 +95,10 @@ export class RepoLogProvider
         async (item: ILogTreeItem) => copyCommitToClipboard("msg", item)
       ),
       commands.registerCommand(
+        "svn.repolog.copydetails",
+        async (item: ILogTreeItem) => copyCommitToClipboard("details", item)
+      ),
+      commands.registerCommand(
         "svn.repolog.copyrevision",
         async (item: ILogTreeItem) => copyCommitToClipboard("revision", item)
       ),

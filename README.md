@@ -62,6 +62,15 @@ You can checkout a SVN repository with the `SVN: Checkout` command in the **Comm
 * Copy file permalinks
 * Lock files
 
+### History Views
+
+Use the **File History** and **Repositories** views to inspect SVN log entries directly in the sidebar. From each commit entry you can:
+
+* Open the revision or diff
+* Copy the commit message
+* Copy the revision number
+* Copy detailed commit information, including revision, author, date, message, and changed paths
+
 ## Blame
 
 Please use a dedicated extension like [blamer-vs](https://marketplace.visualstudio.com/items?itemName=beaugust.blamer-vs)

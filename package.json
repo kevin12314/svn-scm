@@ -231,6 +231,11 @@
                 "title": "%commands.svn.itemlog.copymsg.title%"
             },
             {
+                "command": "svn.itemlog.copydetails",
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.itemlog.copydetails.title%"
+            },
+            {
                 "command": "svn.itemlog.copyrevision",
                 "category": "%commands.category.svn%",
                 "title": "%commands.svn.itemlog.copyrevision.title%"
@@ -387,6 +392,11 @@
                 "title": "%commands.svn.repolog.copymsg.title%"
             },
             {
+                "command": "svn.repolog.copydetails",
+                "category": "%commands.category.svn%",
+                "title": "%commands.svn.repolog.copydetails.title%"
+            },
+            {
                 "command": "svn.repolog.copyrevision",
                 "category": "%commands.category.svn%",
                 "title": "%commands.svn.repolog.copyrevision.title%"
@@ -541,6 +551,10 @@
                     "when": "false"
                 },
                 {
+                    "command": "svn.itemlog.copydetails",
+                    "when": "false"
+                },
+                {
                     "command": "svn.itemlog.copyrevision",
                     "when": "false"
                 },
@@ -646,6 +660,10 @@
                 },
                 {
                     "command": "svn.repolog.copymsg",
+                    "when": "false"
+                },
+                {
+                    "command": "svn.repolog.copydetails",
                     "when": "false"
                 },
                 {
@@ -798,6 +816,10 @@
                     "when": "view == itemlog && viewItem == diffable"
                 },
                 {
+                    "command": "svn.itemlog.copydetails",
+                    "when": "view == itemlog && viewItem == diffable"
+                },
+                {
                     "command": "svn.itemlog.copyrevision",
                     "when": "view == itemlog && viewItem == diffable"
                 },
@@ -819,6 +841,10 @@
                 },
                 {
                     "command": "svn.repolog.copymsg",
+                    "when": "view == repolog && viewItem == commit"
+                },
+                {
+                    "command": "svn.repolog.copydetails",
                     "when": "view == repolog && viewItem == commit"
                 },
                 {

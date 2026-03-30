@@ -94,8 +94,41 @@ export async function copyCommitToClipboard(what: string, item: ILogTreeItem) {
       case "msg":
       case "revision":
         await clipboard.writeText(commit[what]);
+        break;
+      case "details":
+        await clipboard.writeText(getDetailedCommitMessage(commit));
+        break;
     }
   }
+}
+
+export function getDetailedCommitMessage(commit: ISvnLogEntry): string {
+  const lines = [
+    l10n.t("Revision: {0}", `r${commit.revision}`),
+    l10n.t("Author: {0}", commit.author),
+    l10n.t("Date: {0}", getCommitDisplayDate(commit.date)),
+    "",
+    l10n.t("Message:"),
+    commit.msg
+  ];
+
+  if (commit.paths.length > 0) {
+    lines.push(
+      "",
+      l10n.t("Changed paths:"),
+      ...commit.paths.map(pathEntry => `- ${pathEntry.action} ${pathEntry._}`)
+    );
+  }
+
+  return lines.join("\n");
+}
+
+function getCommitDisplayDate(date: string): string {
+  if (!isNaN(Date.parse(date))) {
+    return new Date(date).toString();
+  }
+
+  return date;
 }
 
 function needFetch(
@@ -248,10 +281,7 @@ export function getCommitLabel(commit: ISvnLogEntry): string {
 }
 
 export function getCommitToolTip(commit: ISvnLogEntry): string {
-  let date = commit.date;
-  if (!isNaN(Date.parse(date))) {
-    date = new Date(date).toString();
-  }
+  const date = getCommitDisplayDate(commit.date);
   return `Author: ${commit.author}
 ${date}
 Revision: ${commit.revision}
