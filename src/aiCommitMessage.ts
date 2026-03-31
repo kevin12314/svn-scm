@@ -256,6 +256,52 @@ async function readResponseText(
   return text.trim();
 }
 
+function looksLikeReasoningLine(line: string): boolean {
+  const normalized = line.trim();
+
+  if (!normalized) {
+    return false;
+  }
+
+  if (/^\*\*[^*]+\*\*$/.test(normalized)) {
+    return true;
+  }
+
+  return /^(i|we)\s+(need to|should|will|want to|am|have to)\b/i.test(
+    normalized
+  );
+}
+
+function sanitizeCommitMessageResponse(text: string): string {
+  const normalized = text.replace(/\r\n/g, "\n").trim();
+
+  if (!normalized) {
+    return "";
+  }
+
+  const lines = normalized.split("\n");
+  let startIndex = 0;
+
+  while (startIndex < lines.length) {
+    const line = lines[startIndex].trim();
+
+    if (!line) {
+      startIndex += 1;
+      continue;
+    }
+
+    if (looksLikeReasoningLine(line)) {
+      startIndex += 1;
+      continue;
+    }
+
+    break;
+  }
+
+  const sanitized = lines.slice(startIndex).join("\n").trim();
+  return sanitized || normalized;
+}
+
 function buildPrompt(
   repository: Repository,
   resources: Resource[],
@@ -333,7 +379,9 @@ export async function generateAICommitMessage(
       undefined
     );
 
-    const message = await readResponseText(response);
+    const message = sanitizeCommitMessageResponse(
+      await readResponseText(response)
+    );
     if (!message) {
       return { reason: "error" };
     }
@@ -343,3 +391,7 @@ export async function generateAICommitMessage(
     return { reason: "error", error };
   }
 }
+
+export const __test__ = {
+  sanitizeCommitMessageResponse
+};

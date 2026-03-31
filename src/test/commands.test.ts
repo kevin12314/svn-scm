@@ -2,6 +2,7 @@ import * as assert from "assert";
 import * as fs from "original-fs";
 import * as path from "path";
 import { commands, Uri, window, workspace } from "vscode";
+import { __test__ as aiCommitMessageTest } from "../aiCommitMessage";
 import { ISvnResourceGroup, Status } from "../common/types";
 import { Resource } from "../resource";
 import { SourceControlManager } from "../source_control_manager";
@@ -130,6 +131,30 @@ suite("Commands Tests", () => {
     assert.equal(repository.changes.resourceStates.length, 0);
 
     const resource = repository.unversioned.resourceStates[0];
+
+  test("Sanitize AI Commit Message Reasoning", function () {
+    const response = [
+      "**Crafting SVN commit message**",
+      "",
+      "I need to create an SVN commit message in Traditional Chinese.",
+      "",
+      "**Creating commit message**",
+      "",
+      "I'm crafting a commit message for removing outdated entryComponents definitions.",
+      "移除 Angular 模組中過時的 entryComponents 定義",
+      "",
+      "已調整多個 chpac/platform module，刪除或註解 entryComponents 條目。"
+    ].join("\n");
+
+    assert.strictEqual(
+      aiCommitMessageTest.sanitizeCommitMessageResponse(response),
+      [
+        "移除 Angular 模組中過時的 entryComponents 定義",
+        "",
+        "已調整多個 chpac/platform module，刪除或註解 entryComponents 條目。"
+      ].join("\n")
+    );
+  });
 
     await commands.executeCommand("svn.add", resource);
 
