@@ -1277,6 +1277,12 @@
                     "description": "%configuration.svn.commitMessageGeneration.openAICompatible.apiType.description%",
                     "default": "auto"
                 },
+                "svn.commitMessageGeneration.openAICompatible.apiKeyManagement": {
+                    "type": "string",
+                    "markdownDescription": "%configuration.svn.commitMessageGeneration.openAICompatible.apiKeyManagement.description%",
+                    "default": "",
+                    "scope": "application"
+                },
                 "svn.commitMessageGeneration.openAICompatible.organization": {
                     "type": [
                         "string",
@@ -1320,6 +1326,12 @@
                     ],
                     "description": "%configuration.svn.commitMessageGeneration.azureOpenAI.apiType.description%",
                     "default": "chat-completions"
+                },
+                "svn.commitMessageGeneration.azureOpenAI.apiKeyManagement": {
+                    "type": "string",
+                    "markdownDescription": "%configuration.svn.commitMessageGeneration.azureOpenAI.apiKeyManagement.description%",
+                    "default": "",
+                    "scope": "application"
                 },
                 "svn.conflicts.autoResolve": {
                     "type": "boolean",

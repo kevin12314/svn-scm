@@ -123,6 +123,9 @@ Here are all of the extension settings with their default values. To change any 
   // Controls which OpenAI-compatible endpoint is used.
   "svn.commitMessageGeneration.openAICompatible.apiType": "auto",  // values: ["auto","responses","chat-completions"],
 
+  // API keys are stored in VS Code Secret Storage. Use the Set/Check/Clear API Key commands instead of settings.json.
+  "svn.commitMessageGeneration.openAICompatible.apiKeyManagement": "",
+
   // Timeout in milliseconds for AI commit message generation requests.
   "svn.commitMessageGeneration.timeout": 30000,
 
@@ -143,6 +146,9 @@ Here are all of the extension settings with their default values. To change any 
 
   // Controls which Azure OpenAI endpoint is used.
   "svn.commitMessageGeneration.azureOpenAI.apiType": "chat-completions",  // values: ["responses","chat-completions"],
+
+  // API keys are stored in VS Code Secret Storage. Use the Set/Check/Clear API Key commands instead of settings.json.
+  "svn.commitMessageGeneration.azureOpenAI.apiKeyManagement": "",
 
   // Set file to status resolved after fix conflicts
   "svn.conflicts.autoResolve": null,
