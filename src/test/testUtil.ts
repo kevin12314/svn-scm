@@ -199,9 +199,9 @@ export function activeExtension() {
 }
 
 export async function getSourceControlManager(): Promise<SourceControlManager> {
-  const extension = extensions.getExtension(
-    "johnstoncode.svn-scm"
-  ) as { isActive: boolean; activate(): Thenable<SvnExtensionApi> } | undefined;
+  const extension = extensions.getExtension("johnstoncode.svn-scm") as
+    | { isActive: boolean; activate(): Thenable<SvnExtensionApi> }
+    | undefined;
 
   if (!extension) {
     throw new Error("Extension not found");

@@ -9,7 +9,9 @@ export class SetAzureOpenAIApiKey extends Command {
 
   public async execute() {
     const apiKey = await window.showInputBox({
-      prompt: l10n.t("Enter the API key for the Azure OpenAI commit message provider."),
+      prompt: l10n.t(
+        "Enter the API key for the Azure OpenAI commit message provider."
+      ),
       password: true,
       ignoreFocusOut: true
     });
