@@ -2,7 +2,7 @@ import * as assert from "assert";
 import * as fs from "original-fs";
 import * as path from "path";
 import { commands, Uri, window, workspace } from "vscode";
-import { __test__ as aiCommitMessageTest } from "../aiCommitMessage";
+import { __test__ as aiCommitMessageTest } from "../aiCommitMessageService";
 import { ISvnResourceGroup, Status } from "../common/types";
 import { Resource } from "../resource";
 import { SourceControlManager } from "../source_control_manager";
@@ -84,6 +84,15 @@ function runSvnCapture(args: string[], cwd: string): Promise<string> {
   });
 }
 
+function createJsonResponse(status: number, payload?: unknown): Response {
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    text: async () =>
+      typeof payload === "undefined" ? "" : JSON.stringify(payload)
+  } as Response;
+}
+
 suite("Commands Tests", () => {
   let repoUri: Uri;
   let checkoutDir: Uri;
@@ -98,10 +107,7 @@ suite("Commands Tests", () => {
       testUtil.getSvnUrl(repoUri) + "/trunk"
     );
 
-    sourceControlManager = (await commands.executeCommand(
-      "svn.getSourceControlManager",
-      checkoutDir
-    )) as SourceControlManager;
+    sourceControlManager = await testUtil.getSourceControlManager();
 
     await sourceControlManager.tryOpenRepository(checkoutDir.fsPath);
   });
@@ -132,6 +138,12 @@ suite("Commands Tests", () => {
 
     const resource = repository.unversioned.resourceStates[0];
 
+    await commands.executeCommand("svn.add", resource);
+
+    assert.equal(repository.unversioned.resourceStates.length, 0);
+    assert.equal(repository.changes.resourceStates.length, 1);
+  });
+
   test("Sanitize AI Commit Message Reasoning", function () {
     const response = [
       "**Crafting SVN commit message**",
@@ -156,10 +168,98 @@ suite("Commands Tests", () => {
     );
   });
 
-    await commands.executeCommand("svn.add", resource);
+  test("OpenAI Provider Returns Missing API Key For 401 Without Secret", async function () {
+    const result = await aiCommitMessageTest.generateOpenAICompatibleCommitMessageForTests(
+      "prompt",
+      {
+        baseUrl: "https://example.test/v1",
+        model: "gpt-test",
+        apiType: "responses",
+        fetchFn: async () => createJsonResponse(200, { output_text: "unused" })
+      }
+    );
 
-    assert.equal(repository.unversioned.resourceStates.length, 0);
-    assert.equal(repository.changes.resourceStates.length, 1);
+    assert.strictEqual(result.reason, "missing-api-key");
+  });
+
+  test("OpenAI Provider Returns Http Error For 429", async function () {
+    const result = await aiCommitMessageTest.generateOpenAICompatibleCommitMessageForTests(
+      "prompt",
+      {
+        apiKey: "test-key",
+        baseUrl: "https://example.test/v1",
+        model: "gpt-test",
+        apiType: "responses",
+        fetchFn: async () =>
+          createJsonResponse(429, {
+            error: {
+              message: "Rate limit exceeded"
+            }
+          })
+      }
+    );
+
+    assert.strictEqual(result.reason, "http-error");
+    assert.deepStrictEqual(result.error, {
+      error: {
+        message: "Rate limit exceeded"
+      }
+    });
+  });
+
+  test("OpenAI Provider Returns Error For Empty Response Body", async function () {
+    const result = await aiCommitMessageTest.generateOpenAICompatibleCommitMessageForTests(
+      "prompt",
+      {
+        apiKey: "test-key",
+        baseUrl: "https://example.test/v1",
+        model: "gpt-test",
+        apiType: "responses",
+        fetchFn: async () => createJsonResponse(200)
+      }
+    );
+
+    assert.strictEqual(result.reason, "error");
+  });
+
+  test("OpenAI Provider Falls Back From Responses To Chat Completions", async function () {
+    const requestedPaths: string[] = [];
+    const result = await aiCommitMessageTest.generateOpenAICompatibleFallbackCommitMessageForTests(
+      "prompt",
+      {
+        apiKey: "test-key",
+        baseUrl: "https://example.test/v1",
+        model: "gpt-test",
+        fetchFn: async (input: RequestInfo | URL) => {
+          const url = String(input);
+          requestedPaths.push(new URL(url, "https://example.test").pathname);
+
+          if (url.endsWith("/responses")) {
+            return createJsonResponse(429, {
+              error: {
+                message: "Rate limit exceeded"
+              }
+            });
+          }
+
+          return createJsonResponse(200, {
+            choices: [
+              {
+                message: {
+                  content: "**Creating commit message**\n\nUpdate fallback path"
+                }
+              }
+            ]
+          });
+        }
+      }
+    );
+
+    assert.deepStrictEqual(requestedPaths, [
+      "/v1/responses",
+      "/v1/chat/completions"
+    ]);
+    assert.strictEqual(result.message, "Update fallback path");
   });
 
   test("Commit Single File", async function () {

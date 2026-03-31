@@ -51,6 +51,12 @@ import { SearchLogByRevision } from "./commands/search_log_by_revision";
 import { SearchLogByText } from "./commands/search_log_by_text";
 import { Merge } from "./commands/merge";
 import { CopyPermalink } from "./commands/copyPermalink";
+import { SetOpenAICompatibleApiKey } from "./commands/setOpenAICompatibleApiKey";
+import { ClearOpenAICompatibleApiKey } from "./commands/clearOpenAICompatibleApiKey";
+import { CheckOpenAICompatibleApiKey } from "./commands/checkOpenAICompatibleApiKey";
+import { SetAzureOpenAIApiKey } from "./commands/setAzureOpenAIApiKey";
+import { ClearAzureOpenAIApiKey } from "./commands/clearAzureOpenAIApiKey";
+import { CheckAzureOpenAIApiKey } from "./commands/checkAzureOpenAIApiKey";
 
 export function registerCommands(
   sourceControlManager: SourceControlManager,
@@ -63,6 +69,12 @@ export function registerCommands(
   disposables.push(new CommitWithMessage());
   disposables.push(new CompleteMerge());
   disposables.push(new GenerateCommitMessage());
+  disposables.push(new SetOpenAICompatibleApiKey());
+  disposables.push(new ClearOpenAICompatibleApiKey());
+  disposables.push(new CheckOpenAICompatibleApiKey());
+  disposables.push(new SetAzureOpenAIApiKey());
+  disposables.push(new ClearAzureOpenAIApiKey());
+  disposables.push(new CheckAzureOpenAIApiKey());
   disposables.push(new Add());
   disposables.push(new ChangeList());
   disposables.push(new Refresh());

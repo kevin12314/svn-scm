@@ -12,7 +12,7 @@
 
 # Info
 This project is a fork of [JohnstonCode's VS Code SVN Extension](https://github.com/JohnstonCode/svn-scm)
-with additional support for localized user-facing messages and AI-assisted commit message generation using GitHub Copilot.
+with additional support for localized user-facing messages and AI-assisted commit message generation using GitHub Copilot or OpenAI-compatible APIs.
 
 # Prerequisites
 
@@ -57,7 +57,7 @@ You can checkout a SVN repository with the `SVN: Checkout` command in the **Comm
 * Create patches
 * Diff changes
 * Commit changes/changelists
-* AI-assisted commit message generation from current changes using GitHub Copilot
+* AI-assisted commit message generation from current changes using GitHub Copilot or OpenAI-compatible APIs
 * See commit messages
 * Copy file permalinks
 * Lock files
@@ -93,14 +93,17 @@ Here are all of the extension settings with their default values. To change any 
   // Controls how commit messages are generated.
   "svn.commitMessageGeneration.mode": "auto",  // values: ["auto","ai","template"],
 
-  // Preferred language model vendor for AI commit message generation, for example 'copilot'. Leave empty to use automatic selection.
-  "svn.commitMessageGeneration.preferredVendor": null,
+  // Selects which AI provider is used for commit message generation.
+  "svn.commitMessageGeneration.provider": "vscode-lm",  // values: ["vscode-lm","openai-compatible","azure-openai"],
 
-  // Optional language model family for AI commit message generation, for example 'oswe-vscode'. Leave empty unless you need stricter model selection.
-  "svn.commitMessageGeneration.preferredModelFamily": null,
+  // Preferred vendor for the VS Code language model provider. Only used when provider = "vscode-lm".
+  "svn.commitMessageGeneration.vscodeLM.preferredVendor": null,
 
-  // Preferred language model version for AI commit message generation. Defaults to 'raptor-mini' so the extension tries that Copilot model first.
-  "svn.commitMessageGeneration.preferredModelVersion": "raptor-mini",
+  // Optional model family for the VS Code language model provider. Only used when provider = "vscode-lm".
+  "svn.commitMessageGeneration.vscodeLM.preferredModelFamily": null,
+
+  // Preferred model version for the VS Code language model provider. Only used when provider = "vscode-lm".
+  "svn.commitMessageGeneration.vscodeLM.preferredModelVersion": "raptor-mini",
 
   // Controls the language used for generated commit messages.
   "svn.commitMessageGeneration.outputLanguage": "auto",  // values: ["auto","en","ko","ja","zh-CN","zh-TW"],
@@ -110,6 +113,36 @@ Here are all of the extension settings with their default values. To change any 
 
   // Maximum number of diff characters to include in the AI prompt.
   "svn.commitMessageGeneration.maxDiffCharacters": 12000,
+
+  // Base URL for the OpenAI-compatible API, for example https://api.openai.com/v1 or a compatible gateway.
+  "svn.commitMessageGeneration.openAICompatible.baseUrl": "",
+
+  // Model name used for the OpenAI-compatible API.
+  "svn.commitMessageGeneration.openAICompatible.model": "",
+
+  // Controls which OpenAI-compatible endpoint is used.
+  "svn.commitMessageGeneration.openAICompatible.apiType": "auto",  // values: ["auto","responses","chat-completions"],
+
+  // Timeout in milliseconds for AI commit message generation requests.
+  "svn.commitMessageGeneration.timeout": 30000,
+
+  // Optional OpenAI-Organization header value for the OpenAI-compatible API.
+  "svn.commitMessageGeneration.openAICompatible.organization": null,
+
+  // Optional OpenAI-Project header value for the OpenAI-compatible API.
+  "svn.commitMessageGeneration.openAICompatible.project": null,
+
+  // Azure OpenAI resource endpoint, for example https://your-resource.openai.azure.com.
+  "svn.commitMessageGeneration.azureOpenAI.endpoint": "",
+
+  // Azure OpenAI deployment name used for commit message generation.
+  "svn.commitMessageGeneration.azureOpenAI.deployment": "",
+
+  // Azure OpenAI API version appended as the api-version query parameter.
+  "svn.commitMessageGeneration.azureOpenAI.apiVersion": "2024-10-21",
+
+  // Controls which Azure OpenAI endpoint is used.
+  "svn.commitMessageGeneration.azureOpenAI.apiType": "chat-completions",  // values: ["responses","chat-completions"],
 
   // Set file to status resolved after fix conflicts
   "svn.conflicts.autoResolve": null,
@@ -236,3 +269,26 @@ Here are all of the extension settings with their default values. To change any 
 }
 ```
 <!--end-settings-->
+
+## OpenAI-Compatible Commit Message Setup
+
+To use an OpenAI-compatible API for commit message generation:
+
+1. Set `svn.commitMessageGeneration.provider` to `openai-compatible`.
+2. Configure `svn.commitMessageGeneration.openAICompatible.baseUrl`.
+3. Configure `svn.commitMessageGeneration.openAICompatible.model`.
+4. Run the `SVN: Set OpenAI-Compatible API Key` command to store the API key in VS Code SecretStorage.
+
+The extension can use either the Responses API or Chat Completions API. In `auto` mode it tries Responses first and falls back to Chat Completions when needed.
+
+## Azure OpenAI Commit Message Setup
+
+To use Azure OpenAI for commit message generation:
+
+1. Set `svn.commitMessageGeneration.provider` to `azure-openai`.
+2. Configure `svn.commitMessageGeneration.azureOpenAI.endpoint`.
+3. Configure `svn.commitMessageGeneration.azureOpenAI.deployment`.
+4. Optionally adjust `svn.commitMessageGeneration.azureOpenAI.apiVersion` and `svn.commitMessageGeneration.azureOpenAI.apiType`.
+5. Run the `SVN: Set Azure OpenAI API Key` command to store the API key in VS Code SecretStorage.
+
+This provider is separate from the generic OpenAI-compatible mode so Azure-specific URL structure and `api-version` handling do not need to be forced into the generic provider.

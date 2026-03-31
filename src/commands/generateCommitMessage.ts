@@ -2,7 +2,7 @@ import { l10n, ProgressLocation, window } from "vscode";
 import {
   generateAICommitMessage,
   getCommitMessageGenerationMode
-} from "../aiCommitMessage";
+} from "../aiCommitMessageService";
 import {
   generateCommitMessage,
   getCommitMessageResources
@@ -78,6 +78,10 @@ export class GenerateCommitMessage extends Command {
             ? l10n.t(
                 "No language model is currently available for AI commit message generation."
               )
+            : aiResult.reason === "missing-api-key"
+            ? l10n.t("OpenAI-compatible API key is not configured.")
+            : aiResult.reason === "http-error"
+            ? l10n.t("OpenAI-compatible API request failed.")
             : l10n.t("AI commit message generation failed."),
           useTemplate
         );
@@ -96,6 +100,14 @@ export class GenerateCommitMessage extends Command {
             ? l10n.t("AI unavailable, used template commit message.")
             : aiResult.reason === "no-model"
             ? l10n.t("No AI model found, used template commit message.")
+            : aiResult.reason === "missing-api-key"
+            ? l10n.t(
+                "AI provider API key missing, used template commit message."
+              )
+            : aiResult.reason === "http-error"
+            ? l10n.t(
+                "AI provider API request failed, used template commit message."
+              )
             : l10n.t("AI generation failed, used template commit message."),
           3000
         );

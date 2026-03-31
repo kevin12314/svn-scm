@@ -9,6 +9,7 @@ import {
   window
 } from "vscode";
 import { registerCommands } from "./commands";
+import { setCommitMessageSecretStorage } from "./aiCommitMessageService";
 import { ConstructorPolicy } from "./common/types";
 import { CheckActiveEditor } from "./contexts/checkActiveEditor";
 import { OpenRepositoryCount } from "./contexts/openRepositoryCount";
@@ -27,6 +28,12 @@ import { IsSvn18orGreater } from "./contexts/isSvn18orGreater";
 import { tempSvnFs } from "./temp_svn_fs";
 import { SvnFileSystemProvider } from "./svnFileSystemProvider";
 
+let sourceControlManagerReady: Promise<SourceControlManager> | undefined;
+
+export interface SvnExtensionApi {
+  getSourceControlManager(): Promise<SourceControlManager>;
+}
+
 function getErrorMessage(err: unknown): string {
   if (err instanceof Error) {
     return err.message;
@@ -39,7 +46,7 @@ async function init(
   extensionContext: ExtensionContext,
   outputChannel: OutputChannel,
   disposables: Disposable[]
-) {
+): Promise<SourceControlManager> {
   const pathHint = configuration.get<string>("path");
   const svnFinder = new SvnFinder();
 
@@ -75,9 +82,13 @@ async function init(
     toDisposable(() => svn.onOutput.removeListener("log", onOutput))
   );
   disposables.push(toDisposable(messages.dispose));
+
+  return sourceControlManager;
 }
 
 async function _activate(context: ExtensionContext, disposables: Disposable[]) {
+  setCommitMessageSecretStorage(context.secrets);
+
   const outputChannel = window.createOutputChannel(l10n.t("SVN"));
   commands.registerCommand("svn.showOutput", () => outputChannel.show());
   disposables.push(outputChannel);
@@ -90,7 +101,8 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
 
   const tryInit = async () => {
     try {
-      await init(context, outputChannel, disposables);
+      sourceControlManagerReady = init(context, outputChannel, disposables);
+      await sourceControlManagerReady;
     } catch (err) {
       const errorMessage = getErrorMessage(err);
 
@@ -162,13 +174,29 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
   await tryInit();
 }
 
-export async function activate(context: ExtensionContext) {
+export async function activate(
+  context: ExtensionContext
+): Promise<SvnExtensionApi> {
   const disposables: Disposable[] = [];
   context.subscriptions.push(
     new Disposable(() => Disposable.from(...disposables).dispose())
   );
 
-  await _activate(context, disposables).catch(err => console.error(err));
+  const activationReady = _activate(context, disposables).catch(err => {
+    console.error(err);
+  });
+
+  await activationReady;
+
+  return {
+    async getSourceControlManager(): Promise<SourceControlManager> {
+      if (!sourceControlManagerReady) {
+        throw new Error("Source control manager is not initialized.");
+      }
+
+      return sourceControlManagerReady;
+    }
+  };
 }
 
 // this method is called when your extension is deactivated

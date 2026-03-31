@@ -221,6 +221,36 @@
                 "icon": "$(sparkle)"
             },
             {
+                "command": "svn.setOpenAICompatibleApiKey",
+                "title": "%commands.svn.setOpenAICompatibleApiKey.title%",
+                "category": "%commands.category.svn%"
+            },
+            {
+                "command": "svn.clearOpenAICompatibleApiKey",
+                "title": "%commands.svn.clearOpenAICompatibleApiKey.title%",
+                "category": "%commands.category.svn%"
+            },
+            {
+                "command": "svn.checkOpenAICompatibleApiKey",
+                "title": "%commands.svn.checkOpenAICompatibleApiKey.title%",
+                "category": "%commands.category.svn%"
+            },
+            {
+                "command": "svn.setAzureOpenAIApiKey",
+                "title": "%commands.svn.setAzureOpenAIApiKey.title%",
+                "category": "%commands.category.svn%"
+            },
+            {
+                "command": "svn.clearAzureOpenAIApiKey",
+                "title": "%commands.svn.clearAzureOpenAIApiKey.title%",
+                "category": "%commands.category.svn%"
+            },
+            {
+                "command": "svn.checkAzureOpenAIApiKey",
+                "title": "%commands.svn.checkAzureOpenAIApiKey.title%",
+                "category": "%commands.category.svn%"
+            },
+            {
                 "command": "svn.deleteUnversioned",
                 "title": "%commands.svn.deleteUnversioned.title%",
                 "category": "%commands.category.svn%"
@@ -1145,28 +1175,43 @@
                     "description": "%configuration.svn.commitMessageGeneration.mode.description%",
                     "default": "auto"
                 },
-                "svn.commitMessageGeneration.preferredVendor": {
+                "svn.commitMessageGeneration.provider": {
+                    "type": "string",
+                    "enum": [
+                        "vscode-lm",
+                        "openai-compatible",
+                        "azure-openai"
+                    ],
+                    "markdownEnumDescriptions": [
+                        "%configuration.svn.commitMessageGeneration.provider.vscodeLM.description%",
+                        "%configuration.svn.commitMessageGeneration.provider.openAICompatible.description%",
+                        "%configuration.svn.commitMessageGeneration.provider.azureOpenAI.description%"
+                    ],
+                    "description": "%configuration.svn.commitMessageGeneration.provider.description%",
+                    "default": "vscode-lm"
+                },
+                "svn.commitMessageGeneration.vscodeLM.preferredVendor": {
                     "type": [
                         "string",
                         "null"
                     ],
-                    "description": "%configuration.svn.commitMessageGeneration.preferredVendor.description%",
+                    "description": "%configuration.svn.commitMessageGeneration.vscodeLM.preferredVendor.description%",
                     "default": null
                 },
-                "svn.commitMessageGeneration.preferredModelFamily": {
+                "svn.commitMessageGeneration.vscodeLM.preferredModelFamily": {
                     "type": [
                         "string",
                         "null"
                     ],
-                    "description": "%configuration.svn.commitMessageGeneration.preferredModelFamily.description%",
+                    "description": "%configuration.svn.commitMessageGeneration.vscodeLM.preferredModelFamily.description%",
                     "default": null
                 },
-                "svn.commitMessageGeneration.preferredModelVersion": {
+                "svn.commitMessageGeneration.vscodeLM.preferredModelVersion": {
                     "type": [
                         "string",
                         "null"
                     ],
-                    "description": "%configuration.svn.commitMessageGeneration.preferredModelVersion.description%",
+                    "description": "%configuration.svn.commitMessageGeneration.vscodeLM.preferredModelVersion.description%",
                     "default": "raptor-mini"
                 },
                 "svn.commitMessageGeneration.outputLanguage": {
@@ -1200,6 +1245,81 @@
                     "minimum": 1000,
                     "description": "%configuration.svn.commitMessageGeneration.maxDiffCharacters.description%",
                     "default": 12000
+                },
+                "svn.commitMessageGeneration.timeout": {
+                    "type": "number",
+                    "minimum": 1000,
+                    "description": "%configuration.svn.commitMessageGeneration.timeout.description%",
+                    "default": 30000
+                },
+                "svn.commitMessageGeneration.openAICompatible.baseUrl": {
+                    "type": "string",
+                    "description": "%configuration.svn.commitMessageGeneration.openAICompatible.baseUrl.description%",
+                    "default": ""
+                },
+                "svn.commitMessageGeneration.openAICompatible.model": {
+                    "type": "string",
+                    "description": "%configuration.svn.commitMessageGeneration.openAICompatible.model.description%",
+                    "default": ""
+                },
+                "svn.commitMessageGeneration.openAICompatible.apiType": {
+                    "type": "string",
+                    "enum": [
+                        "auto",
+                        "responses",
+                        "chat-completions"
+                    ],
+                    "markdownEnumDescriptions": [
+                        "%configuration.svn.commitMessageGeneration.openAICompatible.apiType.auto.description%",
+                        "%configuration.svn.commitMessageGeneration.openAICompatible.apiType.responses.description%",
+                        "%configuration.svn.commitMessageGeneration.openAICompatible.apiType.chatCompletions.description%"
+                    ],
+                    "description": "%configuration.svn.commitMessageGeneration.openAICompatible.apiType.description%",
+                    "default": "auto"
+                },
+                "svn.commitMessageGeneration.openAICompatible.organization": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "%configuration.svn.commitMessageGeneration.openAICompatible.organization.description%",
+                    "default": null
+                },
+                "svn.commitMessageGeneration.openAICompatible.project": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "%configuration.svn.commitMessageGeneration.openAICompatible.project.description%",
+                    "default": null
+                },
+                "svn.commitMessageGeneration.azureOpenAI.endpoint": {
+                    "type": "string",
+                    "description": "%configuration.svn.commitMessageGeneration.azureOpenAI.endpoint.description%",
+                    "default": ""
+                },
+                "svn.commitMessageGeneration.azureOpenAI.deployment": {
+                    "type": "string",
+                    "description": "%configuration.svn.commitMessageGeneration.azureOpenAI.deployment.description%",
+                    "default": ""
+                },
+                "svn.commitMessageGeneration.azureOpenAI.apiVersion": {
+                    "type": "string",
+                    "description": "%configuration.svn.commitMessageGeneration.azureOpenAI.apiVersion.description%",
+                    "default": "2024-10-21"
+                },
+                "svn.commitMessageGeneration.azureOpenAI.apiType": {
+                    "type": "string",
+                    "enum": [
+                        "responses",
+                        "chat-completions"
+                    ],
+                    "markdownEnumDescriptions": [
+                        "%configuration.svn.commitMessageGeneration.azureOpenAI.apiType.responses.description%",
+                        "%configuration.svn.commitMessageGeneration.azureOpenAI.apiType.chatCompletions.description%"
+                    ],
+                    "description": "%configuration.svn.commitMessageGeneration.azureOpenAI.apiType.description%",
+                    "default": "chat-completions"
                 },
                 "svn.conflicts.autoResolve": {
                     "type": "boolean",

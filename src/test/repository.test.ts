@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import * as fs from "original-fs";
 import * as path from "path";
-import { commands, Uri, window, workspace } from "vscode";
+import { Uri, window, workspace } from "vscode";
 import { SourceControlManager } from "../source_control_manager";
 import * as testUtil from "./testUtil";
 
@@ -19,10 +19,7 @@ suite("Repository Tests", () => {
       testUtil.getSvnUrl(repoUri) + "/trunk"
     );
 
-    sourceControlManager = (await commands.executeCommand(
-      "svn.getSourceControlManager",
-      checkoutDir
-    )) as SourceControlManager;
+    sourceControlManager = await testUtil.getSourceControlManager();
   });
 
   suiteTeardown(() => {

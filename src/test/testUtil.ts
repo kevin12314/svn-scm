@@ -7,6 +7,7 @@ import { extensions, Uri, window } from "vscode";
 import { Repository } from "../repository";
 import { SourceControlManager } from "../source_control_manager";
 import { timeout } from "../util";
+import { SvnExtensionApi } from "../extension";
 
 tmp.setGracefulCleanup();
 
@@ -188,13 +189,29 @@ export function activeExtension() {
 
     if (!extension.isActive) {
       extension.activate().then(
-        () => resolve(),
+        async () => resolve(),
         () => reject()
       );
     } else {
       resolve();
     }
   });
+}
+
+export async function getSourceControlManager(): Promise<SourceControlManager> {
+  const extension = extensions.getExtension(
+    "johnstoncode.svn-scm"
+  ) as { isActive: boolean; activate(): Thenable<SvnExtensionApi> } | undefined;
+
+  if (!extension) {
+    throw new Error("Extension not found");
+  }
+
+  const api = extension.isActive
+    ? await extension.activate()
+    : await extension.activate();
+
+  return api.getSourceControlManager();
 }
 
 export async function getOrOpenRepository(

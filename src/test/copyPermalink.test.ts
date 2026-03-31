@@ -23,10 +23,7 @@ suite("Copy Permalink Tests", () => {
       testUtil.getSvnUrl(repoUri) + "/trunk"
     );
 
-    sourceControlManager = (await commands.executeCommand(
-      "svn.getSourceControlManager",
-      checkoutDir
-    )) as SourceControlManager;
+    sourceControlManager = await testUtil.getSourceControlManager();
 
     await sourceControlManager.tryOpenRepository(checkoutDir.fsPath);
 
