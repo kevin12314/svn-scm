@@ -27,17 +27,16 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.17.0
-          run_install: false
-
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'pnpm'
+
+      - name: Enable Corepack pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.17.0 --activate
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile --config.node-linker=hoisted
@@ -46,7 +45,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y subversion
+          sudo apt-get install -y subversion xvfb
 
       - name: Install Subversion on macOS
         if: runner.os == 'macOS'
@@ -89,10 +88,16 @@ jobs:
             vscode-${{ runner.os }}-${{ matrix.version }}-
             vscode-${{ runner.os }}-
       
-      - name: Run tests
-        uses: GabrielBB/xvfb-action@v1.0
-        with:
-          run: pnpm test
+      - name: Run tests on Linux
+        if: runner.os == 'Linux'
+        run: xvfb-run -a pnpm test
+        env:
+          CODE_VERSION: ${{ matrix.version }}
+        continue-on-error: ${{ matrix.version == 'insiders' }}
+
+      - name: Run tests on macOS and Windows
+        if: runner.os != 'Linux'
+        run: pnpm test
         env:
           CODE_VERSION: ${{ matrix.version }}
         continue-on-error: ${{ matrix.version == 'insiders' }}
@@ -119,17 +124,16 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.17.0
-          run_install: false
-
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'pnpm'
+
+      - name: Enable Corepack pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.17.0 --activate
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile --config.node-linker=hoisted
@@ -145,17 +149,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.17.0
-          run_install: false
-
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'pnpm'
+
+      - name: Enable Corepack pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.17.0 --activate
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile --config.node-linker=hoisted

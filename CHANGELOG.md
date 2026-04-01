@@ -4,8 +4,8 @@
 ### Features
 
 * add AI commit message generation with API key management for OpenAI-compatible and Azure OpenAI providers
-* add commit message response sanitization and improve localized title generation
-* add localization updates for the AI-assisted extension branding and labels
+* add commit message response sanitization, localized title generation improvements, and translated Local labels
+* update the extension for VS Code 1.91 compatibility and refresh AI-assisted naming and descriptions
 
 ### Bug Fixes
 
@@ -13,7 +13,8 @@
 
 ### Maintenance
 
-* refresh package metadata and localization files to reflect the AI-supported extension name and description
+* refresh package and publisher metadata to align the AI-assisted extension branding across documentation and workflows
+* update release workflows to avoid unnecessary publish steps and force JavaScript actions onto Node 24
 
 # [3.4.0](https://github.com/kevin12314/svn-scm/compare/v3.3.0...v3.4.0) (2026-03-30)
 
