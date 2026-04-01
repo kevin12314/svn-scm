@@ -11,7 +11,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/kevin12314/svn-scm/badge.svg)](https://snyk.io/test/github/kevin12314/svn-scm)
 
 # Info
-This project is a fork of [JohnstonCode's VS Code SVN Extension](https://github.com/kevin12314/svn-scm)
+This project is a fork of [JohnstonCode's VS Code SVN Extension](https://github.com/JohnstonCode/svn-scm)
 with additional support for localized user-facing messages and AI-assisted commit message generation using GitHub Copilot or OpenAI-compatible APIs.
 
 # Prerequisites
