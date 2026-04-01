@@ -79,7 +79,7 @@ jobs:
 
       - name: Cache VSCode binary
         id: cache-vscode
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .vscode-test
           key: vscode-${{ runner.os }}-${{ matrix.version }}-${{ github.run_id }}
@@ -164,7 +164,7 @@ jobs:
         run: pnpm run package:vsix
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: "svn-scm-${{ github.sha }}.vsix"
           path: "svn-scm-ai.vsix"
@@ -173,7 +173,7 @@ jobs:
         run: pnpm run package:ovsx
 
       - name: Upload open-vsx artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: "svn-scm-ovsx-${{ github.sha }}.vsix"
           path: "svn-scm-ai-ovsx.vsix"
