@@ -1,5 +1,5 @@
 {
-    "name": "svn-scm-ai",
+    "name": "svn-scm-ai-next",
     "displayName": "%extension.displayName%",
     "description": "%extension.description%",
     "version": "3.5.0",
@@ -46,6 +46,7 @@
         "l10n:check": "node ./scripts/check-l10n-missing.js",
         "organize": "node ./out/tools/organize.js",
         "package:ovsx": "pnpm exec vsce package --follow-symlinks -o svn-scm-ai-ovsx.vsix",
+        "publish:vsix": "pnpm exec vsce publish -i svn-scm-ai.vsix",
         "package:vsix": "pnpm exec vsce package --follow-symlinks -o svn-scm-ai.vsix",
         "semantic-release": "semantic-release",
         "style-check": "prettylint 'src/**/*.ts'",
