@@ -1,4 +1,21 @@
-# [3.4.0](https://github.com/JohnstonCode/svn-scm/compare/v3.3.0...v3.4.0) (2026-03-30)
+# [3.5.0](https://github.com/kevin12314/svn-scm/compare/v3.4.0...v3.5.0) (2026-04-01)
+
+
+### Features
+
+* add AI commit message generation with API key management for OpenAI-compatible and Azure OpenAI providers
+* add commit message response sanitization and improve localized title generation
+* add localization updates for the AI-assisted extension branding and labels
+
+### Bug Fixes
+
+* fix the missing newline at end of file issue
+
+### Maintenance
+
+* refresh package metadata and localization files to reflect the AI-supported extension name and description
+
+# [3.4.0](https://github.com/kevin12314/svn-scm/compare/v3.3.0...v3.4.0) (2026-03-30)
 
 
 ### Features
@@ -17,7 +34,7 @@
 * update README guidance for AI-assisted commit message generation
 * refresh TypeScript project settings and dependency versions
 
-# [3.3.0](https://github.com/JohnstonCode/svn-scm/compare/v3.2.0...v3.3.0) (2026-03-26)
+# [3.3.0](https://github.com/kevin12314/svn-scm/compare/v3.2.0...v3.3.0) (2026-03-26)
 
 
 ### Features
@@ -33,7 +50,7 @@
 
 * update the Open VSX release workflow permissions and tag resolution
 
-# [3.2.0](https://github.com/JohnstonCode/svn-scm/compare/v3.1.0...v3.2.0) (2026-03-24)
+# [3.2.0](https://github.com/kevin12314/svn-scm/compare/v3.1.0...v3.2.0) (2026-03-24)
 
 
 ### Features
@@ -48,7 +65,7 @@
 
 * extend the Open VSX release workflow with optional publish inputs
 
-# [3.1.0](https://github.com/JohnstonCode/svn-scm/compare/v3.0.0...v3.1.0) (2026-03-20)
+# [3.1.0](https://github.com/kevin12314/svn-scm/compare/v3.0.0...v3.1.0) (2026-03-20)
 
 
 ### Features
@@ -66,7 +83,7 @@
 * refactor tests to reuse shared repository setup helpers
 * update pnpm install configuration and minimatch type definitions
 
-# [3.0.0](https://github.com/JohnstonCode/svn-scm/compare/v2.17.0...v3.0.0) (2026-03-20)
+# [3.0.0](https://github.com/kevin12314/svn-scm/compare/v2.17.0...v3.0.0) (2026-03-20)
 
 
 ### Features
