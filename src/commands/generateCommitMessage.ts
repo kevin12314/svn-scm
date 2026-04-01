@@ -70,11 +70,7 @@ export class GenerateCommitMessage extends Command {
       } else if (mode === "ai") {
         const useTemplate = l10n.t("Use Template");
         const selection = await window.showWarningMessage(
-          aiResult.reason === "no-api"
-            ? l10n.t(
-                "AI commit message generation is not available in this VS Code version."
-              )
-            : aiResult.reason === "no-model"
+          aiResult.reason === "no-model"
             ? l10n.t(
                 "No language model is currently available for AI commit message generation."
               )
@@ -96,9 +92,7 @@ export class GenerateCommitMessage extends Command {
         );
       } else {
         window.setStatusBarMessage(
-          aiResult.reason === "no-api"
-            ? l10n.t("AI unavailable, used template commit message.")
-            : aiResult.reason === "no-model"
+          aiResult.reason === "no-model"
             ? l10n.t("No AI model found, used template commit message.")
             : aiResult.reason === "missing-api-key"
             ? l10n.t(

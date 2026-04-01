@@ -33,42 +33,6 @@ interface OpenAICompatibleProviderOptions {
   apiType?: OpenAICompatibleApiType;
 }
 
-interface LanguageModelApi {
-  lm?: {
-    selectChatModels?: (
-      selector?: LanguageModelSelector
-    ) => Promise<LanguageModelChat[]>;
-  };
-  LanguageModelChatMessage?: {
-    User: (content: string) => unknown;
-  };
-}
-
-interface LanguageModelSelector {
-  vendor?: string;
-  family?: string;
-  version?: string;
-  id?: string;
-}
-
-interface LanguageModelChat {
-  sendRequest: (
-    messages: unknown[],
-    options?: { justification?: string },
-    token?: vscode.CancellationToken
-  ) => Promise<LanguageModelResponse>;
-}
-
-interface LanguageModelResponse {
-  stream: AsyncIterable<
-    LanguageModelResponsePart | LanguageModelResponsePart[]
-  >;
-}
-
-interface LanguageModelResponsePart {
-  value?: unknown;
-}
-
 interface CommitMessagePromptContext {
   repository: Repository;
   resources: Resource[];
@@ -78,14 +42,14 @@ interface CommitMessagePromptContext {
 
 interface CommitMessageProvider {
   generate(
-    prompt: string,
+    prompt: string | CommitMessagePromptContext,
     token?: vscode.CancellationToken
   ): Promise<CommitMessageAIResult>;
 }
 
 export interface CommitMessageAIResult {
   message?: string;
-  reason?: "no-api" | "no-model" | "missing-api-key" | "http-error" | "error";
+  reason?: "no-model" | "missing-api-key" | "http-error" | "error";
   error?: unknown;
 }
 
@@ -177,10 +141,6 @@ async function getAzureOpenAIApiKey(): Promise<string | undefined> {
   return extensionSecrets.get(AZURE_OPENAI_API_KEY_SECRET);
 }
 
-function getLanguageModelApi(): LanguageModelApi {
-  return (vscode as unknown) as LanguageModelApi;
-}
-
 function getOutputLanguageInstruction(): string {
   const language = configuration.get<string>(
     "commitMessageGeneration.outputLanguage",
@@ -190,35 +150,33 @@ function getOutputLanguageInstruction(): string {
 
   switch (language) {
     case "en":
-      return vscode.l10n.t("Write the commit message in English.");
+      return "Write the commit message in English.";
     case "ko":
-      return vscode.l10n.t("Write the commit message in Korean.");
+      return "Write the commit message in Korean.";
     case "ja":
-      return vscode.l10n.t("Write the commit message in Japanese.");
+      return "Write the commit message in Japanese.";
     case "zh-CN":
-      return vscode.l10n.t("Write the commit message in Simplified Chinese.");
+      return "Write the commit message in Simplified Chinese.";
     case "zh-TW":
-      return vscode.l10n.t("Write the commit message in Traditional Chinese.");
+      return "Write the commit message in Traditional Chinese.";
     default:
       if (editorLanguage === "ko" || editorLanguage.startsWith("ko-")) {
-        return vscode.l10n.t("Write the commit message in Korean.");
+        return "Write the commit message in Korean.";
       }
 
       if (editorLanguage === "ja" || editorLanguage.startsWith("ja-")) {
-        return vscode.l10n.t("Write the commit message in Japanese.");
+        return "Write the commit message in Japanese.";
       }
 
       if (editorLanguage === "zh-tw" || editorLanguage.startsWith("zh-hant")) {
-        return vscode.l10n.t(
-          "Write the commit message in Traditional Chinese."
-        );
+        return "Write the commit message in Traditional Chinese.";
       }
 
       if (editorLanguage === "zh-cn" || editorLanguage.startsWith("zh-hans")) {
-        return vscode.l10n.t("Write the commit message in Simplified Chinese.");
+        return "Write the commit message in Simplified Chinese.";
       }
 
-      return vscode.l10n.t("Write the commit message in English.");
+      return "Write the commit message in English.";
   }
 }
 
@@ -285,37 +243,21 @@ async function getDiffContext(
   return trimDiff(diff);
 }
 
-async function selectModel(): Promise<LanguageModelChat | undefined> {
-  const vscodeApi = getLanguageModelApi();
-  const selectChatModels = vscodeApi.lm?.selectChatModels;
-
-  if (!selectChatModels) {
-    return;
-  }
-
+async function selectModel(): Promise<vscode.LanguageModelChat | undefined> {
   const preferredVendor = configuration.get<string | null>(
     "commitMessageGeneration.vscodeLM.preferredVendor",
-    configuration.get<string | null>(
-      "commitMessageGeneration.preferredVendor",
-      null
-    )
+    null
   );
   const preferredModelFamily = configuration.get<string | null>(
     "commitMessageGeneration.vscodeLM.preferredModelFamily",
-    configuration.get<string | null>(
-      "commitMessageGeneration.preferredModelFamily",
-      null
-    )
+    null
   );
   const preferredModelVersion = configuration.get<string | null>(
     "commitMessageGeneration.vscodeLM.preferredModelVersion",
-    configuration.get<string | null>(
-      "commitMessageGeneration.preferredModelVersion",
-      "raptor-mini"
-    )
+    "raptor-mini"
   );
 
-  const preferredSelectors: LanguageModelSelector[] = [];
+  const preferredSelectors: vscode.LanguageModelChatSelector[] = [];
 
   if (preferredVendor && preferredModelFamily && preferredModelVersion) {
     preferredSelectors.push({
@@ -359,34 +301,28 @@ async function selectModel(): Promise<LanguageModelChat | undefined> {
   }
 
   for (const selector of preferredSelectors) {
-    const preferredModels = await selectChatModels(selector);
+    const preferredModels = await vscode.lm.selectChatModels(selector);
     if (preferredModels.length > 0) {
       return preferredModels[0];
     }
   }
 
-  const copilotModels = await selectChatModels({ vendor: "copilot" });
+  const copilotModels = await vscode.lm.selectChatModels({ vendor: "copilot" });
   if (copilotModels.length > 0) {
     return copilotModels[0];
   }
 
-  const models = await selectChatModels({});
+  const models = await vscode.lm.selectChatModels({});
   return models[0];
 }
 
 async function readResponseText(
-  response: LanguageModelResponse
+  response: vscode.LanguageModelChatResponse
 ): Promise<string> {
   let text = "";
 
-  for await (const chunk of response.stream) {
-    const parts = Array.isArray(chunk) ? chunk : [chunk];
-
-    for (const part of parts) {
-      if (typeof part?.value === "string") {
-        text += part.value;
-      }
-    }
+  for await (const fragment of response.text) {
+    text += fragment;
   }
 
   return text.trim();
@@ -403,6 +339,18 @@ function looksLikeReasoningLine(line: string): boolean {
     return true;
   }
 
+  if (isCommitMessageLeadInLine(normalized)) {
+    return true;
+  }
+
+  if (
+    /^(if necessary|keeping it simple|that should work nicely|this should work|this keeps it|i kept it|you can use this|let me know if you'd like|let me know if you want|i can also|i could also)\b/i.test(
+      normalized
+    )
+  ) {
+    return true;
+  }
+
   if (/^(i|we)'m\s+/i.test(normalized)) {
     return true;
   }
@@ -410,6 +358,59 @@ function looksLikeReasoningLine(line: string): boolean {
   return /^(i|we)\s+(need to|should|will|want to|am|have to)\b/i.test(
     normalized
   );
+}
+
+function isCommitMessageLeadInLine(line: string): boolean {
+  return [
+    /^(?:the\s+)?commit\s+message\b/i,
+    /^(?:here(?:'s| is)\s+)?(?:a\s+|the\s+)?commit\s+message\b/i,
+    /^(?:my|suggested|recommended|proposed|final|concise|short)\s+commit\s+message\b/i,
+    /^(?:a\s+)?(?:good|concise|short)\s+commit\s+message\s+would\s+be\b/i,
+    /^(?:subject|subject\s+line)\b/i,
+    /^(?:suggestion|recommendation)\b/i
+  ].some(pattern => pattern.test(line));
+}
+
+function extractQuotedCommitMessage(text: string): string | undefined {
+  const trimmed = text.trim();
+  const quotedCandidate = trimmed.match(/^(["'`])(.+?)(?:["'`])[.!?。！？]?$/);
+
+  if (quotedCandidate) {
+    return quotedCandidate[2].trim();
+  }
+
+  const smartQuotedCandidate = trimmed.match(
+    /^([“”])(.+?)(?:[“”])[.!?。！？]?$/
+  );
+
+  if (smartQuotedCandidate) {
+    return smartQuotedCandidate[2].trim();
+  }
+
+  return trimmed.replace(/[.!?。！？]+$/, "").trim() || undefined;
+}
+
+function extractCommitMessageFromLeadIn(line: string): string | undefined {
+  const normalized = line.trim();
+
+  const leadInPatterns = [
+    /^(?:(?:the\s+)?commit\s+message(?:\s+i(?:'|’)?ll\s+use|\s+i(?:'|’)?d\s+use)?|(?:here(?:'s| is)\s+)?(?:a\s+|the\s+)?commit\s+message|(?:my|suggested|recommended|proposed|final|concise|short)\s+commit\s+message)(?:\s+would\s+be|\s+is)?\s*[:\-]\s*(.+)$/i,
+    /^(?:a\s+)?(?:good|concise|short)\s+commit\s+message\s+would\s+be\s*[:\-]\s*(.+)$/i,
+    /^(?:subject|subject\s+line)\s*[:\-]\s*(.+)$/i,
+    /^(?:suggestion|recommendation)\s*[:\-]\s*(.+)$/i
+  ];
+
+  for (const pattern of leadInPatterns) {
+    const match = normalized.match(pattern);
+
+    if (!match) {
+      continue;
+    }
+
+    return extractQuotedCommitMessage(match[1]);
+  }
+
+  return;
 }
 
 function sanitizeCommitMessageResponse(text: string): string {
@@ -420,25 +421,37 @@ function sanitizeCommitMessageResponse(text: string): string {
   }
 
   const lines = normalized.split("\n");
-  let startIndex = 0;
+  const sanitizedLines: string[] = [];
 
-  while (startIndex < lines.length) {
-    const line = lines[startIndex].trim();
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
 
     if (!line) {
-      startIndex += 1;
+      if (
+        sanitizedLines.length > 0 &&
+        sanitizedLines[sanitizedLines.length - 1]
+      ) {
+        sanitizedLines.push("");
+      }
+
+      continue;
+    }
+
+    const extractedCommitMessage = extractCommitMessageFromLeadIn(line);
+
+    if (extractedCommitMessage) {
+      sanitizedLines.push(extractedCommitMessage);
       continue;
     }
 
     if (looksLikeReasoningLine(line)) {
-      startIndex += 1;
       continue;
     }
 
-    break;
+    sanitizedLines.push(rawLine.trimEnd());
   }
 
-  const sanitized = lines.slice(startIndex).join("\n").trim();
+  const sanitized = sanitizedLines.join("\n").trim();
   return sanitized || normalized;
 }
 
@@ -450,53 +463,78 @@ function buildPrompt({
 }: CommitMessagePromptContext): string {
   const summary = getResourceSummary(repository, resources);
   const diffSection = diff
-    ? `\n${vscode.l10n.t("Unified diff (possibly truncated):")}\n${diff}`
-    : `\n${vscode.l10n.t("No diff content was available.")}`;
+    ? `\nUnified diff (possibly truncated):\n${diff}`
+    : "\nNo diff content was available.";
 
   return [
-    vscode.l10n.t("You generate SVN commit messages."),
+    "You generate SVN commit messages.",
     getOutputLanguageInstruction(),
-    vscode.l10n.t("Return only the final commit message text."),
-    vscode.l10n.t("Use an imperative subject line and keep it concise."),
-    vscode.l10n.t(
-      "Add a blank line and a short body only when it adds real value."
-    ),
-    vscode.l10n.t(
-      "Do not invent changes that are not present in the provided context."
-    ),
+    "Return only the final commit message text.",
+    "Use an imperative subject line and keep it concise.",
+    "Add a blank line and a short body only when it adds real value.",
+    "Do not invent changes that are not present in the provided context.",
     "",
-    vscode.l10n.t("Changed files:"),
+    "Changed files:",
     summary,
     "",
-    vscode.l10n.t("Template fallback draft:"),
+    "Template fallback draft:",
     fallbackMessage,
     diffSection
   ].join("\n");
 }
 
+function buildPromptMessages({
+  repository,
+  resources,
+  fallbackMessage,
+  diff
+}: CommitMessagePromptContext): string[] {
+  const summary = getResourceSummary(repository, resources);
+  const instructionBlock = [
+    "You generate SVN commit messages.",
+    getOutputLanguageInstruction(),
+    "Return only the final commit message text.",
+    "Use an imperative subject line and keep it concise.",
+    "Add a blank line and a short body only when it adds real value.",
+    "Do not invent changes that are not present in the provided context."
+  ].join("\n");
+
+  const contextSections = [
+    "Changed files:",
+    summary,
+    "",
+    "Template fallback draft:",
+    fallbackMessage
+  ];
+
+  if (diff) {
+    contextSections.push("", "Unified diff (possibly truncated):", diff);
+  } else {
+    contextSections.push("", "No diff content was available.");
+  }
+
+  return [instructionBlock, contextSections.join("\n")];
+}
+
 class VscodeLanguageModelCommitMessageProvider
   implements CommitMessageProvider {
   public async generate(
-    prompt: string,
+    prompt: string | CommitMessagePromptContext,
     token?: vscode.CancellationToken
   ): Promise<CommitMessageAIResult> {
-    const vscodeApi = getLanguageModelApi();
-
-    if (
-      typeof vscodeApi.lm?.selectChatModels !== "function" ||
-      typeof vscodeApi.LanguageModelChatMessage?.User !== "function"
-    ) {
-      return { reason: "no-api" };
-    }
-
     try {
       const model = await selectModel();
       if (!model) {
         return { reason: "no-model" };
       }
 
+      const promptMessages = (typeof prompt === "string"
+        ? [prompt]
+        : buildPromptMessages(prompt)
+      ).map(section => vscode.LanguageModelChatMessage.User(section));
+
       const response = await model.sendRequest(
-        [vscodeApi.LanguageModelChatMessage.User(prompt)],
+        promptMessages,
         {
           justification: vscode.l10n.t(
             "Generate an SVN commit message from the current working copy changes."
@@ -778,9 +816,11 @@ class OpenAICompatibleCommitMessageProvider implements CommitMessageProvider {
   }
 
   public async generate(
-    prompt: string,
+    prompt: string | CommitMessagePromptContext,
     token?: vscode.CancellationToken
   ): Promise<CommitMessageAIResult> {
+    const promptText =
+      typeof prompt === "string" ? prompt : buildPrompt(prompt);
     const baseUrl = this.getBaseUrl();
     const model = this.getModel();
 
@@ -791,14 +831,17 @@ class OpenAICompatibleCommitMessageProvider implements CommitMessageProvider {
     const apiType = this.getApiType();
 
     if (apiType === "responses") {
-      return this.generateWithResponsesApi(prompt, token);
+      return this.generateWithResponsesApi(promptText, token);
     }
 
     if (apiType === "chat-completions") {
-      return this.generateWithChatCompletions(prompt, token);
+      return this.generateWithChatCompletions(promptText, token);
     }
 
-    const responsesResult = await this.generateWithResponsesApi(prompt, token);
+    const responsesResult = await this.generateWithResponsesApi(
+      promptText,
+      token
+    );
     if (responsesResult.message) {
       return responsesResult;
     }
@@ -807,7 +850,7 @@ class OpenAICompatibleCommitMessageProvider implements CommitMessageProvider {
       return responsesResult;
     }
 
-    return this.generateWithChatCompletions(prompt, token);
+    return this.generateWithChatCompletions(promptText, token);
   }
 }
 
@@ -928,9 +971,11 @@ class AzureOpenAICommitMessageProvider implements CommitMessageProvider {
   }
 
   public async generate(
-    prompt: string,
+    prompt: string | CommitMessagePromptContext,
     token?: vscode.CancellationToken
   ): Promise<CommitMessageAIResult> {
+    const promptText =
+      typeof prompt === "string" ? prompt : buildPrompt(prompt);
     const endpoint = getAzureOpenAIEndpoint();
     const deployment = getAzureOpenAIDeployment();
 
@@ -939,8 +984,8 @@ class AzureOpenAICommitMessageProvider implements CommitMessageProvider {
     }
 
     return getAzureOpenAIApiType() === "responses"
-      ? this.generateWithResponsesApi(prompt, token)
-      : this.generateWithChatCompletions(prompt, token);
+      ? this.generateWithResponsesApi(promptText, token)
+      : this.generateWithChatCompletions(promptText, token);
   }
 }
 
@@ -968,56 +1013,10 @@ async function generateOpenAICompatibleCommitMessageForTests(
   };
 
   try {
-    return new OpenAICompatibleCommitMessageProvider(options.fetchFn, {
+    return await new OpenAICompatibleCommitMessageProvider(options.fetchFn, {
       baseUrl: options.baseUrl,
       model: options.model,
       apiType: options.apiType
-    }).generate(prompt);
-  } finally {
-    extensionSecrets = originalSecrets;
-  }
-}
-
-async function generateOpenAICompatibleFallbackCommitMessageForTests(
-  prompt: string,
-  options: {
-    apiKey?: string;
-    baseUrl: string;
-    model: string;
-    fetchFn: FetchLike;
-  }
-): Promise<CommitMessageAIResult> {
-  const originalSecrets = extensionSecrets;
-
-  extensionSecrets = {
-    get: async () => options.apiKey,
-    store: async () => undefined,
-    delete: async () => undefined,
-    onDidChange: new vscode.EventEmitter<vscode.SecretStorageChangeEvent>()
-      .event
-  };
-
-  try {
-    const responsesResult = await new OpenAICompatibleCommitMessageProvider(
-      options.fetchFn,
-      {
-        baseUrl: options.baseUrl,
-        model: options.model,
-        apiType: "responses"
-      }
-    ).generate(prompt);
-
-    if (
-      responsesResult.message ||
-      responsesResult.reason === "missing-api-key"
-    ) {
-      return responsesResult;
-    }
-
-    return new OpenAICompatibleCommitMessageProvider(options.fetchFn, {
-      baseUrl: options.baseUrl,
-      model: options.model,
-      apiType: "chat-completions"
     }).generate(prompt);
   } finally {
     extensionSecrets = originalSecrets;
@@ -1063,23 +1062,26 @@ export async function generateAICommitMessage(
       diff = undefined;
     }
 
-    const prompt = buildPrompt({
+    const promptContext = {
       repository,
       resources,
       fallbackMessage,
       diff
-    });
+    };
 
-    return createCommitMessageProvider().generate(prompt, token);
+    return createCommitMessageProvider().generate(promptContext, token);
   } catch (error) {
     return { reason: "error", error };
   }
 }
 
 export const __test__ = {
+  buildPrompt,
+  buildPromptMessages,
+  getOutputLanguageInstruction,
+  readResponseText,
   sanitizeCommitMessageResponse,
   extractResponsesApiText,
   extractChatCompletionsText,
-  generateOpenAICompatibleCommitMessageForTests,
-  generateOpenAICompatibleFallbackCommitMessageForTests
+  generateOpenAICompatibleCommitMessageForTests
 };

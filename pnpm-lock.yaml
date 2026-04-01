@@ -43,8 +43,8 @@ importers:
         specifier: 0.2.1
         version: 0.2.1
       '@types/vscode':
-        specifier: 1.74.0
-        version: 1.74.0
+        specifier: 1.91.0
+        version: 1.91.0
       '@types/xml2js':
         specifier: ^0.4.9
         version: 0.4.9
@@ -564,8 +564,8 @@ packages:
   '@types/tmp@0.2.1':
     resolution: {integrity: sha512-7cTXwKP/HLOPVgjg+YhBdQ7bMiobGMuoBmrGmqwIWJv8elC6t1DfVc/mn4fD9UE1IjhwmhaQ5pGVXkmXbH0rhg==}
 
-  '@types/vscode@1.74.0':
-    resolution: {integrity: sha512-LyeCIU3jb9d38w0MXFwta9r0Jx23ugujkAxdwLTNCyspdZTKUc43t7ppPbCiPoQ/Ivd/pnDFZrb4hWd45wrsgA==}
+  '@types/vscode@1.91.0':
+    resolution: {integrity: sha512-PgPr+bUODjG3y+ozWUCyzttqR9EHny9sPAfJagddQjDwdtf66y2sDKJMnFZRuzBA2YtBGASqJGPil8VDUPvO6A==}
 
   '@types/xml2js@0.4.9':
     resolution: {integrity: sha512-CHiCKIihl1pychwR2RNX5mAYmJDACgFVCMT5OArMaO3erzwXVcBqPcusr+Vl8yeeXukxZqtF8mZioqX+mpjjdw==}
@@ -4227,7 +4227,7 @@ snapshots:
 
   '@types/tmp@0.2.1': {}
 
-  '@types/vscode@1.74.0': {}
+  '@types/vscode@1.91.0': {}
 
   '@types/xml2js@0.4.9':
     dependencies:

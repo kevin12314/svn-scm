@@ -93,6 +93,16 @@ function createJsonResponse(status: number, payload?: unknown): Response {
   } as Response;
 }
 
+async function collectAsyncIterable<T>(values: T[]): Promise<AsyncIterable<T>> {
+  async function* iterator() {
+    for (const value of values) {
+      yield value;
+    }
+  }
+
+  return iterator();
+}
+
 suite("Commands Tests", () => {
   let repoUri: Uri;
   let checkoutDir: Uri;
@@ -168,6 +178,165 @@ suite("Commands Tests", () => {
     );
   });
 
+  test("Sanitize AI Commit Message Lead-In And Commentary", function () {
+    const response = [
+      'The commit message I’ll use is: "新增 VS Code Java 除錯設定".',
+      "",
+      "If necessary, I could include a short description or list of changes, but I'm thinking keeping it simple is probably fine!",
+      "",
+      "已加入：",
+      "- .vscode",
+      "- .vscode/launch.json"
+    ].join("\n");
+
+    assert.strictEqual(
+      aiCommitMessageTest.sanitizeCommitMessageResponse(response),
+      [
+        "新增 VS Code Java 除錯設定",
+        "",
+        "已加入：",
+        "- .vscode",
+        "- .vscode/launch.json"
+      ].join("\n")
+    );
+  });
+
+  test("Sanitize Common English Commit Message Lead-In Variants", function () {
+    const cases = [
+      {
+        input: 'Here is the commit message: "Add Java debug launch config"',
+        expected: "Add Java debug launch config"
+      },
+      {
+        input: "Suggested commit message: Add Java debug launch config",
+        expected: "Add Java debug launch config"
+      },
+      {
+        input:
+          "A concise commit message would be: Add Java debug launch config",
+        expected: "Add Java debug launch config"
+      },
+      {
+        input: "Subject: Add Java debug launch config",
+        expected: "Add Java debug launch config"
+      },
+      {
+        input: "Commit message - Add Java debug launch config",
+        expected: "Add Java debug launch config"
+      }
+    ];
+
+    for (const testCase of cases) {
+      assert.strictEqual(
+        aiCommitMessageTest.sanitizeCommitMessageResponse(testCase.input),
+        testCase.expected
+      );
+    }
+  });
+
+  test("Sanitize English Commentary Around Commit Message", function () {
+    const response = [
+      "Here is the commit message:",
+      "Add Java debug launch config",
+      "",
+      "This keeps it concise and clear.",
+      "Let me know if you'd like a more detailed version."
+    ].join("\n");
+
+    assert.strictEqual(
+      aiCommitMessageTest.sanitizeCommitMessageResponse(response),
+      "Add Java debug launch config"
+    );
+  });
+
+  test("Build Prompt Uses English Instructions", async function () {
+    const config = workspace.getConfiguration("svn");
+    const previousOutputLanguage = config.get(
+      "commitMessageGeneration.outputLanguage"
+    );
+
+    try {
+      await config.update(
+        "commitMessageGeneration.outputLanguage",
+        "zh-TW",
+        true
+      );
+
+      const prompt = aiCommitMessageTest.buildPrompt({
+        repository: {
+          repository: {
+            removeAbsolutePath: (filePath: string) => path.basename(filePath)
+          }
+        } as any,
+        resources: [
+          new Resource(
+            Uri.file(path.join(checkoutDir.fsPath, "new.txt")),
+            Status.MODIFIED
+          )
+        ],
+        fallbackMessage: "Update new.txt",
+        diff: "@@ -1 +1 @@\n-old\n+new"
+      });
+
+      assert.ok(prompt.includes("You generate SVN commit messages."));
+      assert.ok(
+        prompt.includes("Write the commit message in Traditional Chinese.")
+      );
+      assert.ok(prompt.includes("Return only the final commit message text."));
+      assert.ok(prompt.includes("Changed files:"));
+      assert.ok(prompt.includes("Template fallback draft:"));
+      assert.ok(prompt.includes("Unified diff (possibly truncated):"));
+      assert.equal(prompt.includes("你產生 SVN 提交訊息"), false);
+    } finally {
+      await config.update(
+        "commitMessageGeneration.outputLanguage",
+        previousOutputLanguage,
+        true
+      );
+    }
+  });
+
+  test("Build Prompt Messages Splits Instructions And Context", async function () {
+    const messages = aiCommitMessageTest.buildPromptMessages({
+      repository: {
+        repository: {
+          removeAbsolutePath: (filePath: string) => path.basename(filePath)
+        }
+      } as any,
+      resources: [
+        new Resource(
+          Uri.file(path.join(checkoutDir.fsPath, "new.txt")),
+          Status.MODIFIED
+        )
+      ],
+      fallbackMessage: "Update new.txt",
+      diff: "@@ -1 +1 @@\n-old\n+new"
+    });
+
+    assert.equal(messages.length, 2);
+    assert.ok(messages[0].includes("You generate SVN commit messages."));
+    assert.ok(
+      messages[0].includes("Return only the final commit message text.")
+    );
+    assert.ok(messages[1].includes("Changed files:"));
+    assert.ok(messages[1].includes("Template fallback draft:"));
+    assert.ok(messages[1].includes("Unified diff (possibly truncated):"));
+  });
+
+  test("Read Response Text Prefers Text Stream", async function () {
+    const response = {
+      text: await collectAsyncIterable(["final ", "message"]),
+      stream: await collectAsyncIterable([
+        {
+          value: "reasoning that should be ignored"
+        }
+      ])
+    };
+
+    const text = await aiCommitMessageTest.readResponseText(response);
+    assert.strictEqual(text, "final message");
+  });
+
   test("OpenAI Provider Returns Missing API Key For 401 Without Secret", async function () {
     const result = await aiCommitMessageTest.generateOpenAICompatibleCommitMessageForTests(
       "prompt",
@@ -224,12 +393,13 @@ suite("Commands Tests", () => {
 
   test("OpenAI Provider Falls Back From Responses To Chat Completions", async function () {
     const requestedPaths: string[] = [];
-    const result = await aiCommitMessageTest.generateOpenAICompatibleFallbackCommitMessageForTests(
+    const result = await aiCommitMessageTest.generateOpenAICompatibleCommitMessageForTests(
       "prompt",
       {
         apiKey: "test-key",
         baseUrl: "https://example.test/v1",
         model: "gpt-test",
+        apiType: "auto",
         fetchFn: async (input: RequestInfo | URL) => {
           const url = String(input);
           requestedPaths.push(new URL(url, "https://example.test").pathname);

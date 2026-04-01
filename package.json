@@ -5,7 +5,7 @@
     "version": "3.5.0",
     "publisher": "kevin12314",
     "engines": {
-        "vscode": "^1.74.0"
+        "vscode": "^1.91.0"
     },
     "packageManager": "pnpm@10.17.0",
     "private": true,
@@ -30,8 +30,7 @@
     ],
     "activationEvents": [
         "onStartupFinished",
-        "workspaceContains:**/.svn",
-        "onCommand:svn.checkout"
+        "workspaceContains:**/.svn"
     ],
     "main": "./out/extension",
     "l10n": "./l10n",
@@ -71,7 +70,7 @@
         "@types/node": "^12.11.7",
         "@types/semver": "^7.3.8",
         "@types/tmp": "0.2.1",
-        "@types/vscode": "1.74.0",
+        "@types/vscode": "1.91.0",
         "@types/xml2js": "^0.4.9",
         "@typescript-eslint/eslint-plugin": "^8.57.1",
         "@typescript-eslint/parser": "^8.57.1",
