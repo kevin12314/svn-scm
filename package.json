@@ -1,22 +1,22 @@
 {
-    "name": "svn-scm",
+    "name": "svn-scm-ai",
     "displayName": "%extension.displayName%",
     "description": "%extension.description%",
-    "version": "3.4.0",
-    "publisher": "johnstoncode",
+    "version": "3.5.0",
+    "publisher": "kevin12314",
     "engines": {
         "vscode": "^1.74.0"
     },
     "packageManager": "pnpm@10.17.0",
     "private": true,
     "icon": "images/subversion.png",
-    "homepage": "https://github.com/kevin12314/svn-scm/blob/master/README.md",
+    "homepage": "https://github.com/kevin12314/svn-scm-ai/blob/master/README.md",
     "repository": {
         "type": "git",
-        "url": "https://github.com/JohnstonCode/svn-scm.git"
+        "url": "https://github.com/kevin12314/svn-scm-ai.git"
     },
     "bugs": {
-        "url": "https://github.com/JohnstonCode/svn-scm/issues"
+        "url": "https://github.com/kevin12314/svn-scm-ai/issues"
     },
     "categories": [
         "Other",

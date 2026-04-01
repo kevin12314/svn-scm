@@ -1,6 +1,6 @@
 {
-    "extension.displayName": "SVN",
-    "extension.description": "Subversion ソース管理の統合",
+    "extension.displayName": "SVN SCM AI",
+    "extension.description": "AI 支援のコミットメッセージ生成を備えた VS Code 用 Subversion ソース管理",
     "viewsContainers.activitybar.svnActivity.title": "Subversion",
     "views.explorer.svn.name": "SVN",
     "views.svnActivity.repolog.name": "リポジトリ",

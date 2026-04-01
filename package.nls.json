@@ -1,6 +1,6 @@
 {
-    "extension.displayName": "SVN",
-    "extension.description": "Integrated Subversion source control",
+    "extension.displayName": "SVN SCM AI",
+    "extension.description": "Subversion source control for VS Code with AI-assisted commit message generation",
     "viewsContainers.activitybar.svnActivity.title": "Subversion",
     "views.explorer.svn.name": "SVN",
     "views.svnActivity.repolog.name": "Repositories",
