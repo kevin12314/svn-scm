@@ -55,11 +55,11 @@ jobs:
           exit 1
         fi
 
-        pnpm exec ovsx publish svn-scm-ovsx.vsix -p "$OVSX_TOKEN"
+        pnpm exec ovsx publish svn-scm-ai-ovsx.vsix -p "$OVSX_TOKEN"
 
     - name: Upload Open VSX to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ github.token }}
-        file: svn-scm-ovsx.vsix
+        file: svn-scm-ai-ovsx.vsix
         tag: ${{ github.ref_name }}

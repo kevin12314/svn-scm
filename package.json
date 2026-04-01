@@ -10,13 +10,13 @@
     "packageManager": "pnpm@10.17.0",
     "private": true,
     "icon": "images/subversion.png",
-    "homepage": "https://github.com/kevin12314/svn-scm-ai/blob/master/README.md",
+    "homepage": "https://github.com/kevin12314/svn-scm/blob/master/README.md",
     "repository": {
         "type": "git",
-        "url": "https://github.com/kevin12314/svn-scm-ai.git"
+        "url": "https://github.com/kevin12314/svn-scm.git"
     },
     "bugs": {
-        "url": "https://github.com/kevin12314/svn-scm-ai/issues"
+        "url": "https://github.com/kevin12314/svn-scm/issues"
     },
     "categories": [
         "Other",
@@ -46,7 +46,7 @@
         "l10n:pseudo": "pnpm exec @vscode/l10n-dev generate-pseudo -o ./l10n ./l10n/bundle.l10n.json ./package.nls.json",
         "l10n:check": "node ./scripts/check-l10n-missing.js",
         "organize": "node ./out/tools/organize.js",
-        "package:ovsx": "pnpm exec vsce package --follow-symlinks -o svn-scm-ai.vsix",
+        "package:ovsx": "pnpm exec vsce package --follow-symlinks -o svn-scm-ai-ovsx.vsix",
         "package:vsix": "pnpm exec vsce package --follow-symlinks -o svn-scm-ai.vsix",
         "semantic-release": "semantic-release",
         "style-check": "prettylint 'src/**/*.ts'",

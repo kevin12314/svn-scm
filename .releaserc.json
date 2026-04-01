@@ -21,11 +21,11 @@
   "publish": [
     {
       "path": "@semantic-release/exec",
-      "publishCmd": "pnpm exec vsce publish --packagePath svn-scm.vsix --pat $VSCE_TOKEN"
+      "publishCmd": "pnpm exec vsce publish --packagePath svn-scm-ai.vsix --pat $VSCE_TOKEN"
     },
     {
       "path": "@semantic-release/github",
-      "assets": "svn-scm.vsix"
+      "assets": "svn-scm-ai.vsix"
     }
   ]
 }

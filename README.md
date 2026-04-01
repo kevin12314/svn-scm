@@ -1,9 +1,9 @@
 # Subversion source control for VS Code
 
-![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/johnstoncode.svn-scm)
-![Visual Studio Marketplace Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/johnstoncode.svn-scm)
-![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/johnstoncode.svn-scm)
-![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/johnstoncode.svn-scm)
+![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/kevin12314.svn-scm-ai)
+![Visual Studio Marketplace Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/kevin12314.svn-scm-ai)
+![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/kevin12314.svn-scm-ai)
+![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/kevin12314.svn-scm-ai)
 
 ![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/kevin12314/svn-scm/main.yml?branch=master)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
@@ -11,7 +11,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/kevin12314/svn-scm/badge.svg)](https://snyk.io/test/github/kevin12314/svn-scm)
 
 # Info
-This project is a fork of [JohnstonCode's VS Code SVN Extension](https://github.com/JohnstonCode/svn-scm)
+This project is a fork of [JohnstonCode's VS Code SVN Extension](https://github.com/kevin12314/svn-scm)
 with additional support for localized user-facing messages and AI-assisted commit message generation using GitHub Copilot or OpenAI-compatible APIs.
 
 # Prerequisites
@@ -31,11 +31,11 @@ Please open an [issue](https://github.com/kevin12314/svn-scm/issues) with improv
 ## Feedback & Contributing
 
 * Please report any bugs, suggestions or documentation requests via the
-  [Issues](https://github.com/JohnstonCode/svn-scm/issues)
+  [Issues](https://github.com/kevin12314/svn-scm/issues)
 * Feel free to submit
-  [pull requests](https://github.com/JohnstonCode/svn-scm/pulls)
+  [pull requests](https://github.com/kevin12314/svn-scm/pulls)
 
-## [Contributors](https://github.com/JohnstonCode/svn-scm/graphs/contributors)
+## [Contributors](https://github.com/kevin12314/svn-scm/graphs/contributors)
 
 # Features
 

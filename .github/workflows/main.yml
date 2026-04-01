@@ -95,7 +95,7 @@ jobs:
         continue-on-error: ${{ matrix.version == 'insiders' }}
 
       - name: Release
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == 'stable' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
+        if: startsWith(matrix.os, 'ubuntu') && matrix.version == 'stable' && github.ref == 'refs/heads/master' && github.repository == 'kevin12314/svn-scm'
         run: |
           pnpm run organize
           pnpm run semantic-release
@@ -164,7 +164,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "svn-scm-${{ github.sha }}.vsix"
-          path: "svn-scm.vsix"
+          path: "svn-scm-ai.vsix"
 
       - name: Package open-vsx extension
         run: pnpm run package:ovsx
@@ -173,4 +173,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "svn-scm-ovsx-${{ github.sha }}.vsix"
-          path: "svn-scm-ovsx.vsix"
+          path: "svn-scm-ai-ovsx.vsix"

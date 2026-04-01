@@ -181,7 +181,7 @@ export function destroyAllTempPaths() {
 
 export function activeExtension() {
   return new Promise<void>((resolve, reject) => {
-    const extension = extensions.getExtension("johnstoncode.svn-scm");
+    const extension = extensions.getExtension("kevin12314.svn-scm-ai");
     if (!extension) {
       reject();
       return;
@@ -199,7 +199,7 @@ export function activeExtension() {
 }
 
 export async function getSourceControlManager(): Promise<SourceControlManager> {
-  const extension = extensions.getExtension("johnstoncode.svn-scm") as
+  const extension = extensions.getExtension("kevin12314.svn-scm-ai") as
     | { isActive: boolean; activate(): Thenable<SvnExtensionApi> }
     | undefined;
 
