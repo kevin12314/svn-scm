@@ -1,6 +1,6 @@
 {
     "extension.displayName": "SVN SCM AI",
-    "extension.description": "为 VS Code 提供 AI 辅助提交消息生成的 Subversion 源代码管理",
+    "extension.description": "为 VS Code 提供 Subversion 源代码管理，并支持 AI 辅助生成提交消息",
     "viewsContainers.activitybar.svnActivity.title": "Subversion",
     "views.explorer.svn.name": "SVN",
     "views.svnActivity.repolog.name": "存储库",
