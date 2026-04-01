@@ -14,7 +14,7 @@
 ### Maintenance
 
 * refresh package and publisher metadata to align the AI-assisted extension branding across documentation and workflows
-* update release workflows to avoid unnecessary publish steps and force JavaScript actions onto Node 24
+* update release workflows to avoid unnecessary publish steps and JavaScript actions onto Node 24
 
 # [3.4.0](https://github.com/kevin12314/svn-scm/compare/v3.3.0...v3.4.0) (2026-03-30)
 
