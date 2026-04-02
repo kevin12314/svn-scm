@@ -2,7 +2,7 @@
     "name": "svn-scm-ai-next",
     "displayName": "%extension.displayName%",
     "description": "%extension.description%",
-    "version": "3.5.0",
+    "version": "3.5.1",
     "publisher": "kevin12314",
     "engines": {
         "vscode": "^1.91.0"

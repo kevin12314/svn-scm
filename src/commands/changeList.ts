@@ -12,11 +12,27 @@ export class ChangeList extends Command {
 
   public async execute(...args: any[]) {
     let uris: Uri[];
+    const normalizedResources = this.normalizeResourceStates(args).filter(
+      (state): state is Resource => state instanceof Resource
+    );
 
-    if (args[0] instanceof Resource) {
-      uris = (args as Resource[]).map(resource => resource.resourceUri);
+    if (normalizedResources.length > 0) {
+      uris = normalizedResources.map(resource => resource.resourceUri);
     } else if (args[0] instanceof Uri) {
-      uris = args[1] as Uri[];
+      const uriArgs = args.flatMap(arg =>
+        Array.isArray(arg) ? arg : [arg]
+      ) as unknown[];
+      const seenUris = new Map<string, Uri>();
+
+      for (const candidate of uriArgs) {
+        if (!(candidate instanceof Uri)) {
+          continue;
+        }
+
+        seenUris.set(candidate.toString(), candidate);
+      }
+
+      uris = Array.from(seenUris.values());
     } else if (window.activeTextEditor) {
       uris = [window.activeTextEditor.document.uri];
     } else {

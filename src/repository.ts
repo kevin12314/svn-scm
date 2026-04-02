@@ -69,6 +69,13 @@ function shouldShowProgress(operation: Operation): boolean {
 }
 
 export class Repository implements IRemoteRepository {
+  private static readonly debounceKeys = [
+    "$debounce$onDidAnyFileChanged",
+    "$debounce$actionForDeletedFiles",
+    "$debounce$updateRemoteChangedFiles",
+    "$debounce$eventuallyUpdateWhenIdleAndWait"
+  ] as const;
+
   public sourceControl: SourceControl;
   public statusBar: StatusBarCommands;
   public changes: ISvnResourceGroup;
@@ -86,6 +93,7 @@ export class Repository implements IRemoteRepository {
   private remoteChangedUpdateInterval?: NodeJS.Timer;
   private deletedUris: Uri[] = [];
   private canSaveAuth: boolean = false;
+  private isDisposed = false;
 
   private lastPromptAuth?: Thenable<IAuth | undefined>;
 
@@ -298,6 +306,10 @@ export class Repository implements IRemoteRepository {
 
   @debounce(1000)
   private async onDidAnyFileChanged(e: Uri) {
+    if (this.isDisposed) {
+      return;
+    }
+
     await this.repository.updateInfo();
     this._onDidChangeRepository.fire(e);
   }
@@ -322,6 +334,10 @@ export class Repository implements IRemoteRepository {
    */
   @debounce(1000)
   private async actionForDeletedFiles() {
+    if (this.isDisposed) {
+      return;
+    }
+
     if (!this.deletedUris.length) {
       return;
     }
@@ -386,6 +402,10 @@ export class Repository implements IRemoteRepository {
 
   @debounce(1000)
   public async updateRemoteChangedFiles() {
+    if (this.isDisposed) {
+      return;
+    }
+
     const updateFreq = configuration.get<number>(
       "remoteChanges.checkFrequency",
       300
@@ -418,6 +438,10 @@ export class Repository implements IRemoteRepository {
 
   @debounce(1000)
   private eventuallyUpdateWhenIdleAndWait(): void {
+    if (this.isDisposed) {
+      return;
+    }
+
     this.updateWhenIdleAndWait();
   }
 
@@ -1091,6 +1115,10 @@ export class Repository implements IRemoteRepository {
     operation: Operation,
     runOperation: () => Promise<T> = () => Promise.resolve<any>(null)
   ): Promise<T> {
+    if (this.isDisposed) {
+      return Promise.resolve<any>(null);
+    }
+
     if (this.state !== RepositoryState.Idle) {
       throw new Error("Repository not initialized");
     }
@@ -1186,7 +1214,21 @@ export class Repository implements IRemoteRepository {
     }
   }
 
+  private clearPendingDebounces(): void {
+    const self = (this as unknown) as Record<
+      string,
+      ReturnType<typeof setTimeout>
+    >;
+
+    for (const key of Repository.debounceKeys) {
+      clearTimeout(self[key]);
+      delete self[key];
+    }
+  }
+
   public dispose(): void {
+    this.isDisposed = true;
+    this.clearPendingDebounces();
     this.disposables = dispose(this.disposables);
   }
 }

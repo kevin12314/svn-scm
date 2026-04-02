@@ -140,20 +140,60 @@ export abstract class Command implements Disposable {
   protected async getResourceStates(
     resourceStates: SourceControlResourceState[]
   ): Promise<Resource[]> {
-    if (
-      resourceStates.length === 0 ||
-      !(resourceStates[0].resourceUri instanceof Uri)
-    ) {
+    const normalizedResourceStates = this.normalizeResourceStates(
+      resourceStates
+    );
+
+    if (normalizedResourceStates.length === 0) {
       const resource = await this.getSCMResource();
 
       if (!resource) {
         return [];
       }
 
-      resourceStates = [resource];
+      return [resource];
     }
 
-    return resourceStates.filter(s => s instanceof Resource) as Resource[];
+    return normalizedResourceStates.filter(
+      s => s instanceof Resource
+    ) as Resource[];
+  }
+
+  protected normalizeResourceStates(
+    resourceStates: unknown[]
+  ): SourceControlResourceState[] {
+    const normalizedStates: SourceControlResourceState[] = [];
+    const seenPaths = new Set<string>();
+
+    for (const state of resourceStates) {
+      const candidates = Array.isArray(state) ? state : [state];
+
+      for (const candidate of candidates) {
+        if (
+          !candidate ||
+          typeof candidate !== "object" ||
+          !("resourceUri" in candidate)
+        ) {
+          continue;
+        }
+
+        const resourceState = candidate as SourceControlResourceState;
+
+        if (!(resourceState.resourceUri instanceof Uri)) {
+          continue;
+        }
+
+        const key = resourceState.resourceUri.toString();
+        if (seenPaths.has(key)) {
+          continue;
+        }
+
+        seenPaths.add(key);
+        normalizedStates.push(resourceState);
+      }
+    }
+
+    return normalizedStates;
   }
 
   protected runByRepository<T>(
@@ -447,6 +487,9 @@ export abstract class Command implements Disposable {
     const preserveFocus = arg instanceof Resource;
     const preserveSelection = arg instanceof Uri || !arg;
     let resources: Resource[] | undefined;
+    const normalizedResourceStates = this.normalizeResourceStates(
+      resourceStates ?? []
+    ).filter((state): state is Resource => state instanceof Resource);
 
     if (arg instanceof Uri) {
       const resource = await this.getSCMResource(arg);
@@ -473,13 +516,21 @@ export abstract class Command implements Disposable {
       }
 
       if (resource) {
-        resources = [...(resourceStates as Resource[]), resource];
+        resources = [...normalizedResourceStates, resource];
       }
     }
 
     if (!resources) {
       return;
     }
+
+    const dedupedResources = new Map<string, Resource>();
+
+    for (const resource of resources) {
+      dedupedResources.set(resource.resourceUri.toString(), resource);
+    }
+
+    resources = Array.from(dedupedResources.values());
 
     const preview = resources.length === 1 ? undefined : false;
     for (const resource of resources) {

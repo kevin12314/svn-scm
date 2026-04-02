@@ -1,8 +1,7 @@
 import * as path from "path";
-import { SourceControlResourceState, Uri, window } from "vscode";
+import { SourceControlResourceState, window } from "vscode";
 import { Status } from "../common/types";
 import { inputCommitMessage } from "../messages";
-import { Resource } from "../resource";
 import { isSvnErrorLike } from "../util";
 import { Command } from "./command";
 import { confirmMissingResourcesForCommit } from "./commitMissing";
@@ -13,19 +12,11 @@ export class Commit extends Command {
   }
 
   public async execute(...resources: SourceControlResourceState[]) {
-    if (resources.length === 0 || !(resources[0].resourceUri instanceof Uri)) {
-      const resource = await this.getSCMResource();
+    const selection = await this.getResourceStates(resources);
 
-      if (!resource) {
-        return;
-      }
-
-      resources = [resource];
+    if (selection.length === 0) {
+      return;
     }
-
-    const selection = resources.filter(
-      s => s instanceof Resource
-    ) as Resource[];
 
     const uris = selection.map(resource => resource.resourceUri);
     selection.forEach(resource => {

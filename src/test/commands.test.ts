@@ -468,6 +468,31 @@ suite("Commands Tests", () => {
     await commands.executeCommand("svn.openHEADFile", uri);
   });
 
+  test("Open File From SCM Multi Select", async function () {
+    const file1 = path.join(checkoutDir.fsPath, "open-multi-1.txt");
+    fs.writeFileSync(file1, "test");
+
+    const file2 = path.join(checkoutDir.fsPath, "open-multi-2.txt");
+    fs.writeFileSync(file2, "test");
+
+    const repository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
+      checkoutDir
+    );
+
+    await commands.executeCommand("svn.refresh");
+
+    const selection = repository.unversioned.resourceStates.slice(-2);
+    assert.equal(selection.length, 2);
+
+    await commands.executeCommand("svn.openFile", selection[0], selection);
+
+    assert.strictEqual(
+      window.activeTextEditor?.document.uri.fsPath,
+      selection[1].resourceUri.fsPath
+    );
+  });
+
   test("Open Diff (Double click o source control)", async function () {
     const repository = await testUtil.getOrOpenRepository(
       sourceControlManager,
@@ -537,6 +562,46 @@ suite("Commands Tests", () => {
     assert.ok(repository.changelists.has("changelist-test"));
   });
 
+  test("Add Changelist From SCM Multi Select", async function () {
+    const file1 = path.join(checkoutDir.fsPath, "changelist-multi-1.txt");
+    fs.writeFileSync(file1, "test");
+
+    const file2 = path.join(checkoutDir.fsPath, "changelist-multi-2.txt");
+    fs.writeFileSync(file2, "test");
+
+    const repository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
+      checkoutDir
+    );
+
+    await commands.executeCommand("svn.refresh");
+    await commands.executeCommand(
+      "svn.add",
+      repository.unversioned.resourceStates[0]
+    );
+    await commands.executeCommand("svn.refresh");
+    await commands.executeCommand(
+      "svn.add",
+      repository.unversioned.resourceStates[0]
+    );
+    await commands.executeCommand("svn.refresh");
+
+    const selection = repository.changes.resourceStates.slice(-2);
+    assert.equal(selection.length, 2);
+
+    testUtil.overrideNextShowQuickPick(0);
+    testUtil.overrideNextShowInputBox("changelist-multi-test");
+
+    await commands.executeCommand("svn.changelist", selection[0], selection);
+
+    const group = repository.changelists.get(
+      "changelist-multi-test"
+    ) as ISvnResourceGroup;
+
+    assert.ok(group);
+    assert.equal(group.resourceStates.length, 2);
+  });
+
   test("Remove Changelist", async function () {
     const repository = await testUtil.getOrOpenRepository(
       sourceControlManager,
@@ -559,22 +624,41 @@ suite("Commands Tests", () => {
   });
 
   test("Commit Selected File", async function () {
+    const file = path.join(checkoutDir.fsPath, "commit-selected-file.txt");
+    fs.writeFileSync(file, "test");
+    await commands.executeCommand("svn.openFile", Uri.file(file));
+
     const repository = await testUtil.getOrOpenRepository(
       sourceControlManager,
       checkoutDir
     );
 
     await commands.executeCommand("svn.refresh");
-    assert.equal(repository.changes.resourceStates.length, 1);
+    const unversionedResource = repository.unversioned.resourceStates.find(
+      resource => resource.resourceUri.fsPath === file
+    );
+    assert.ok(unversionedResource);
 
-    const resource = repository.changes.resourceStates[0];
+    await commands.executeCommand("svn.add", unversionedResource);
+    await commands.executeCommand("svn.refresh");
+
+    const resource = repository.changes.resourceStates.find(
+      candidate => candidate.resourceUri.fsPath === file
+    );
+    assert.ok(resource);
 
     setTimeout(() => {
       commands.executeCommand("svn.forceCommitMessageTest", "Second Commit");
     }, 1000);
-    await commands.executeCommand("svn.commit", resource);
+    await commands.executeCommand("svn.commit", resource as Resource);
 
-    assert.equal(repository.changes.resourceStates.length, 0);
+    await commands.executeCommand("svn.refresh");
+
+    assert.ok(
+      !repository.changes.resourceStates.some(
+        candidate => candidate.resourceUri.fsPath === file
+      )
+    );
   });
 
   test("Commit Multiple", async function () {
@@ -605,8 +689,58 @@ suite("Commands Tests", () => {
     await commands.executeCommand("svn.refresh");
 
     testUtil.overrideNextShowQuickPick(0);
+    testUtil.overrideNextShowQuickPick([0, 1]);
 
     await commands.executeCommand("svn.commitWithMessage");
+  });
+
+  test("Commit Selected Resources From SCM Multi Select", async function () {
+    const file1 = path.join(checkoutDir.fsPath, "multi-select-1.txt");
+    fs.writeFileSync(file1, "test");
+    await commands.executeCommand("svn.openFile", Uri.file(file1));
+
+    const file2 = path.join(checkoutDir.fsPath, "multi-select-2.txt");
+    fs.writeFileSync(file2, "test");
+    await commands.executeCommand("svn.openFile", Uri.file(file2));
+
+    const repository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
+      checkoutDir
+    );
+
+    await commands.executeCommand("svn.refresh");
+    await commands.executeCommand(
+      "svn.add",
+      repository.unversioned.resourceStates[0]
+    );
+    await commands.executeCommand("svn.refresh");
+    await commands.executeCommand(
+      "svn.add",
+      repository.unversioned.resourceStates[0]
+    );
+    await commands.executeCommand("svn.refresh");
+
+    const selection = repository.changes.resourceStates.filter(resource =>
+      [file1, file2].includes(resource.resourceUri.fsPath)
+    );
+    assert.equal(selection.length, 2);
+
+    setTimeout(() => {
+      commands.executeCommand(
+        "svn.forceCommitMessageTest",
+        "Multi Select Commit"
+      );
+    }, 1000);
+
+    await commands.executeCommand("svn.commit", selection[0], selection);
+
+    await commands.executeCommand("svn.refresh");
+
+    assert.ok(
+      !repository.changes.resourceStates.some(resource =>
+        [file1, file2].includes(resource.resourceUri.fsPath)
+      )
+    );
   });
 
   test("Commit Missing Folder Removes From SVN", async function () {

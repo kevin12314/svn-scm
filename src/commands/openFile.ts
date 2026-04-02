@@ -22,6 +22,9 @@ export class OpenFile extends Command {
     ...resourceStates: SourceControlResourceState[]
   ) {
     const preserveFocus = arg instanceof Resource;
+    const normalizedResourceStates = this.normalizeResourceStates(
+      resourceStates
+    ).filter((state): state is Resource => state instanceof Resource);
 
     let uris: Uri[] | undefined;
 
@@ -51,10 +54,17 @@ export class OpenFile extends Command {
       }
 
       if (resource) {
-        uris = [
-          ...resourceStates.map(r => r.resourceUri),
-          resource.resourceUri
-        ];
+        const dedupedUris = new Map<string, Uri>();
+
+        for (const selectedResource of normalizedResourceStates) {
+          dedupedUris.set(
+            selectedResource.resourceUri.toString(),
+            selectedResource.resourceUri
+          );
+        }
+
+        dedupedUris.set(resource.resourceUri.toString(), resource.resourceUri);
+        uris = Array.from(dedupedUris.values());
       }
     }
 

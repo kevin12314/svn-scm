@@ -2,6 +2,8 @@ import * as assert from "assert";
 import * as vscode from "vscode";
 import * as testUtil from "./testUtil";
 
+const EXTENSION_ID = "kevin12314.svn-scm-ai-next";
+
 suite("Extension Tests", () => {
   setup(async () => {});
 
@@ -10,7 +12,7 @@ suite("Extension Tests", () => {
   });
 
   test("should be present", () => {
-    assert.ok(vscode.extensions.getExtension("kevin12314.svn-scm-ai"));
+    assert.ok(vscode.extensions.getExtension(EXTENSION_ID));
   });
 
   // The extension is already activated by vscode before running mocha test framework.
@@ -19,7 +21,7 @@ suite("Extension Tests", () => {
   test("should be able to activate the extension", function (done) {
     this.timeout(60 * 1000);
     const extension = vscode.extensions.getExtension(
-      "kevin12314.svn-scm-ai"
+      EXTENSION_ID
     ) as vscode.Extension<any>;
 
     if (!extension) {

@@ -9,6 +9,8 @@ import { SourceControlManager } from "../source_control_manager";
 import { timeout } from "../util";
 import { SvnExtensionApi } from "../extension";
 
+const EXTENSION_ID = "kevin12314.svn-scm-ai-next";
+
 tmp.setGracefulCleanup();
 
 const tempDirList: tmp.DirResult[] = [];
@@ -181,7 +183,7 @@ export function destroyAllTempPaths() {
 
 export function activeExtension() {
   return new Promise<void>((resolve, reject) => {
-    const extension = extensions.getExtension("kevin12314.svn-scm-ai");
+    const extension = extensions.getExtension(EXTENSION_ID);
     if (!extension) {
       reject();
       return;
@@ -199,7 +201,7 @@ export function activeExtension() {
 }
 
 export async function getSourceControlManager(): Promise<SourceControlManager> {
-  const extension = extensions.getExtension("kevin12314.svn-scm-ai") as
+  const extension = extensions.getExtension(EXTENSION_ID) as
     | { isActive: boolean; activate(): Thenable<SvnExtensionApi> }
     | undefined;
 
@@ -268,6 +270,14 @@ window.showQuickPick = ((
 
   if (typeof next === "number" && Array.isArray(items)) {
     next = items[next];
+  }
+
+  if (
+    Array.isArray(next) &&
+    Array.isArray(items) &&
+    next.every(value => typeof value === "number")
+  ) {
+    next = next.map(index => items[index]);
   }
 
   return new Promise((resolve, _reject) => {
