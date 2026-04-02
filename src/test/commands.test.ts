@@ -823,7 +823,8 @@ suite("Commands Tests", () => {
     }
 
     const escapedFolder = folder.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const matches = capturedHtml.match(new RegExp(`<li>${escapedFolder}</li>`, "g")) ?? [];
+    const matches =
+      capturedHtml.match(new RegExp(`<li>${escapedFolder}</li>`, "g")) ?? [];
 
     assert.equal(matches.length, 1, capturedHtml);
     assert.ok(capturedHtml.includes(`<li>${webXml}</li>`), capturedHtml);

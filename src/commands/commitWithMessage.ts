@@ -40,8 +40,10 @@ export class CommitWithMessage extends Command {
       return;
     }
 
-    const filePaths = getCommitFilePaths(initialFilePaths, resources, filePath =>
-      repository.getResourceFromFile(filePath)
+    const filePaths = getCommitFilePaths(
+      initialFilePaths,
+      resources,
+      filePath => repository.getResourceFromFile(filePath)
     );
 
     try {
