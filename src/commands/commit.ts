@@ -1,9 +1,9 @@
-import * as path from "path";
 import { SourceControlResourceState, window } from "vscode";
 import { Status } from "../common/types";
 import { inputCommitMessage } from "../messages";
 import { isSvnErrorLike } from "../util";
 import { Command } from "./command";
+import { getCommitFilePaths } from "./commitPaths";
 import { confirmMissingResourcesForCommit } from "./commitMissing";
 
 export class Commit extends Command {
@@ -40,20 +40,11 @@ export class Commit extends Command {
         return;
       }
 
-      const paths = resources.map(resource => resource.fsPath);
-
-      for (const resource of selectedResources) {
-        let dir = path.dirname(resource.resourceUri.fsPath);
-        let parent = repository.getResourceFromFile(dir);
-
-        while (parent) {
-          if (parent.type === Status.ADDED) {
-            paths.push(dir);
-          }
-          dir = path.dirname(dir);
-          parent = repository.getResourceFromFile(dir);
-        }
-      }
+      const paths = getCommitFilePaths(
+        resources.map(resource => resource.fsPath),
+        selectedResources,
+        filePath => repository.getResourceFromFile(filePath)
+      );
 
       try {
         const message = await inputCommitMessage(

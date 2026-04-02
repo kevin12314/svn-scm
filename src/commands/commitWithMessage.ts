@@ -1,12 +1,11 @@
-import * as path from "path";
 import { window } from "vscode";
 import { inputCommitFiles } from "../changelistItems";
-import { Status } from "../common/types";
 import { inputCommitMessage } from "../messages";
 import { Repository } from "../repository";
 import { Resource } from "../resource";
 import { isSvnErrorLike } from "../util";
 import { Command } from "./command";
+import { getCommitFilePaths } from "./commitPaths";
 import { confirmMissingResourcesForCommit } from "./commitMissing";
 
 export class CommitWithMessage extends Command {
@@ -28,38 +27,22 @@ export class CommitWithMessage extends Command {
       return;
     }
 
-    const filePaths = resourceStates.map(state => {
+    const initialFilePaths = resourceStates.map(state => {
       return state.resourceUri.fsPath;
     });
 
     const message = await inputCommitMessage(
       repository.inputBox.value,
       false,
-      filePaths
+      initialFilePaths
     );
     if (message === undefined) {
       return;
     }
 
-    // If files is renamed, the commit need previous file
-    resources.forEach(state => {
-      if (state instanceof Resource) {
-        if (state.type === Status.ADDED && state.renameResourceUri) {
-          filePaths.push(state.renameResourceUri.fsPath);
-        }
-
-        let dir = path.dirname(state.resourceUri.fsPath);
-        let parent = repository.getResourceFromFile(dir);
-
-        while (parent) {
-          if (parent.type === Status.ADDED) {
-            filePaths.push(dir);
-          }
-          dir = path.dirname(dir);
-          parent = repository.getResourceFromFile(dir);
-        }
-      }
-    });
+    const filePaths = getCommitFilePaths(initialFilePaths, resources, filePath =>
+      repository.getResourceFromFile(filePath)
+    );
 
     try {
       const result = await repository.commitFiles(message, filePaths);

@@ -1,3 +1,16 @@
+# [3.5.1](https://github.com/kevin12314/svn-scm/compare/v3.5.0...v3.5.1) (2026-04-02)
+
+
+### Bug Fixes
+
+* improve VS Code language model selection for AI commit messages by avoiding slow version-only lookups while still preferring the default Copilot raptor-mini model
+* deduplicate added parent folders in the commit selected webview so the files-to-commit list no longer shows the same folder twice
+
+### Maintenance
+
+* document the default AI commit message model selection rules in the README and VS Code setting descriptions
+* add an extension host regression test covering the commit selected webview file list for added folders and nested files
+
 # [3.5.0](https://github.com/kevin12314/svn-scm/compare/v3.4.0...v3.5.0) (2026-04-01)
 
 

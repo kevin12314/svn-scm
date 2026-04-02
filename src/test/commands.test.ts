@@ -743,6 +743,93 @@ suite("Commands Tests", () => {
     );
   });
 
+  test("Commit Webview File List Does Not Duplicate Added Parent Folder", async function () {
+    this.timeout(60000);
+
+    const repository = await testUtil.getOrOpenRepository(
+      sourceControlManager,
+      checkoutDir
+    );
+    const suffix = Date.now().toString();
+    const folder = path.join(checkoutDir.fsPath, `src-${suffix}`);
+    const webXml = path.join(folder, "web.xml");
+    const modifiedFile = path.join(checkoutDir.fsPath, `test-${suffix}.txt`);
+
+    fs.mkdirSync(folder);
+    fs.writeFileSync(webXml, "<web-app />");
+    fs.writeFileSync(modifiedFile, "base\n");
+
+    await repository.addFiles([modifiedFile]);
+    await repository.commitFiles(`Add ${path.basename(modifiedFile)}`, [
+      modifiedFile
+    ]);
+    await timeout(500);
+
+    fs.writeFileSync(modifiedFile, "base\nchanged\n");
+
+    await repository.addFiles([folder]);
+    await commands.executeCommand("svn.refresh");
+    await timeout(500);
+
+    const selectedResources = repository.changes.resourceStates.filter(
+      resource =>
+        [folder, webXml, modifiedFile].includes(resource.resourceUri.fsPath)
+    );
+
+    assert.equal(selectedResources.length, 3);
+
+    let capturedHtml = "";
+    const originalCreateWebviewPanel = window.createWebviewPanel;
+
+    (window as any).createWebviewPanel = () => {
+      const disposeCallbacks: Array<() => void> = [];
+      const webview = {
+        cspSource: "test-webview",
+        html: "",
+        asWebviewUri: (uri: Uri) => uri,
+        postMessage: async () => true,
+        onDidReceiveMessage: () => ({ dispose() {} })
+      };
+
+      return {
+        webview,
+        onDidDispose: (listener: () => void) => {
+          disposeCallbacks.push(listener);
+          return { dispose() {} };
+        },
+        dispose: () => {
+          capturedHtml = webview.html;
+          disposeCallbacks.splice(0).forEach(listener => listener());
+        },
+        reveal: () => {}
+      };
+    };
+
+    try {
+      setTimeout(() => {
+        commands.executeCommand(
+          "svn.forceCommitMessageTest",
+          "Verify commit panel paths"
+        );
+      }, 1000);
+
+      await commands.executeCommand(
+        "svn.commit",
+        selectedResources[0],
+        selectedResources
+      );
+    } finally {
+      (window as any).createWebviewPanel = originalCreateWebviewPanel;
+    }
+
+    const escapedFolder = folder.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const matches = capturedHtml.match(new RegExp(`<li>${escapedFolder}</li>`, "g")) ?? [];
+
+    assert.equal(matches.length, 1, capturedHtml);
+    assert.ok(capturedHtml.includes(`<li>${webXml}</li>`), capturedHtml);
+    assert.ok(capturedHtml.includes(`<li>${modifiedFile}</li>`), capturedHtml);
+  });
+
   test("Commit Missing Folder Removes From SVN", async function () {
     this.timeout(30000);
 
