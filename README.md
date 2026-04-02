@@ -1,9 +1,9 @@
 # Subversion source control for VS Code
 
-![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/kevin12314.svn-scm-ai)
-![Visual Studio Marketplace Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/kevin12314.svn-scm-ai)
-![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/kevin12314.svn-scm-ai)
-![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/kevin12314.svn-scm-ai)
+![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/kevin12314.svn-scm-ai-next)
+![Visual Studio Marketplace Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/kevin12314.svn-scm-ai-next)
+![Visual Studio Marketplace Version](https://vsmarketplacebadges.dev/version-short/kevin12314.svn-scm-ai-next.svg?&colorB=orange)
+![Visual Studio Marketplace Rating](https://vsmarketplacebadges.dev/rating-star/kevin12314.svn-scm-ai-next.svg)
 
 ![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/kevin12314/svn-scm/main.yml?branch=master)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
