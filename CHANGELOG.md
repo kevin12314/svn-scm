@@ -5,11 +5,15 @@
 
 * improve VS Code language model selection for AI commit messages by avoiding slow version-only lookups while still preferring the default Copilot raptor-mini model
 * deduplicate added parent folders in the commit selected webview so the files-to-commit list no longer shows the same folder twice
+* normalize and deduplicate multi-selection resource handling for changelist, commit, and open file commands
+* stop deferred repository refresh work after a repository is disposed to avoid stale updates during cleanup
+* fix the README fork link so it points to JohnstonCode's upstream repository
 
 ### Maintenance
 
 * document the default AI commit message model selection rules in the README and VS Code setting descriptions
 * add an extension host regression test covering the commit selected webview file list for added folders and nested files
+* rename the package identifier to svn-scm-ai-next and add a VSIX publish script
 
 # [3.5.0](https://github.com/kevin12314/svn-scm/compare/v3.4.0...v3.5.0) (2026-04-01)
 
