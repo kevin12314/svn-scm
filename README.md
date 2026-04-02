@@ -97,12 +97,15 @@ Here are all of the extension settings with their default values. To change any 
   "svn.commitMessageGeneration.provider": "vscode-lm",  // values: ["vscode-lm","openai-compatible","azure-openai"],
 
   // Preferred vendor for the VS Code language model provider. Only used when provider = "vscode-lm".
+  // When left unset, the extension prefers the built-in Copilot model selection.
   "svn.commitMessageGeneration.vscodeLM.preferredVendor": null,
 
   // Optional model family for the VS Code language model provider. Only used when provider = "vscode-lm".
+  // When left unset, the extension prefers the Copilot oswe-vscode family.
   "svn.commitMessageGeneration.vscodeLM.preferredModelFamily": null,
 
   // Preferred model version for the VS Code language model provider. Only used when provider = "vscode-lm".
+  // By default the extension targets the Copilot raptor-mini model and resolves it through broader selectors for better performance.
   "svn.commitMessageGeneration.vscodeLM.preferredModelVersion": "raptor-mini",
 
   // Controls the language used for generated commit messages.
@@ -275,6 +278,12 @@ Here are all of the extension settings with their default values. To change any 
 }
 ```
 <!--end-settings-->
+
+## AI Commit Message Default Model Selection
+
+When `svn.commitMessageGeneration.provider` is set to `vscode-lm`, the extension prefers the Copilot `oswe-vscode` family with the `raptor-mini` version by default.
+
+If you do not explicitly set `svn.commitMessageGeneration.vscodeLM.preferredVendor` or `svn.commitMessageGeneration.vscodeLM.preferredModelFamily`, the extension will try to resolve that default model from broader Copilot selectors first and then pick the best matching model in memory. This keeps the default selection fast while still targeting `oswe-vscode-prime` when it is available.
 
 ## OpenAI-Compatible Commit Message Setup
 

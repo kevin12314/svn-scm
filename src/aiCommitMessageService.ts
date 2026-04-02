@@ -38,6 +38,7 @@ interface CommitMessagePromptContext {
   resources: Resource[];
   fallbackMessage: string;
   diff?: string;
+  traceId?: string;
 }
 
 interface CommitMessageProvider {
@@ -59,11 +60,178 @@ const AZURE_OPENAI_API_KEY_SECRET =
   "svn.commitMessageGeneration.azureOpenAI.apiKey";
 
 let extensionSecrets: vscode.SecretStorage | undefined;
+let commitMessageOutputChannel: vscode.OutputChannel | undefined;
 
 export function setCommitMessageSecretStorage(
   secrets: vscode.SecretStorage
 ): void {
   extensionSecrets = secrets;
+}
+
+export function setCommitMessageOutputChannel(
+  outputChannel: vscode.OutputChannel
+): void {
+  commitMessageOutputChannel = outputChannel;
+}
+
+function logCommitMessageTrace(traceId: string, message: string): void {
+  if (!commitMessageOutputChannel) {
+    console.warn(
+      `[commit-message:${traceId}] Output channel is not initialized; trace logging skipped.`
+    );
+    return;
+  }
+
+  commitMessageOutputChannel.appendLine(
+    `[commit-message:${traceId}] ${message}`
+  );
+}
+
+function getElapsedMilliseconds(startedAt: number): number {
+  return Date.now() - startedAt;
+}
+
+interface PreferredModelCriteria {
+  vendor?: string;
+  family?: string;
+  version?: string;
+  id?: string;
+}
+
+const DEFAULT_VSCODE_LM_MODEL: Required<PreferredModelCriteria> = {
+  id: "oswe-vscode-prime",
+  vendor: "copilot",
+  family: "oswe-vscode",
+  version: "raptor-mini"
+};
+
+function describeModel(model: vscode.LanguageModelChat): string {
+  return `id=${model.id} vendor=${model.vendor} family=${model.family} version=${model.version}`;
+}
+
+function getModelMatchScore(
+  model: vscode.LanguageModelChat,
+  criteria: PreferredModelCriteria
+): number {
+  let score = 0;
+
+  if (criteria.id) {
+    if (model.id !== criteria.id) {
+      return -1;
+    }
+
+    score += 100;
+  }
+
+  if (criteria.vendor) {
+    if (model.vendor !== criteria.vendor) {
+      return -1;
+    }
+
+    score += 10;
+  }
+
+  if (criteria.family) {
+    if (model.family !== criteria.family) {
+      return -1;
+    }
+
+    score += 5;
+  }
+
+  if (criteria.version) {
+    if (model.version !== criteria.version) {
+      return -1;
+    }
+
+    score += 3;
+  }
+
+  return score;
+}
+
+function pickBestMatchingModel(
+  models: readonly vscode.LanguageModelChat[],
+  criteria: PreferredModelCriteria
+): vscode.LanguageModelChat | undefined {
+  let bestModel: vscode.LanguageModelChat | undefined;
+  let bestScore = -1;
+
+  for (const model of models) {
+    const score = getModelMatchScore(model, criteria);
+
+    if (score > bestScore) {
+      bestModel = model;
+      bestScore = score;
+    }
+  }
+
+  return bestModel;
+}
+
+function getPreferredModelCriteria(): PreferredModelCriteria {
+  const preferredVendor = configuration.get<string | null>(
+    "commitMessageGeneration.vscodeLM.preferredVendor",
+    null
+  );
+  const preferredModelFamily = configuration.get<string | null>(
+    "commitMessageGeneration.vscodeLM.preferredModelFamily",
+    null
+  );
+  const preferredModelVersion = configuration.get<string | null>(
+    "commitMessageGeneration.vscodeLM.preferredModelVersion",
+    DEFAULT_VSCODE_LM_MODEL.version
+  );
+
+  return {
+    vendor: preferredVendor ?? DEFAULT_VSCODE_LM_MODEL.vendor,
+    family: preferredModelFamily ?? DEFAULT_VSCODE_LM_MODEL.family,
+    version: preferredModelVersion ?? DEFAULT_VSCODE_LM_MODEL.version,
+    id:
+      !preferredVendor && !preferredModelFamily && !preferredModelVersion
+        ? DEFAULT_VSCODE_LM_MODEL.id
+        : undefined
+  };
+}
+
+function buildModelSelectors(
+  criteria: PreferredModelCriteria
+): Array<vscode.LanguageModelChatSelector | Record<string, never>> {
+  const selectors: Array<
+    vscode.LanguageModelChatSelector | Record<string, never>
+  > = [];
+  const selectorKeys = new Set<string>();
+
+  const pushSelector = (
+    selector: vscode.LanguageModelChatSelector | Record<string, never>
+  ): void => {
+    const key = JSON.stringify(selector);
+
+    if (!selectorKeys.has(key)) {
+      selectorKeys.add(key);
+      selectors.push(selector);
+    }
+  };
+
+  if (criteria.vendor && criteria.family) {
+    pushSelector({
+      vendor: criteria.vendor,
+      family: criteria.family
+    });
+  }
+
+  if (criteria.vendor) {
+    pushSelector({ vendor: criteria.vendor });
+  }
+
+  if (criteria.family) {
+    pushSelector({ family: criteria.family });
+  }
+
+  pushSelector({ vendor: DEFAULT_VSCODE_LM_MODEL.vendor });
+  pushSelector({});
+
+  return selectors;
 }
 
 function getDefaultFetchImplementation(): FetchLike {
@@ -243,87 +411,60 @@ async function getDiffContext(
   return trimDiff(diff);
 }
 
-async function selectModel(): Promise<vscode.LanguageModelChat | undefined> {
-  const preferredVendor = configuration.get<string | null>(
-    "commitMessageGeneration.vscodeLM.preferredVendor",
-    null
-  );
-  const preferredModelFamily = configuration.get<string | null>(
-    "commitMessageGeneration.vscodeLM.preferredModelFamily",
-    null
-  );
-  const preferredModelVersion = configuration.get<string | null>(
-    "commitMessageGeneration.vscodeLM.preferredModelVersion",
-    "raptor-mini"
-  );
+async function selectModel(
+  traceId?: string
+): Promise<vscode.LanguageModelChat | undefined> {
+  const preferredCriteria = getPreferredModelCriteria();
 
-  const preferredSelectors: vscode.LanguageModelChatSelector[] = [];
+  // Query broad selectors first, then filter in memory. This keeps the
+  // default raptor-mini selection fast without relying on a slow version-only lookup.
+  for (const selector of buildModelSelectors(preferredCriteria)) {
+    const models = await vscode.lm.selectChatModels(selector);
+    const matchedModel = pickBestMatchingModel(models, preferredCriteria);
 
-  if (preferredVendor && preferredModelFamily && preferredModelVersion) {
-    preferredSelectors.push({
-      vendor: preferredVendor,
-      family: preferredModelFamily,
-      version: preferredModelVersion
-    });
-  }
-
-  if (preferredVendor && preferredModelVersion) {
-    preferredSelectors.push({
-      vendor: preferredVendor,
-      version: preferredModelVersion
-    });
-  }
-
-  if (preferredModelFamily && preferredModelVersion) {
-    preferredSelectors.push({
-      family: preferredModelFamily,
-      version: preferredModelVersion
-    });
-  }
-
-  if (preferredVendor && preferredModelFamily) {
-    preferredSelectors.push({
-      vendor: preferredVendor,
-      family: preferredModelFamily
-    });
-  }
-
-  if (preferredModelVersion) {
-    preferredSelectors.push({ version: preferredModelVersion });
-  }
-
-  if (preferredModelFamily) {
-    preferredSelectors.push({ family: preferredModelFamily });
-  }
-
-  if (preferredVendor) {
-    preferredSelectors.push({ vendor: preferredVendor });
-  }
-
-  for (const selector of preferredSelectors) {
-    const preferredModels = await vscode.lm.selectChatModels(selector);
-    if (preferredModels.length > 0) {
-      return preferredModels[0];
+    if (matchedModel) {
+      logCommitMessageTrace(
+        traceId ?? "select-model",
+        `selected model ${describeModel(matchedModel)}`
+      );
+      return matchedModel;
     }
   }
 
-  const copilotModels = await vscode.lm.selectChatModels({ vendor: "copilot" });
-  if (copilotModels.length > 0) {
-    return copilotModels[0];
-  }
-
-  const models = await vscode.lm.selectChatModels({});
-  return models[0];
+  return undefined;
 }
 
 async function readResponseText(
-  response: vscode.LanguageModelChatResponse
+  response: vscode.LanguageModelChatResponse,
+  traceId?: string
 ): Promise<string> {
   let text = "";
+  let fragmentCount = 0;
+  let firstFragmentLogged = false;
+  const startedAt = Date.now();
 
   for await (const fragment of response.text) {
+    fragmentCount += 1;
+
+    if (!firstFragmentLogged) {
+      firstFragmentLogged = true;
+      logCommitMessageTrace(
+        traceId ?? "response-text",
+        `first response fragment received in ${getElapsedMilliseconds(
+          startedAt
+        )}ms`
+      );
+    }
+
     text += fragment;
   }
+
+  logCommitMessageTrace(
+    traceId ?? "response-text",
+    `response stream completed in ${getElapsedMilliseconds(
+      startedAt
+    )}ms fragments=${fragmentCount} chars=${text.length}`
+  );
 
   return text.trim();
 }
@@ -522,8 +663,24 @@ class VscodeLanguageModelCommitMessageProvider
     prompt: string | CommitMessagePromptContext,
     token?: vscode.CancellationToken
   ): Promise<CommitMessageAIResult> {
+    const traceId =
+      typeof prompt === "string"
+        ? Date.now().toString(36)
+        : prompt.traceId ?? Date.now().toString(36);
+    const startedAt = Date.now();
+
     try {
-      const model = await selectModel();
+      logCommitMessageTrace(traceId, "provider=vscode-lm start");
+
+      const selectModelStartedAt = Date.now();
+      const model = await selectModel(traceId);
+      logCommitMessageTrace(
+        traceId,
+        `selectModel completed in ${getElapsedMilliseconds(
+          selectModelStartedAt
+        )}ms${model ? "" : " (no model)"}`
+      );
+
       if (!model) {
         return { reason: "no-model" };
       }
@@ -533,6 +690,11 @@ class VscodeLanguageModelCommitMessageProvider
         : buildPromptMessages(prompt)
       ).map(section => vscode.LanguageModelChatMessage.User(section));
 
+      const sendRequestStartedAt = Date.now();
+      logCommitMessageTrace(
+        traceId,
+        `sendRequest start with ${promptMessages.length} message part(s)`
+      );
       const response = await model.sendRequest(
         promptMessages,
         {
@@ -542,17 +704,46 @@ class VscodeLanguageModelCommitMessageProvider
         },
         token
       );
+      logCommitMessageTrace(
+        traceId,
+        `sendRequest completed in ${getElapsedMilliseconds(
+          sendRequestStartedAt
+        )}ms`
+      );
 
+      const readResponseStartedAt = Date.now();
       const message = sanitizeCommitMessageResponse(
-        await readResponseText(response)
+        await readResponseText(response, traceId)
+      );
+      logCommitMessageTrace(
+        traceId,
+        `readResponseText completed in ${getElapsedMilliseconds(
+          readResponseStartedAt
+        )}ms`
       );
 
       if (!message) {
+        logCommitMessageTrace(
+          traceId,
+          `provider=vscode-lm finished with empty message in ${getElapsedMilliseconds(
+            startedAt
+          )}ms`
+        );
         return { reason: "error" };
       }
 
+      logCommitMessageTrace(
+        traceId,
+        `provider=vscode-lm finished in ${getElapsedMilliseconds(startedAt)}ms`
+      );
       return { message };
     } catch (error) {
+      logCommitMessageTrace(
+        traceId,
+        `provider=vscode-lm failed after ${getElapsedMilliseconds(
+          startedAt
+        )}ms: ${error instanceof Error ? error.message : String(error)}`
+      );
       return { reason: "error", error };
     }
   }
@@ -1054,11 +1245,38 @@ export async function generateAICommitMessage(
   fallbackMessage: string,
   token?: vscode.CancellationToken
 ): Promise<CommitMessageAIResult> {
+  const traceId = Date.now().toString(36);
+  const startedAt = Date.now();
+
   try {
+    logCommitMessageTrace(
+      traceId,
+      `generateAICommitMessage start provider=${getCommitMessageAIProvider()} resources=${
+        resources.length
+      }`
+    );
+
+    const diffStartedAt = Date.now();
+    logCommitMessageTrace(traceId, "diff collection start");
     let diff: string | undefined;
+
     try {
       diff = await getDiffContext(repository, resources);
-    } catch {
+      logCommitMessageTrace(
+        traceId,
+        `diff collection completed in ${getElapsedMilliseconds(
+          diffStartedAt
+        )}ms${
+          typeof diff === "string" ? ` (chars=${diff.length})` : " (no diff)"
+        }`
+      );
+    } catch (error) {
+      logCommitMessageTrace(
+        traceId,
+        `diff collection failed after ${getElapsedMilliseconds(
+          diffStartedAt
+        )}ms: ${error instanceof Error ? error.message : String(error)}`
+      );
       diff = undefined;
     }
 
@@ -1066,11 +1284,40 @@ export async function generateAICommitMessage(
       repository,
       resources,
       fallbackMessage,
-      diff
+      diff,
+      traceId
     };
 
-    return createCommitMessageProvider().generate(promptContext, token);
+    const providerStartedAt = Date.now();
+    const result = await createCommitMessageProvider().generate(
+      promptContext,
+      token
+    );
+    logCommitMessageTrace(
+      traceId,
+      `provider.generate completed in ${getElapsedMilliseconds(
+        providerStartedAt
+      )}ms${
+        result.message
+          ? " (message returned)"
+          : ` (reason=${result.reason ?? "unknown"})`
+      }`
+    );
+    logCommitMessageTrace(
+      traceId,
+      `generateAICommitMessage finished in ${getElapsedMilliseconds(
+        startedAt
+      )}ms`
+    );
+
+    return result;
   } catch (error) {
+    logCommitMessageTrace(
+      traceId,
+      `generateAICommitMessage failed after ${getElapsedMilliseconds(
+        startedAt
+      )}ms: ${error instanceof Error ? error.message : String(error)}`
+    );
     return { reason: "error", error };
   }
 }

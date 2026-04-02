@@ -9,7 +9,10 @@ import {
   window
 } from "vscode";
 import { registerCommands } from "./commands";
-import { setCommitMessageSecretStorage } from "./aiCommitMessageService";
+import {
+  setCommitMessageOutputChannel,
+  setCommitMessageSecretStorage
+} from "./aiCommitMessageService";
 import { ConstructorPolicy } from "./common/types";
 import { CheckActiveEditor } from "./contexts/checkActiveEditor";
 import { OpenRepositoryCount } from "./contexts/openRepositoryCount";
@@ -90,6 +93,7 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
   setCommitMessageSecretStorage(context.secrets);
 
   const outputChannel = window.createOutputChannel(l10n.t("SVN"));
+  setCommitMessageOutputChannel(outputChannel);
   commands.registerCommand("svn.showOutput", () => outputChannel.show());
   disposables.push(outputChannel);
 
